@@ -1,0 +1,6 @@
+pragma ever-solidity ^0.66.0;
+
+
+library Gas {
+    uint128 constant SAMPLE_VALUE = 1 ever;
+}

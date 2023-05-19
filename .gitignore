@@ -1,0 +1,13 @@
+.idea/
+**/.DS_Store
+
+node_modules/
+venv/
+.vscode
+.temp
+
+package-lock.json
+locklift.config.ts
+
+*.log
+.env

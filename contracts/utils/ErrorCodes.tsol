@@ -1,0 +1,6 @@
+pragma ever-solidity ^0.66.0;
+
+library ErrorCodes {
+    uint16 constant IS_NOT_ROOT = 1000;
+    uint16 constant SAMPLE_ERROR_CODE = 1001;
+}

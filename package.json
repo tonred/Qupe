@@ -1,0 +1,29 @@
+{
+    "name": "ever-solidity-project-templated",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "npx locklift build",
+        "deploy": "npx locklift run --network local --script scripts/1-deploy-sample.ts --disable-build",
+        "test": "npx locklift test --network local --disable-build"
+    },
+    "author": "TONRED",
+    "license": "ISC",
+    "dependencies": {
+        "@types/node": "^18.16.9",
+        "@types/mocha": "^10.0.1",
+        "@broxus/contracts": "^1.1.1",
+        "bignumber.js": "^9.1.1",
+        "chai": "^4.3.7",
+        "chai-bignumber": "^3.1.0",
+        "directory-tree": "^3.0.1",
+        "dotenv": "^10.0.0",
+        "folder-hash": "^4.0.4",
+        "mocha": "^10.0.1",
+        "mocha-logger": "^1.0.8",
+        "typescript": "^4.7.4",
+        "locklift": "^2.5.5",
+        "prettier": "^2.7.1"
+    }
+}

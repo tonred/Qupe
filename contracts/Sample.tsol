@@ -1,0 +1,33 @@
+pragma ever-solidity ^0.66.0;
+
+pragma AbiHeader time;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+
+import "./interfaces/IUpgradable.tsol";
+import "./utils/ErrorCodes.tsol";
+import "./utils/Gas.tsol";
+import "./utils/TransferUtils.tsol";
+
+import "@broxus/contracts/contracts/access/InternalOwner.tsol";
+import "@broxus/contracts/contracts/platform/Platform.tsol";
+import "@broxus/contracts/contracts/utils/CheckPubKey.tsol";
+import "@broxus/contracts/contracts/utils/RandomNonce.tsol";
+
+
+contract Sample is IUpgradable, TransferUtils, InternalOwner, CheckPubKey, RandomNonce {
+
+    constructor(address owner) public checkPubKey {
+        tvm.accept();
+        setOwnership(owner);
+    }
+
+    function _targetBalance() internal view inline override returns (uint128) {
+        return 1 ever;
+    }
+
+    function upgrade(TvmCell code) external override internalMsg onlyOwner {
+
+    }
+
+}
