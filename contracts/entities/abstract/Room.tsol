@@ -1,0 +1,102 @@
+pragma ever-solidity ^0.66.0;
+
+import "./Base.tsol";
+import "../../structures/UserData.tsol";
+
+pragma AbiHeader time;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+
+
+abstract contract Room is Base {
+    event MessageAccepted(uint64 messageID, uint messageHash);
+    event MessageHighlighted(uint64 messageID, uint messageHash);
+
+    uint64 public _serverID;
+    uint64 public _roomID;
+
+    mapping(address => bool) public _bans;
+    uint64 public _messagesCount;
+
+
+    function onCodeUpgrade(address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) internal {
+        tvm.resetStorage();
+        _initPlatform(root, platformCode);
+        (_serverID, _roomID) = abi.decode(initialData, (uint64, uint64));
+        _init(initialParams);
+    }
+
+    function _init(TvmCell params) internal virtual override;
+
+
+    function acceptMessage(
+        uint messageHash,
+        address user,
+        bool highlight,
+        optional(UserData) data
+    ) public minValue(Gas.ACCEPT_MESSAGE_VALUE) onlyProfile(user) {
+        Payment payment = _currentPayment(Gas.ACCEPT_MESSAGE_VALUE);
+        require(_permissions.check(user, Action.SEND_MESSAGE), 69);
+        require(_checkAcceptMessageData(user, highlight, payment, data), 69);
+        _acceptMessage(messageHash, user, highlight);
+    }
+
+    function ban(address user) public minValue(Gas.CALL_VALUE) cashBack hasPermission(Action.BAN_UNBAN) {
+        _bans[user] = true;
+    }
+
+    function unban(address user) public minValue(Gas.CALL_VALUE) cashBack hasPermission(Action.BAN_UNBAN) {
+        delete _bans[user];
+    }
+
+//    function changeParams(
+//        uint64 serverID,
+//        TvmCell params,
+//        bool resetPermissions,
+//        address remainingGasTo
+//    ) public onlyServer(serverID) {
+//        _reserve();
+//        address owner = _init(params);
+//        if (resetPermissions) {
+//            _resetPermissions(owner);
+//        }
+//        remainingGasTo.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});
+//    }
+
+
+    function _onAcceptTokensTransfer(uint128 amount, address sender, TvmCell payload) internal override {
+        (uint messageHash, optional(UserData) data, bool highlight) =
+            abi.decode(payload, (uint, optional(UserData), bool));
+        Payment payment = Payment(_token, amount);
+        bool enough_value = msg.value >= Gas.ACCEPT_MESSAGE_VALUE;
+        bool has_permission = _permissions.check(sender, Action.SEND_MESSAGE);
+        bool correct_data = _checkAcceptMessageData(sender, highlight, payment, data);
+        if (!enough_value || !has_permission || !correct_data) {
+            _returnTokens(amount, sender);
+            return;
+        }
+        _acceptMessage(messageHash, sender, highlight);
+    }
+
+    function _checkAcceptMessageData(
+        address user, bool highlight, Payment payment, optional(UserData) data
+    ) internal view virtual returns (bool);
+
+    function _acceptMessage(uint messageHash, address /*user*/, bool highlight) internal virtual {
+        uint64 messageID = _messagesCount++;
+        emit MessageAccepted(messageID, messageHash);  // todo are user and highlight needed? + remove from args
+        if (highlight) {
+            emit MessageHighlighted(messageID, messageHash);
+        }
+        // todo return gas
+    }
+
+    function _isBanned(address user) internal view inline returns (bool) {
+        return _bans.exists(user);
+    }
+
+    function _targetBalance() internal view inline override returns (uint128) {
+        return Gas.ROOM_TARGET_BALANCE;
+    }
+
+}

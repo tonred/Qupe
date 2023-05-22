@@ -1,0 +1,87 @@
+pragma ever-solidity ^0.66.0;
+
+import "../utils/TransferUtils.tsol";
+import "./PermissionsLibrary.tsol";
+
+
+abstract contract PermissionsController is TransferUtils {
+    using PermissionsLibrary for Permissions;
+
+    Permissions public _permissions;
+
+    modifier onlyAdmin() {
+        require(_permissions.check(msg.sender, Action.ADMIN), 69);
+        _;
+    }
+
+    modifier hasPermission(Action action) {
+        require(_permissions.check(msg.sender, action), 69);
+        _;
+    }
+
+
+    function _initPermissions(address owner, mapping(uint8 => bool) defaultRights) internal {
+        _permissions = PermissionsLibrary.create(defaultRights);
+        if (owner.value != 0) {
+            _setOwner(owner);
+        }
+    }
+
+    // todo what is right is false?
+    function createGroup(mapping(uint8 => bool) rights) public onlyAdmin responsible returns (uint32) {
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _permissions.createGroup(rights);
+    }
+
+    function deleteGroup(uint32 group) public onlyAdmin responsible returns (bool) {
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _permissions.deleteGroup(group);
+    }
+
+    function setGroupRight(uint32 group, mapping(uint8 => bool) rights) public onlyAdmin cashBack {
+        _permissions.setGroupRight(group, rights);
+    }
+
+    function grantGroupAction(uint32 group, Action action) public onlyAdmin cashBack {
+        _permissions.grantGroupAction(group, action);
+    }
+
+    function revokeGroupAction(uint32 group, Action action) public onlyAdmin cashBack {
+        _permissions.revokeGroupAction(group, action);
+    }
+
+    function setUserGroup(address user, uint32 group) public onlyAdmin cashBack {
+        _permissions.setUserGroup(user, group);
+    }
+
+    function deleteUserGroup(address user) public onlyAdmin cashBack {
+        _permissions.deleteUserGroup(user);
+    }
+
+    function setDefaultGroup(uint32 group) public onlyAdmin cashBack {
+        _permissions.setDefaultGroup(group);
+    }
+
+
+    function getGroupRights(uint32 group) public onlyAdmin responsible returns (mapping(uint8 => bool)) {
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _permissions.getGroupRights(group);
+    }
+
+    function getUserGroup(address user) public onlyAdmin responsible returns (uint32) {
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _permissions.getUserGroup(user);
+    }
+
+    function transferRights(address from, address to) public onlyAdmin cashBack {
+        _permissions.transferRights(from, to);
+    }
+
+
+    function _resetPermissions(address newOwner) internal {
+        _permissions.reset(emptyMap);
+        _setOwner(newOwner);
+    }
+
+    function _setOwner(address owner) private {
+        uint32 group = _permissions.createGroup(PermissionsLibrary.fullRights());
+        _permissions.setUserGroup(owner, group);
+    }
+
+}

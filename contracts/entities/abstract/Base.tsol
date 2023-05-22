@@ -1,0 +1,40 @@
+pragma ever-solidity ^0.66.0;
+
+pragma AbiHeader time;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+
+import "../../permissions/PermissionsController.tsol";
+import "../../platform/PlatformUtils.tsol";
+import "../../structures/Payment.tsol";
+import "../../vault/Vault.tsol";
+
+
+abstract contract Base is PermissionsController, Vault, PlatformUtils {
+
+    function _init(TvmCell params) internal virtual;
+
+    function withdraw(address token, address recipient) public minValue(Gas.CALL_VALUE) onlyAdmin {
+        if (token.value == 0) {
+            tvm.rawReserve(_targetBalance(), 0);
+            recipient.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});
+        } else if (token == _token) {
+            TvmCell empty;
+            _transferTokens(_balance, recipient, empty, 0, MsgFlag.REMAINING_GAS);
+        } else {
+            revert(69);
+        }
+    }
+
+    function _targetBalance() internal view inline virtual returns (uint128);
+
+    function _currentPayment(uint128 fee) internal pure returns (Payment) {
+        return Payment(address(0), msg.value - fee);
+    }
+
+    // todo what if payment token is NOT std address??? it used in comparisons
+    function _checkPayment(Payment actual, Payment expected) internal pure returns (bool) {
+        return actual.token == expected.token && actual.amount >= expected.amount;
+    }
+
+}

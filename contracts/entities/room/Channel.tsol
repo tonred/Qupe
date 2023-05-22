@@ -1,0 +1,40 @@
+pragma ever-solidity ^0.66.0;
+
+pragma AbiHeader time;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+pragma experimental ABIEncoderV2;
+
+import "../../structures/Infos.tsol";
+import "../abstract/Room.tsol";
+
+
+contract Channel is Room {
+
+    ChannelInfo public _info;
+
+
+    function _init(TvmCell params) internal override {
+        address owner;
+        mapping(uint8 => bool) defaultRights;
+        (owner, _info) = abi.decode(params, (address, ChannelInfo));
+        defaultRights[uint8(Action.SEND_MESSAGE)] = true;
+        _initPermissions(owner, defaultRights);
+    }
+
+    function changeInfo(ChannelInfo info) public cashBack hasPermission(Action.CONFIG) {
+        _info = info;
+    }
+
+
+    function _checkAcceptMessageData(
+        address user, bool highlight, Payment payment, optional(UserData) /*data*/
+    ) internal view override returns (bool) {
+        if (_isBanned(user)) {
+            return false;
+        }
+        Payment expected = highlight ? _info.highlightMessagePayment : _info.messagePayment;
+        return _checkPayment(payment, expected);
+    }
+
+}

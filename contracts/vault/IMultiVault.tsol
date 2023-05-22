@@ -1,0 +1,8 @@
+pragma ever-solidity ^0.66.0;
+
+
+interface IMultiVault {
+    function getTokens() external view responsible returns (address[] tokens) ;
+    function getWallet(address token) external view responsible returns (address wallet);
+    function getBalance(address token) external view responsible returns (uint128 balance);
+}

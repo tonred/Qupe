@@ -1,0 +1,46 @@
+pragma ever-solidity ^0.66.0;
+
+import "./Payment.tsol";
+
+
+// SERVERS
+
+struct ForumInfo {
+    string title;
+    string description;
+    Payment createRoomPayment;
+    int64 createRoomReputation;
+}
+
+struct ChatInfo {
+    string title;
+    string description;
+    Payment createRoomPayment;
+}
+
+struct BlogInfo {
+    string title;
+    string description;
+}
+
+
+// ROOMS
+
+struct TopicInfo {
+    string title;
+    string description;
+    string[] categories;  // todo indexes
+    Payment messagePayment;
+    Payment highlightMessagePayment;
+    int64 messageReputation;
+}
+
+struct ChannelInfo {
+    string title;
+    string description;
+    string[] categories;
+    Payment messagePayment;
+    Payment highlightMessagePayment;
+}
+
+// PageInfo is empty

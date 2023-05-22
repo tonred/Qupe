@@ -2,5 +2,21 @@ pragma ever-solidity ^0.66.0;
 
 
 library Gas {
-    uint128 constant SAMPLE_VALUE = 1 ever;
+    // todo
+    uint128 constant DEPLOY_WALLET_VALUE = 1 ever;
+    uint128 constant CALL_DEPLOY_WALLET_VALUE = 1 ever;
+    uint128 constant CREATE_ROOM_VALUE = 1 ever;
+    uint128 constant ROOM_VALUE = 1 ever;
+    uint128 constant ACCEPT_MESSAGE_VALUE = 1 ever;
+    uint128 constant SEND_MESSAGE_VALUE = 1 ever;
+    uint128 constant PROFILE_TARGET_BALANCE = 1 ever;
+    uint128 constant SERVER_TARGET_BALANCE = 1 ever;
+    uint128 constant ROOM_TARGET_BALANCE = 1 ever;
+    uint128 constant MIN_TOP_UP_VALUE = 1 ever;
+    uint128 constant CALL_VALUE = 1 ever;
+    uint128 constant REACT_VALUE = 1 ever;
+    uint128 constant MESSAGE_TARGET_BALANCE = 1 ever;
+    uint128 constant DEPLOY_MESSAGE_VALUE = 1 ever;
+    uint128 constant DEPLOY_SERVER_VALUE = 1 ever;
+    uint128 constant ROOT_TARGET_VALUE = 1 ever;
 }

@@ -1,0 +1,60 @@
+pragma ever-solidity ^0.66.0;
+
+pragma AbiHeader time;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+pragma experimental ABIEncoderV2;
+
+import "../abstract/Server.tsol";
+import "../../structures/Infos.tsol";
+
+
+contract Forum is Server {
+
+    ForumInfo public _info;
+    TvmCell public _messageCode;
+
+
+    function _init(TvmCell params) internal override {
+        address owner;
+        mapping(uint8 => bool) defaultRights;
+        (owner, _info, _roomCode, _messageCode) = abi.decode(params, (address, ForumInfo, TvmCell, TvmCell));
+        defaultRights[uint8(Action.CREATE_ROOM)] = true;
+        _initPermissions(owner, defaultRights);
+    }
+
+    function changeInfo(ForumInfo info) public cashBack hasPermission(Action.CONFIG) {
+        _info = info;
+    }
+
+    function encodeCreateRoomParams(address owner, TopicInfo info) public pure responsible returns (TvmCell params) {
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} abi.encode(owner, info);
+    }
+
+
+    function _checkCreateRoomParams(TvmCell params) internal pure override returns (bool) {
+        try {
+            abi.decode(params, (address, TopicInfo));
+            return true;
+        } catch (variant /*value*/, uint /*errorCode*/) {}
+        return false;
+    }
+
+    function _checkCreateRoomData(Payment payment, optional(UserData) data) internal view override returns (bool) {
+        Payment expected = _info.createRoomPayment;
+        if (!_checkPayment(payment, expected)) {
+            return false;
+        }
+        if (!data.hasValue()) {
+            return false;
+        }
+        UserData userData = data.get();
+        return userData.reputation >= _info.createRoomReputation;
+    }
+
+    function _buildCreateRoomInitialParams(TvmCell params, address /*creator*/) internal view override returns (TvmCell) {
+        (address owner, TopicInfo info) = abi.decode(params, (address, TopicInfo));
+        return abi.encode(owner, info, _messageCode);
+    }
+
+}

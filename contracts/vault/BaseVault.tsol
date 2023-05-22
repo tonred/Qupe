@@ -1,0 +1,54 @@
+pragma ever-solidity ^0.66.0;
+
+import "../utils/ErrorCodes.tsol";
+import "../utils/Gas.tsol";
+
+import "@broxus/contracts/contracts/libraries/MsgFlag.tsol";
+import "tip3/contracts/interfaces/ITokenRoot.tsol";
+import "tip3/contracts/interfaces/ITokenWallet.tsol";
+import "tip3/contracts/interfaces/IAcceptTokensTransferCallback.tsol";
+
+
+abstract contract BaseVault is IAcceptTokensTransferCallback {
+
+    function _deployWallet(address token, uint128 value) internal pure {
+        ITokenRoot(token).deployWallet{
+            value: Gas.CALL_DEPLOY_WALLET_VALUE + value,
+            flag: MsgFlag.SENDER_PAYS_FEES,
+            callback: onWalletDeployed
+        }({
+            owner: address(this),
+            deployWalletValue: value
+        });
+    }
+
+    function onWalletDeployed(address wallet) public virtual;
+
+    function _returnTokens(uint128 amount, address recipient) internal pure {
+        TvmCell empty;
+        _transferTokensRaw(amount, recipient, empty, msg.sender, 0, MsgFlag.REMAINING_GAS);
+    }
+
+    function _transferTokensRaw(
+        uint128 amount,
+        address recipient,
+        TvmCell payload,
+        address wallet,
+        uint128 msgValue,
+        uint8 msgFlag
+    ) internal pure {
+        ITokenWallet(wallet).transfer{
+            value: msgValue,
+            flag: msgFlag,
+            bounce: false
+        }({
+            amount: amount,
+            recipient: recipient,
+            deployWalletValue: 0,
+            remainingGasTo: recipient,
+            notify: true,
+            payload: payload
+        });
+    }
+
+}

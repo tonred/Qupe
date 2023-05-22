@@ -1,0 +1,57 @@
+pragma ever-solidity ^0.66.0;
+
+pragma AbiHeader time;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+
+import "../platform/PlatformUtils.tsol";
+import "../utils/Gas.tsol";
+
+import "@broxus/contracts/contracts/libraries/MsgFlag.tsol";
+
+
+contract Message is PlatformUtils {
+
+    uint64 public _serverID;
+    uint64 public _roomID;
+    uint64 public _messageID;
+
+    uint public _messageHash;
+    address public _owner;  // todo use for edits/deletion or remove
+    mapping(uint32 /*reaction*/ => uint64 /*count*/) public _reactions;
+
+
+    function onCodeUpgrade(address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) internal {
+        tvm.resetStorage();
+        _initPlatform(root, platformCode);
+        (_serverID, _roomID, _messageID) = abi.decode(initialData, (uint64, uint64, uint64));
+        (_messageHash, _owner) = abi.decode(initialParams, (uint, address));
+    }
+
+    function getIDs() public view responsible returns (uint64 serverID, uint64 roomID, uint64 messageID) {
+        return {value: 0, flag: MsgFlag.SENDER_PAYS_FEES, bounce: false} (_serverID, _roomID, _messageID);
+    }
+
+    function getMessage() public view responsible returns (uint messageHash) {
+        return {value: 0, flag: MsgFlag.SENDER_PAYS_FEES, bounce: false} _messageHash;
+    }
+
+    function getReactions() public view responsible returns (mapping(uint32 => uint64) reactions) {
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _reactions;
+    }
+
+    function getReactionCount(uint32 reaction) public view responsible returns (uint64 count) {
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _reactions[reaction];
+    }
+
+    function react(address user, uint32 reaction, bool undo) public onlyProfile(user) {
+        _reserve();
+        undo ? _reactions[reaction]-- : _reactions[reaction]++;
+        user.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});  // todo onReact (name all functions)
+    }
+
+    function _reserve() internal pure virtual {
+        tvm.rawReserve(Gas.MESSAGE_TARGET_BALANCE, 0);
+    }
+
+}

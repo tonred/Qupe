@@ -1,0 +1,167 @@
+pragma ever-solidity ^0.66.0;
+
+pragma AbiHeader time;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+
+import "../utils/Constants.tsol";
+import "../utils/ErrorCodes.tsol";
+import "../utils/Gas.tsol";
+import "../utils/TransferUtils.tsol";
+import "../vault/MultiVault.tsol";
+import "./abstract/Server.tsol";
+import "./Message.tsol";
+
+
+contract Profile is MultiVault, PlatformUtils, TransferUtils {
+    event Deposit(address token, uint128 amount);
+
+    address public _owner;
+
+    mapping(uint => bool) public _pubkeys;
+    mapping(uint64 /*serverID*/ => UserData) public _datas;
+    mapping(uint224 /*(serverID,roomID,messageID,reaction)*/ => bool /*reaction*/) public _reactions;
+    uint64 public _nonce;
+    uint _currentMessageHash;
+
+
+    modifier onlyOwner() {
+        require(msg.sender == _owner, ErrorCodes.IS_NOT_OWNER);
+        _;
+    }
+
+
+    function onCodeUpgrade(address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) internal {
+        tvm.resetStorage();
+        _initPlatform(root, platformCode);
+        _owner = abi.decode(initialData, address);
+        uint[] pubkeys = abi.decode(initialParams, uint[]);
+        for (uint pubkey : pubkeys) {
+            _pubkeys[pubkey] = true;
+        }
+    }
+
+
+    function afterSignatureCheck(TvmSlice body, TvmCell message) private inline returns (TvmSlice) {
+        body.decode(uint64);
+        uint32 expireAt = body.decode(uint32);
+        require(expireAt >= now, ErrorCodes.EXTERNAL_MSG_IS_EXPIRED);
+
+        uint pubkey = msg.pubkey();
+        require(_pubkeys.exists(pubkey) && pubkey != 0, 69);
+
+        uint messageHash = tvm.hash(message);
+        require(messageHash != _currentMessageHash, 69);
+        _currentMessageHash = messageHash;
+        return body;
+    }
+
+    // ? leave server
+    // ? connect to server
+    // ? onServerConnection
+
+    // ? change server reputation
+    // ? change server permissions
+
+    // send message (evers)
+    // send message (TIP3) + reply
+
+    function createRoom(uint64 serverID, TvmCell params, Payment payment) public onlyOwner {
+        require(msg.value >= payment.amount + Gas.CREATE_ROOM_VALUE + Gas.CALL_VALUE, 69);
+        address server = _serverAddress(serverID);
+        optional(UserData) data = _datas.fetch(serverID);
+        if (payment.token.value == 0) {
+            _createRoomPayEver(server, params, data, payment);
+        } else {
+            TvmCell payload = abi.encode(params, data);
+            _executePayTIP3(payment, server, payload, Gas.CREATE_ROOM_VALUE);
+        }
+    }
+
+    function sendMessage(
+        uint8 version,
+        uint64 serverID,
+        uint64 roomID,
+        string message,
+        optional(uint) replyToMessageID,
+        optional(uint) forwardMessageID,
+        bool highlight,
+        Payment payment
+    ) public externalMsg {
+        require(version == Constants.MESSAGE_VERSION, 69);
+        tvm.accept();  // todo  maybe move up?
+        uint32 length = message.byteLength();
+        if (forwardMessageID.hasValue()) {
+            require(length == 0 && !replyToMessageID.hasValue(), 69);
+        } else {
+            require(length > 0, 69);
+        }
+
+        address room = _roomAddress(serverID, roomID);
+        optional(UserData) data = _datas.fetch(serverID);
+        if (payment.token.value == 0) {
+            _sendMessagePayEver(room, highlight, data, payment);
+        } else {
+            TvmCell payload = abi.encode(_currentMessageHash, highlight, data);
+            _executePayTIP3(payment, room, payload, Gas.SEND_MESSAGE_VALUE);
+        }
+    }
+
+    // todo what about bans? store in contract and check locally? (react to banned messages in banned room -_-)
+    function react(
+        uint64 serverID,
+        uint64 roomID,
+        uint64 messageID,
+        uint32 reaction,
+        bool undo
+    ) public minValue(Gas.REACT_VALUE) onlyOwner {
+        _reserve();
+        uint224 key = (serverID << 160) | (roomID << 96) | (messageID << 32) | reaction;
+        bool hasReaction = _reactions.exists(key);
+        require(hasReaction == undo, 69);
+        address message = _messageAddress(serverID, roomID, messageID);
+        Message(message).react{
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
+            bounce: true
+        }(_owner, reaction, undo);
+        if (undo) {
+            delete _reactions[key];
+        } else {
+            _reactions[key] = true;
+        }
+    }
+
+    function deposit() public pure minValue(Gas.MIN_TOP_UP_VALUE) {
+        emit Deposit(address(0), msg.value);
+    }
+
+
+    function _createRoomPayEver(address server, TvmCell params, optional(UserData) data, Payment payment) private view {
+        Server(server).createRoom{
+            value: Gas.CREATE_ROOM_VALUE + payment.amount,
+            flag: MsgFlag.SENDER_PAYS_FEES,
+            bounce: true
+        }(params, _owner, data);
+    }
+
+    function _sendMessagePayEver(address room, bool highlight, optional(UserData) data, Payment payment) private view {
+        Room(room).acceptMessage{
+            value: Gas.SEND_MESSAGE_VALUE + payment.amount,
+            flag: MsgFlag.SENDER_PAYS_FEES,
+            bounce: true
+        }(_currentMessageHash, _owner, highlight, data);
+    }
+
+    function _executePayTIP3(Payment payment, address recipient, TvmCell payload, uint128 value) private {
+        bool success = _transferTokens(payment.token, payment.amount, recipient, payload, value, MsgFlag.SENDER_PAYS_FEES);
+        require(success, 69);
+    }
+
+    function _onAcceptTokensTransfer(address token, uint128 amount, address sender, TvmCell /*payload*/) internal override {
+        _reserve();
+        emit Deposit(token, amount);
+        sender.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});
+    }
+
+}

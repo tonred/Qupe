@@ -1,0 +1,97 @@
+pragma ever-solidity ^0.66.0;
+
+pragma AbiHeader time;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+
+import "./Room.tsol";
+
+
+abstract contract Server is Base {
+    event RoomCreated(uint64 roomID, address room, address creator);
+
+    uint64 public _serverID;
+
+    string public title;
+    string public description;
+
+    TvmCell public _roomCode;
+    uint64 public _roomsCount;
+
+
+    function onCodeUpgrade(address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) internal {
+        tvm.resetStorage();
+        _initPlatform(root, platformCode);
+        _serverID = abi.decode(initialData, uint64);
+        _init(initialParams);
+    }
+
+    function _init(TvmCell params) internal virtual override;
+
+
+    function createRoom(
+        TvmCell params,
+        address user,
+        optional(UserData) data
+    ) public minValue(Gas.CREATE_ROOM_VALUE) onlyProfile(user) {
+        Payment payment = _currentPayment(Gas.CREATE_ROOM_VALUE);
+        require(_permissions.check(user, Action.CREATE_ROOM), 69);
+        require(_checkCreateRoomData(payment, data), 69);
+        _createRoom(params, msg.sender);
+    }
+
+    // todo
+//    function changeRoomParams(
+//        TvmCell params,
+//        bool resetPermissions,
+//        uint64 roomID
+//    ) public minValue(Gas.CALL_VALUE) onlyAdmin {
+//        address room = _roomAddress(_serverID, roomID);
+//        Room(room).changeParams{
+//            value: 0,
+//            flag: MsgFlag.REMAINING_GAS,
+//            bounce: false
+//        }(_serverID, params, resetPermissions, msg.sender);
+//    }
+
+
+    function _onAcceptTokensTransfer(uint128 amount, address sender, TvmCell payload) internal override {
+        (TvmCell params, optional(UserData) data) = abi.decode(payload, (TvmCell, optional(UserData)));
+        Payment payment = Payment(_token, amount);
+        bool enough_value = msg.value >= Gas.CREATE_ROOM_VALUE;
+        bool has_permission = _permissions.check(sender, Action.CREATE_ROOM);
+        bool correct_params = _checkCreateRoomParams(params);
+        bool correct_data = _checkCreateRoomData(payment, data);
+        if (!enough_value || !has_permission || !correct_params || !correct_data) {
+            _returnTokens(amount, sender);
+            return;
+        }
+        _createRoom(payload, sender);
+    }
+
+    // todo unite `_checkCreateRoomParams`, `_checkCreateRoomData`, `_permissions` checks and return ErrorCode as uint16 (see DeNS)
+    function _checkCreateRoomParams(TvmCell params) internal pure virtual returns (bool);
+
+    function _checkCreateRoomData(Payment payment, optional(UserData) data) internal view virtual returns (bool);
+
+    function _createRoom(TvmCell params, address creator) internal {
+        uint64 roomID = _roomsCount++;
+        TvmCell stateInit = _buildRoomStateInit(_serverID, roomID);
+        params = _buildCreateRoomInitialParams(params, creator);
+        address room = new Platform{
+            stateInit: stateInit,
+            value: Gas.ROOM_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES,
+            bounce: false
+        }(_roomCode, params);
+        emit RoomCreated(roomID, room, creator);
+        // todo return gas
+    }
+
+    function _buildCreateRoomInitialParams(TvmCell params, address /*creator*/) internal view virtual returns (TvmCell);
+
+    function _targetBalance() internal view inline override returns (uint128) {
+        return Gas.SERVER_TARGET_BALANCE;
+    }
+
+}

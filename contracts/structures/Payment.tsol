@@ -1,0 +1,7 @@
+pragma ever-solidity ^0.66.0;
+
+
+struct Payment {
+    address token;
+    uint128 amount;
+}

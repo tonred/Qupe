@@ -24,6 +24,8 @@
         "mocha-logger": "^1.0.8",
         "typescript": "^4.7.4",
         "locklift": "^2.5.5",
-        "prettier": "^2.7.1"
+        "prettier": "^2.7.1",
+        "tip3": "git://github.com/broxus/tip3#c857c077b4e3eacc941c7af2b53f1afe5e6d338b",
+        "versionable": "git://github.com/tonred/Versionable#337c199a135805b1d3fc351c78f07f998a262f6e"
     }
 }

@@ -1,6 +1,13 @@
 pragma ever-solidity ^0.66.0;
 
+
 library ErrorCodes {
+    // todo
     uint16 constant IS_NOT_ROOT = 1000;
     uint16 constant SAMPLE_ERROR_CODE = 1001;
+
+    uint16 constant IS_NOT_TOKEN_ROOT = 1001;
+    uint16 constant IS_NOT_TOKEN_WALLET = 1001;
+    uint16 constant IS_NOT_OWNER = 1001;
+    uint16 constant EXTERNAL_MSG_IS_EXPIRED = 1001;
 }

@@ -1,0 +1,17 @@
+pragma ever-solidity ^0.66.0;
+
+import "./Payment.tsol";
+
+
+struct Codes {
+    // Servers
+    TvmCell forum;
+    TvmCell chat;
+    TvmCell blog;
+    // Rooms
+    TvmCell topic;
+    TvmCell channel;
+    TvmCell page;
+    // Message
+    TvmCell message;
+}

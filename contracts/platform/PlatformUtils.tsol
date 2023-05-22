@@ -1,0 +1,95 @@
+pragma ton-solidity >= 0.57.0;
+
+pragma AbiHeader time;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+
+import "./Platform.tsol";
+import "./PlatformType.tsol";
+
+
+abstract contract PlatformUtils {
+
+    address public _root;
+    TvmCell public _platformCode;
+
+    modifier onlyProfile(address sender) {
+        address profile = _profileAddress(sender);
+        require(msg.sender == profile, 69);
+        _;
+    }
+
+    // todo remove?
+    modifier onlyServer(uint64 serverID) {
+        address server = _serverAddress(serverID);
+        require(msg.sender == server, 69);
+        _;
+    }
+
+
+    function _initPlatform(address root, TvmCell platformCode) internal {
+        _root = root;
+        _platformCode = platformCode;
+    }
+
+    function _profileAddress(address owner) internal view returns (address) {
+        TvmCell stateInit = _buildProfileStateInit(owner);
+        return _calcAddress(stateInit);
+    }
+
+    function _serverAddress(uint64 serverID) internal view returns (address) {
+        TvmCell stateInit = _buildServerStateInit(serverID);
+        return _calcAddress(stateInit);
+    }
+
+    function _roomAddress(uint64 serverID, uint64 roomID) internal view returns (address) {
+        TvmCell stateInit = _buildRoomStateInit(serverID, roomID);
+        return _calcAddress(stateInit);
+    }
+
+    function _messageAddress(uint64 serverID, uint64 roomID, uint64 messageID) internal view returns (address) {
+        TvmCell stateInit = _buildMessageStateInit(serverID, roomID, messageID);
+        return _calcAddress(stateInit);
+    }
+
+    function _buildProfileStateInit(address owner) internal view returns (TvmCell) {
+        TvmCell initialData = abi.encode(owner);
+        return _buildPlatformStateInit(_root, PlatformType.PROFILE, initialData);
+    }
+
+    function _buildServerStateInit(uint64 serverID) internal view returns (TvmCell) {
+        TvmCell initialData = abi.encode(serverID);
+        return _buildPlatformStateInit(_root, PlatformType.SERVER, initialData);
+    }
+
+    function _buildRoomStateInit(uint64 serverID, uint64 roomID) internal view returns (TvmCell) {
+        address server = _serverAddress(serverID);
+        TvmCell initialData = abi.encode(serverID, roomID);
+        return _buildPlatformStateInit(server, PlatformType.ROOM, initialData);
+    }
+
+    function _buildMessageStateInit(uint64 serverID, uint64 roomID, uint64 messageID) internal view returns (TvmCell) {
+        address room = _roomAddress(serverID, roomID);
+        TvmCell initialData = abi.encode(serverID, roomID, messageID);
+        return _buildPlatformStateInit(room, PlatformType.MESSAGE, initialData);
+    }
+
+    function _buildPlatformStateInit(address deployer, PlatformType platformType, TvmCell initialData) private view returns (TvmCell) {
+        return tvm.buildStateInit({
+            contr: Platform,
+            varInit: {
+                _root: _root,
+                _deployer: deployer,
+                _platformType: uint8(platformType),
+                _initialData: initialData
+            },
+            pubkey: 0,
+            code: _platformCode
+        });
+    }
+
+   function _calcAddress(TvmCell stateInit) private pure inline returns (address) {
+       return address(tvm.hash(stateInit));
+   }
+
+}

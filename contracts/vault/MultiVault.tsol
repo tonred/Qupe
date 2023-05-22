@@ -1,0 +1,84 @@
+pragma ever-solidity ^0.66.0;
+
+import "./BaseVault.tsol";
+import "./IMultiVault.tsol";
+
+
+abstract contract MultiVault is BaseVault, IMultiVault {
+
+    mapping(address /*token*/ => bool) public _pendingWallets;
+    mapping(address /*token*/ => address /*wallet*/) public _wallets;
+    mapping(address /*token*/ => uint128 /*balance*/) public _balances;
+
+
+    function _createWallets(address[] tokens, uint128 value) internal {
+        for (address token : tokens) {
+            _createWallet(token, value);
+        }
+    }
+
+    function _createWallet(address token, uint128 value) internal {
+        if (_wallets.exists(token) || _pendingWallets.exists(token) || token.value == 0) {
+            return;
+        }
+        _pendingWallets[token] = true;
+        _deployWallet(token, value);
+    }
+
+    function onWalletDeployed(address wallet) public override {
+        address token = msg.sender;
+        require(_pendingWallets.exists(token) && token.value != 0, 69);
+        delete _pendingWallets[token];
+        _wallets[token] = wallet;
+        _balances[token] = 0;
+    }
+
+    function getTokens() public view responsible override returns (address[] tokens) {
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _wallets.keys();
+    }
+
+    function getWallet(address token) public view responsible override returns (address wallet) {
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _wallets[token];
+    }
+
+    function getBalance(address token) public view responsible override returns (uint128 balance) {
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _balances[token];
+    }
+
+    function onAcceptTokensTransfer(
+        address token,
+        uint128 amount,
+        address sender,
+        address /*senderWallet*/,
+        address /*remainingGasTo*/,
+        TvmCell payload
+    ) public override {
+        if (!_wallets.exists(msg.sender)) {
+            _returnTokens(amount, sender);
+            return;
+        }
+        _balances[token] += amount;
+        _onAcceptTokensTransfer(token, amount, sender, payload);
+    }
+
+
+    function _onAcceptTokensTransfer(address token, uint128 amount, address sender, TvmCell payload) internal virtual;
+
+    function _transferTokens(
+        address token,
+        uint128 amount,
+        address recipient,
+        TvmCell payload,
+        uint128 msgValue,
+        uint8 msgFlag
+    ) internal returns (bool) {
+        if (amount == 0 || !_wallets.exists(token)) {
+            return false;
+        }
+        _balances[token] -= amount;
+        address wallet = _wallets[token];
+        _transferTokensRaw(amount, recipient, payload, wallet, msgValue, msgFlag);
+        return true;
+    }
+
+}

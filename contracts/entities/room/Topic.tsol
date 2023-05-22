@@ -1,0 +1,67 @@
+pragma ever-solidity ^0.66.0;
+
+pragma AbiHeader time;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+pragma experimental ABIEncoderV2;
+
+import "../../permissions/PermissionsLibrary.tsol";
+import "../../structures/Infos.tsol";
+import "../abstract/Room.tsol";
+
+
+contract Topic is Room {
+
+    TopicInfo public _info;
+    TvmCell public _messageCode;
+
+
+    function _init(TvmCell params) internal override {
+        address owner;
+        mapping(uint8 => bool) defaultRights;
+        (owner, _info, _messageCode) = abi.decode(params, (address, TopicInfo, TvmCell));
+        defaultRights[uint8(Action.SEND_MESSAGE)] = true;
+        _initPermissions(owner, defaultRights);
+    }
+
+    function changeInfo(TopicInfo info) public cashBack hasPermission(Action.CONFIG) {
+        _info = info;
+    }
+
+
+    function _checkAcceptMessageData(
+        address user, bool highlight, Payment payment, optional(UserData) data
+    ) internal view override returns (bool) {
+        if (_isBanned(user)) {
+            return false;
+        }
+        Payment expected = highlight ? _info.highlightMessagePayment : _info.messagePayment;
+        if (!_checkPayment(payment, expected)) {
+            return false;
+        }
+        if (!data.hasValue()) {
+            return false;
+        }
+        UserData userData = data.get();
+        return userData.reputation >= _info.messageReputation;
+    }
+
+    function _acceptMessage(uint messageHash, address user, bool highlight) internal override {
+        uint64 messageID = _messagesCount++;
+        emit MessageAccepted(messageID, messageHash);
+        if (highlight) {
+            emit MessageHighlighted(messageID, messageHash);
+        }
+        // unique for Topic
+        TvmCell stateInit = _buildMessageStateInit(_serverID, _roomID, messageID);
+        TvmCell params = abi.encode(messageHash, user);
+        new Platform{
+            stateInit: stateInit,
+            value: Gas.DEPLOY_MESSAGE_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES,
+            bounce: false
+        }(_messageCode, params);
+        // todo return gas
+    }
+
+}

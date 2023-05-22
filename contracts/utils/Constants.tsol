@@ -1,0 +1,6 @@
+pragma ever-solidity ^0.66.0;
+
+
+library Constants {
+    uint16 constant MESSAGE_VERSION = 1;
+}

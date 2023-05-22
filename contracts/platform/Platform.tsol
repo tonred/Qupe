@@ -6,18 +6,19 @@ import "../utils/ErrorCodes.tsol";
 contract Platform {
 
     address static _root;
+    address static _deployer;
     uint8 static _platformType;
     TvmCell static _initialData;
 
 
     constructor(TvmCell code, TvmCell params) public functionID(0x4A2E4FD6) {
-        require(msg.sender == _root, ErrorCodes.IS_NOT_ROOT);
-        TvmCell input = abi.encode(_root, _initialData, params);
+        require(msg.sender == _deployer, ErrorCodes.IS_NOT_ROOT);
+        TvmCell platformCode = tvm.code();
         tvm.setcode(code);
         tvm.setCurrentCode(code);
-        onCodeUpgrade(input, false);
+        onCodeUpgrade(_root, platformCode, _initialData, params);
     }
 
-    function onCodeUpgrade(TvmCell input, bool upgrade) private {}
+    function onCodeUpgrade(address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) private {}
 
 }

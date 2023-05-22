@@ -1,0 +1,36 @@
+pragma ever-solidity ^0.66.0;
+
+pragma AbiHeader time;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+
+import "../abstract/Room.tsol";
+
+
+contract Page is Room {
+
+    address public _owner;  // is not changeable
+
+
+    function _init(TvmCell params) internal override {
+        _owner = abi.decode(params, address);
+        _initPermissions(address(0), emptyMap);
+
+        mapping(uint8 => bool) ownerRights;
+        ownerRights[uint8(Action.SEND_MESSAGE)] = true;
+        uint32 group = _permissions.createGroup(ownerRights);
+        _permissions.setUserGroup(_owner, group);
+    }
+
+    function getOwner() public view responsible returns (address owner) {
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _owner;
+    }
+
+
+    function _checkAcceptMessageData(
+        address user, bool /*highlight*/, Payment /*payment*/, optional(UserData) /*data*/
+    ) internal view override returns (bool) {
+        return user == _owner;
+    }
+
+}

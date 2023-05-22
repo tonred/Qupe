@@ -3,7 +3,7 @@ import lockliftConfig from "../locklift.config";
 
 async function main() {
   const signer = (await locklift.keystore.getSigner("0"))!;
-  const { contract: sample, tx } = await locklift.factory.deployContract({
+  const {contract: sample, tx} = await locklift.factory.deployContract({
     contract: "Sample",
     publicKey: signer.publicKey,
     initParams: {
@@ -12,10 +12,13 @@ async function main() {
     constructorParams: {
       owner: new Address('0:0000000000000000000000000000000000000000000000000000000000000000'),
     },
-    value: locklift.utils.toNano(3),
+    value: locklift.utils.toNano(1),
   });
-
   console.log(`Sample deployed at: ${sample.address.toString()}`);
+
+  await sample.methods.test().sendExternal({publicKey: signer.publicKey});
+  console.log(await sample.fields._message());
+  console.log(await sample.fields._hash());
 }
 
 main()
