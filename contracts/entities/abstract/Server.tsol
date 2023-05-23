@@ -12,9 +12,6 @@ abstract contract Server is Base {
 
     uint64 public _serverID;
 
-    string public title;
-    string public description;
-
     TvmCell public _roomCode;
     uint64 public _roomsCount;
 

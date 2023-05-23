@@ -6,9 +6,9 @@ import "./IMultiVault.tsol";
 
 abstract contract MultiVault is BaseVault, IMultiVault {
 
-    mapping(address /*token*/ => bool) public _pendingWallets;
-    mapping(address /*token*/ => address /*wallet*/) public _wallets;
-    mapping(address /*token*/ => uint128 /*balance*/) public _balances;
+    mapping(address /*token*/ => bool) _pendingWallets;
+    mapping(address /*token*/ => address /*wallet*/) _wallets;
+    mapping(address /*token*/ => uint128 /*balance*/) _balances;
 
 
     function _createWallets(address[] tokens, uint128 value) internal {

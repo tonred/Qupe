@@ -12,13 +12,13 @@ import "@broxus/contracts/contracts/libraries/MsgFlag.tsol";
 
 contract Message is PlatformUtils {
 
-    uint64 public _serverID;
-    uint64 public _roomID;
-    uint64 public _messageID;
+    uint64 _serverID;
+    uint64 _roomID;
+    uint64 _messageID;
 
-    uint public _messageHash;
-    address public _owner;  // todo use for edits/deletion or remove
-    mapping(uint32 /*reaction*/ => uint64 /*count*/) public _reactions;
+    uint _messageHash;
+    address _owner;  // todo use for edits/deletion or remove
+    mapping(uint32 /*reaction*/ => uint64 /*count*/) _reactions;
 
 
     function onCodeUpgrade(address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) internal {

@@ -3,7 +3,6 @@ pragma ever-solidity ^0.66.0;
 pragma AbiHeader time;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
-pragma experimental ABIEncoderV2;
 
 import "../../permissions/PermissionsLibrary.tsol";
 import "../../structures/Infos.tsol";
@@ -12,8 +11,8 @@ import "../abstract/Room.tsol";
 
 contract Topic is Room {
 
-    TopicInfo public _info;
-    TvmCell public _messageCode;
+    TopicInfo _info;
+    TvmCell _messageCode;
 
 
     function _init(TvmCell params) internal override {

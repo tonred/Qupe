@@ -12,11 +12,11 @@ abstract contract Room is Base {
     event MessageAccepted(uint64 messageID, uint messageHash);
     event MessageHighlighted(uint64 messageID, uint messageHash);
 
-    uint64 public _serverID;
-    uint64 public _roomID;
+    uint64 _serverID;
+    uint64 _roomID;
 
-    mapping(address => bool) public _bans;
-    uint64 public _messagesCount;
+    mapping(address => bool) _bans;
+    uint64 _messagesCount;
 
 
     function onCodeUpgrade(address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) internal {

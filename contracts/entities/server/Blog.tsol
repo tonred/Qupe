@@ -10,7 +10,7 @@ import "../../structures/Infos.tsol";
 
 contract Blog is Server {
 
-    BlogInfo public _info;
+    BlogInfo _info;
 
 
     function _init(TvmCell params) internal override {

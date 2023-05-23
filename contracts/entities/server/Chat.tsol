@@ -3,7 +3,6 @@ pragma ever-solidity ^0.66.0;
 pragma AbiHeader time;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
-pragma experimental ABIEncoderV2;
 
 import "../abstract/Server.tsol";
 import "../../structures/Infos.tsol";
@@ -11,7 +10,7 @@ import "../../structures/Infos.tsol";
 
 contract Chat is Server {
 
-    ChatInfo public _info;
+    ChatInfo _info;
 
 
     function _init(TvmCell params) internal override {

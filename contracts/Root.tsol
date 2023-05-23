@@ -15,8 +15,8 @@ import "@broxus/contracts/contracts/libraries/MsgFlag.tsol";
 
 contract Root is PlatformUtils {
 
-    Codes public _codes;
-    uint64 public _serversCount;
+    Codes _codes;
+    uint64 _serversCount;
 
     constructor(Codes codes, TvmCell platformCode) public {
         tvm.accept();

@@ -10,8 +10,8 @@ import "./PlatformType.tsol";
 
 abstract contract PlatformUtils {
 
-    address public _root;
-    TvmCell public _platformCode;
+    address _root;
+    TvmCell _platformCode;
 
     modifier onlyProfile(address sender) {
         address profile = _profileAddress(sender);

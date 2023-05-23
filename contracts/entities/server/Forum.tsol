@@ -3,7 +3,6 @@ pragma ever-solidity ^0.66.0;
 pragma AbiHeader time;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
-pragma experimental ABIEncoderV2;
 
 import "../abstract/Server.tsol";
 import "../../structures/Infos.tsol";
@@ -11,8 +10,8 @@ import "../../structures/Infos.tsol";
 
 contract Forum is Server {
 
-    ForumInfo public _info;
-    TvmCell public _messageCode;
+    ForumInfo _info;
+    TvmCell _messageCode;
 
 
     function _init(TvmCell params) internal override {

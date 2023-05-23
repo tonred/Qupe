@@ -8,9 +8,9 @@ import "tip3/contracts/interfaces/IBurnableTokenWallet.tsol";
 
 abstract contract Vault is BaseVault, IVault {
 
-    address public _token;
-    address public _wallet;
-    uint128 public _balance;
+    address _token;
+    address _wallet;
+    uint128 _balance;
 
 
     function _initVault(address token) internal {  // todo rename to `_init`

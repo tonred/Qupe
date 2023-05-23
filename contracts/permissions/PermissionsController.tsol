@@ -7,7 +7,7 @@ import "./PermissionsLibrary.tsol";
 abstract contract PermissionsController is TransferUtils {
     using PermissionsLibrary for Permissions;
 
-    Permissions public _permissions;
+    Permissions _permissions;
 
     modifier onlyAdmin() {
         require(_permissions.check(msg.sender, Action.ADMIN), 69);

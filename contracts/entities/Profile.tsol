@@ -16,11 +16,10 @@ import "./Message.tsol";
 contract Profile is MultiVault, PlatformUtils, TransferUtils {
     event Deposit(address token, uint128 amount);
 
-    address public _owner;
-
-    mapping(uint => bool) public _pubkeys;
-    mapping(uint64 /*serverID*/ => UserData) public _datas;
-    mapping(uint224 /*(serverID,roomID,messageID,reaction)*/ => bool /*reaction*/) public _reactions;
+    address _owner;
+    mapping(uint => bool) _pubkeys;
+    mapping(uint64 /*serverID*/ => UserData) _datas;
+    mapping(uint224 /*(serverID,roomID,messageID,reaction)*/ => bool /*reaction*/) _reactions;
     uint _currentMessageHash;
 
 

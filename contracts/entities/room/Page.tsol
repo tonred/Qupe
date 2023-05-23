@@ -9,7 +9,7 @@ import "../abstract/Room.tsol";
 
 contract Page is Room {
 
-    address public _owner;  // is not changeable
+    address _owner;  // is not changeable
 
 
     function _init(TvmCell params) internal override {
