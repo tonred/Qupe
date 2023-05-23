@@ -92,6 +92,7 @@ abstract contract Room is Base {
     }
 
     function _isBanned(address user) internal view inline returns (bool) {
+        // todo bans stored on UserData side
         return _bans.exists(user);
     }
 

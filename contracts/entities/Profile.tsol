@@ -15,6 +15,7 @@ import "./Message.tsol";
 
 contract Profile is MultiVault, PlatformUtils, TransferUtils {
     event Deposit(address token, uint128 amount);
+    // todo events for every action, send message, react, etc
 
     address _owner;
     mapping(uint => bool) _pubkeys;
@@ -117,6 +118,8 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
         bool undo
     ) public minValue(Gas.REACT_VALUE) onlyOwner {
         _reserve();
+        // todo change to mappings of mappings
+
         uint224 key = (serverID << 160) | (roomID << 96) | (messageID << 32) | reaction;
         bool hasReaction = _reactions.exists(key);
         require(hasReaction == undo, 69);
