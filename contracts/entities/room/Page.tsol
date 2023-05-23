@@ -12,12 +12,13 @@ contract Page is Room {
     address _owner;  // is not changeable
 
 
-    function _init(TvmCell params) internal override {
+    function _init(TvmCell params) internal override returns (address owner) {
         _owner = abi.decode(params, address);
         _initPermissions(address(0), PermissionsLibrary.none());
 
         Permissions ownerPermissions = PermissionsLibrary.single(Action.SEND_MESSAGE);
-        _setPermissions(_owner, ownerPermissions);
+        _setPermissions(_owner, ownerPermissions, _owner);
+        return _owner;
     }
 
     function getOwner() public view responsible returns (address owner) {

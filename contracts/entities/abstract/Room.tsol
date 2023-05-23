@@ -24,10 +24,11 @@ abstract contract Room is Base {
         tvm.resetStorage();
         _initPlatform(root, platformCode);
         (_serverID, _roomID) = abi.decode(initialData, (uint64, uint64));
-        _init(initialParams);
+        address owner = _init(initialParams);
+        _withdrawEvers(owner);
     }
 
-    function _init(TvmCell params) internal virtual override;
+    function _init(TvmCell params) internal virtual override returns (address owner);
 
 
     function acceptMessage(
@@ -40,11 +41,11 @@ abstract contract Room is Base {
     }
 
     function ban(CallData data, address user) public hasPermission(data, Action.BAN_UNBAN) {
-        _setPermissions(user, PermissionsLibrary.none());
+        _setPermissions(user, PermissionsLibrary.none(), data.user);
     }
 
     function unban(CallData data, address user) public hasPermission(data, Action.BAN_UNBAN) {
-        _setPermissions(user, null);
+        _setPermissions(user, null, data.user);
     }
 
     // todo manageRoom
@@ -84,17 +85,17 @@ abstract contract Room is Base {
         // todo return gas
     }
 
-    function _setPermissions(address user, optional(Permissions) permissions) internal override {
+    function _setPermissions(address user, optional(Permissions) permissions, address remainingGasTo) internal override {
         address profile = _profileAddress(user);
         IProfile(profile).setRoomPermissions{
-            value: 0,
-            flag: MsgFlag.REMAINING_GAS,
+            value: Gas.SET_PERMISSION_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES,
             bounce: false
-        }(_serverID, _roomID, permissions);
+        }(_serverID, _roomID, permissions, remainingGasTo);
     }
 
-    function _targetBalance() internal view inline override returns (uint128) {
-        return Gas.ROOM_TARGET_BALANCE;
+    function _reserveTarget() internal view inline override {
+        tvm.rawReserve(Gas.ROOM_TARGET_BALANCE, 0);
     }
 
 }

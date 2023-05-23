@@ -20,10 +20,11 @@ abstract contract Server is Base {
         tvm.resetStorage();
         _initPlatform(root, platformCode);
         _serverID = abi.decode(initialData, uint64);
-        _init(initialParams);
+        address owner = _init(initialParams);
+        _withdrawEvers(owner);
     }
 
-    function _init(TvmCell params) internal virtual override;
+    function _init(TvmCell params) internal virtual override returns (address owner);
 
 
     function createRoom(CallData data, TvmCell params) public hasPermission(data, Action.CREATE_ROOM) {
@@ -76,17 +77,17 @@ abstract contract Server is Base {
 
     function _buildCreateRoomInitialParams(TvmCell params, address /*creator*/) internal view virtual returns (TvmCell);
 
-    function _setPermissions(address user, optional(Permissions) permissions) internal override {
+    function _setPermissions(address user, optional(Permissions) permissions, address remainingGasTo) internal override {
         address profile = _profileAddress(user);
         IProfile(profile).setServerPermissions{
-            value: 0,
-            flag: MsgFlag.REMAINING_GAS,
+            value: Gas.SET_PERMISSION_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES,
             bounce: false
-        }(_serverID, permissions);
+        }(_serverID, permissions, remainingGasTo);
     }
 
-    function _targetBalance() internal view inline override returns (uint128) {
-        return Gas.SERVER_TARGET_BALANCE;
+    function _reserveTarget() internal view inline override {
+        tvm.rawReserve(Gas.SERVER_TARGET_BALANCE, 0);
     }
 
 }

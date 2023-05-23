@@ -13,8 +13,7 @@ contract Channel is Room {
     ChannelInfo _info;
 
 
-    function _init(TvmCell params) internal override {
-        address owner;
+    function _init(TvmCell params) internal override returns (address owner) {
         (owner, _info) = abi.decode(params, (address, ChannelInfo));
         Permissions defaultPermissions = PermissionsLibrary.single(Action.SEND_MESSAGE);
         _initPermissions(owner, defaultPermissions);

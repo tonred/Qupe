@@ -14,8 +14,7 @@ contract Topic is Room {
     TvmCell _messageCode;
 
 
-    function _init(TvmCell params) internal override {
-        address owner;
+    function _init(TvmCell params) internal override returns (address owner) {
         (owner, _info, _messageCode) = abi.decode(params, (address, TopicInfo, TvmCell));
         Permissions defaultPermissions = PermissionsLibrary.single(Action.SEND_MESSAGE);
         _initPermissions(owner, defaultPermissions);

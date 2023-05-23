@@ -13,10 +13,15 @@ abstract contract PlatformUtils {
     address _root;
     TvmCell _platformCode;
 
-    // todo remove?
     modifier onlyServer(uint64 serverID) {
         address server = _serverAddress(serverID);
         require(msg.sender == server, 69);
+        _;
+    }
+
+    modifier onlyRoom(uint64 serverID, uint64 roomID) {
+        address room = _roomAddress(serverID, roomID);
+        require(msg.sender == room, 69);
         _;
     }
 

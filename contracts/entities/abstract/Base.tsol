@@ -24,12 +24,11 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
     }
 
 
-    function _init(TvmCell params) internal virtual;
+    function _init(TvmCell params) internal virtual returns (address owner);
 
     function withdraw(CallData data, address token, address recipient) public hasPermission(data, Action.ADMIN) {
         if (token.value == 0) {
-            tvm.rawReserve(_targetBalance(), 0);
-            recipient.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});
+            _withdrawEvers(recipient);
         } else if (token == _token) {
             TvmCell empty;
             _transferTokens(_balance, recipient, empty, 0, MsgFlag.REMAINING_GAS);
@@ -46,7 +45,7 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
         if (permissions.hasValue()) {
             require(permissions.get().validate(), 69);
         }
-        _setPermissions(user, permissions);
+        _setPermissions(user, permissions, data.user);
     }
 
     function setDefaultPermissions(CallData data, Permissions permissions) public cashBack hasPermission(data, Action.ADMIN) {
@@ -58,7 +57,7 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
     function _initPermissions(address owner, Permissions defaultPermissions) internal {
         _defaultPermissions = defaultPermissions;
         if (owner.value != 0) {
-            _setPermissions(owner, PermissionsLibrary.full());
+            _setPermissions(owner, PermissionsLibrary.full(), owner);
         }
     }
 
@@ -72,12 +71,17 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
         return permissions.check(action);
     }
 
-    function _setPermissions(address user, optional(Permissions) permissions) internal virtual;
+    function _withdrawEvers(address recipient) internal view {
+        _reserveTarget();
+        recipient.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});
+    }
+
+    function _setPermissions(address user, optional(Permissions) permissions, address remainingGasTo) internal virtual;
 
     function _checkPayment(Payment actual, Payment expected) internal pure returns (bool) {
         return actual.token == expected.token && actual.amount >= expected.amount;
     }
 
-    function _targetBalance() internal view inline virtual returns (uint128);
+    function _reserveTarget() internal view inline virtual;
 
 }

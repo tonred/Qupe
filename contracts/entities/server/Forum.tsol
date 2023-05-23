@@ -14,8 +14,7 @@ contract Forum is Server {
     TvmCell _messageCode;
 
 
-    function _init(TvmCell params) internal override {
-        address owner;
+    function _init(TvmCell params) internal override returns (address owner) {
         (owner, _info, _roomCode, _messageCode) = abi.decode(params, (address, ForumInfo, TvmCell, TvmCell));
         Permissions defaultPermissions = PermissionsLibrary.single(Action.CREATE_ROOM);
         _initPermissions(owner, defaultPermissions);

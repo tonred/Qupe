@@ -20,4 +20,5 @@ library Gas {
     uint128 constant DEPLOY_SERVER_VALUE = 1 ever;
     uint128 constant ROOT_TARGET_VALUE = 1 ever;
     uint128 constant DEPLOY_PROFILE_VALUE = 1 ever;
+    uint128 constant SET_PERMISSION_VALUE = 1 ever;
 }

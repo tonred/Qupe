@@ -13,8 +13,7 @@ contract Blog is Server {
     BlogInfo _info;
 
 
-    function _init(TvmCell params) internal override {
-        address owner;
+    function _init(TvmCell params) internal override returns (address owner) {
         (owner, _info, _roomCode) = abi.decode(params, (address, BlogInfo, TvmCell));
         Permissions defaultPermissions = PermissionsLibrary.single(Action.CREATE_ROOM);
         _initPermissions(address(0), defaultPermissions);
@@ -22,7 +21,7 @@ contract Blog is Server {
         Permissions ownerPermissions = PermissionsLibrary.none();
         ownerPermissions.set(Action.CONFIG, true);
         ownerPermissions.set(Action.CREATE_ROOM, true);
-        _setPermissions(owner, ownerPermissions);
+        _setPermissions(owner, ownerPermissions, owner);
     }
 
     function changeInfo(CallData data, BlogInfo info) public cashBack hasPermission(data, Action.CONFIG) {

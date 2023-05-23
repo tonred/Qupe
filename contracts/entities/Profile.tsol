@@ -13,11 +13,12 @@ import "./abstract/Server.tsol";
 import "./Message.tsol";
 
 
-contract Profile is MultiVault, PlatformUtils, TransferUtils {
+contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
     event RoomCreated(uint64 serverID);
     event MessageSent(uint messageHash, uint64 serverID, uint64 roomID, bool highlight);
     event Reacted(uint64 serverID, uint64 roomID, uint64 messageID, uint32 reaction, bool undo);
     event Deposited(address token, uint128 amount);
+    event PermissionChanged(address entity, bool removed);
 
     address _owner;
 
@@ -151,6 +152,27 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
         _setPubkeys(pubkeys);
     }
 
+    function setServerPermissions(
+        uint64 serverID,
+        optional(Permissions) permissions,
+        address remainingGasTo
+    ) public override onlyServer(serverID) {
+        _reserve();
+        address server = _serverAddress(serverID);
+        _setPermissions(server, permissions, remainingGasTo);
+    }
+
+    function setRoomPermissions(
+        uint64 serverID,
+        uint64 roomID,
+        optional(Permissions) permissions,
+        address remainingGasTo
+    ) public override onlyRoom(serverID, roomID) {
+        _reserve();
+        address room = _roomAddress(serverID, roomID);
+        _setPermissions(room, permissions, remainingGasTo);
+    }
+
 
     function _buildCallData(address recipient, Payment payment) private view returns (CallData) {
         optional(UserData) userData = _userDatas.fetch(recipient);
@@ -183,6 +205,16 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
         for (uint pubkey : pubkeys) {
             _pubkeys[pubkey] = true;
         }
+    }
+
+    function _setPermissions(address entity, optional(Permissions) permissions, address remainingGasTo) private {
+        emit PermissionChanged(entity, !permissions.hasValue());
+        if (permissions.hasValue()) {
+            _permissions[entity] = permissions.get();
+        } else {
+            delete _permissions[entity];
+        }
+        remainingGasTo.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});
     }
 
     function _onAcceptTokensTransfer(address token, uint128 amount, address sender, TvmCell /*payload*/) internal override {
