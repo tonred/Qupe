@@ -1,0 +1,9 @@
+pragma ever-solidity ^0.66.0;
+
+import "../../permissions/Permissions.tsol";
+
+
+interface IProfile {
+    function setServerPermissions(uint64 serverID, optional(Permissions) permissions) external;
+    function setRoomPermissions(uint64 serverID, uint64 roomID, optional(Permissions) permissions) external;
+}

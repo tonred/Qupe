@@ -4,94 +4,41 @@ import "./Permissions.tsol";
 
 
 library PermissionsLibrary {
+    uint8 constant COUNT = 5;
 
-    function create(mapping(uint8 => bool) defaultRights) internal returns (Permissions permissions) {
-        permissions = Permissions({
-            groupNonce: 1,
-            groups: emptyMap,
-            users: emptyMap,
-            defaultGroup: 0
-        });
-        permissions.groups[0] = defaultRights;
+    // todo modifier in library
+    modifier hasPermissionX(Permissions permissions, Action action) {
+        require(check(permissions, action), 69);
+        _;
     }
 
-    function reset(Permissions permissions, mapping(uint8 => bool) defaultRights) internal {
-        permissions.groupNonce = 1;
-        delete permissions.groups;
-        delete permissions.users;
-        permissions.defaultGroup = 0;
-        permissions.groups[0] = defaultRights;
+    function validate(Permissions permissions) internal returns (bool) {
+        return permissions.values.length == COUNT;
     }
 
-    function fullRights() internal returns (mapping(uint8 => bool) rights) {
-        rights[uint8(Action.ADMIN)] = true;
-        rights[uint8(Action.CONFIG)] = true;
-        rights[uint8(Action.BAN_UNBAN)] = true;
-        rights[uint8(Action.CREATE_ROOM)] = true;
-        rights[uint8(Action.SEND_MESSAGE)] = true;
+    function check(Permissions permissions, Action action) internal returns (bool) {
+        uint8 actionID = uint8(action);
+        return permissions.values[actionID];
     }
 
-    function createGroup(Permissions permissions, mapping(uint8 => bool) rights) internal returns (uint32) {
-        uint32 group = permissions.groupNonce++;
-        permissions.groups[group] = rights;
-        return group;
+    function set(Permissions permissions, Action action, bool value) internal {
+        uint8 actionID = uint8(action);
+        permissions.values[actionID] = value;
     }
 
-    function deleteGroup(Permissions permissions, uint32 group) internal returns (bool) {
-        for (uint32 userGroup : permissions.users.values()) {
-            if (userGroup == group) {
-                return false;
-            }
-        }
-        delete permissions.groups[group];
-        return true;
+    function full() internal returns (Permissions) {
+        return Permissions([true, true, true, true, true]);
     }
 
-    function setGroupRight(Permissions permissions, uint32 group, mapping(uint8 => bool) rights) internal {
-        require(permissions.groups.exists(group), 69);
-        permissions.groups[group] = rights;
+    function none() internal returns (Permissions) {
+        return Permissions([false, false, false, false, false]);
     }
 
-    function grantGroupAction(Permissions permissions, uint32 group, Action action) internal {
-        require(permissions.groups.exists(group), 69);
-        permissions.groups[group][uint8(action)] = true;
-    }
-
-    function revokeGroupAction(Permissions permissions, uint32 group, Action action) internal {
-        delete permissions.groups[group][uint8(action)];
-    }
-
-    function setUserGroup(Permissions permissions, address user, uint32 group) internal {
-        require(permissions.groups.exists(group), 69);
-        permissions.users[user] = group;
-    }
-
-    function deleteUserGroup(Permissions permissions, address user) internal {
-        delete permissions.users[user];
-    }
-
-    function setDefaultGroup(Permissions permissions, uint32 group) internal {
-        require(permissions.groups.exists(group), 69);
-        permissions.defaultGroup = group;
-    }
-
-    function getUserGroup(Permissions permissions, address user) internal returns (uint32) {
-        return permissions.users.exists(user) ? permissions.users[user] : permissions.defaultGroup;
-    }
-
-    function getGroupRights(Permissions permissions, uint32 group) internal returns (mapping(uint8 => bool)) {
-        return permissions.groups[group];
-    }
-
-    function check(Permissions permissions, address user, Action action) internal returns (bool) {
-        uint32 group = getUserGroup(permissions, user);
-        return getGroupRights(permissions, group).exists(uint8(action));
-    }
-
-    function transferRights(Permissions permissions, address from, address to) internal {
-        uint32 group = getUserGroup(permissions, from);
-        setUserGroup(permissions, to, group);
-        deleteUserGroup(permissions, from);
+    function single(Action action) internal returns (Permissions) {
+        Permissions permission = none();
+        uint8 actionID = uint8(action);
+        permission.values[actionID] = true;
+        return permission;
     }
 
 }

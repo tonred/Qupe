@@ -18,9 +18,12 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
     // todo events for every action, send message, react, etc
 
     address _owner;
+
     mapping(uint => bool) _pubkeys;
-    mapping(uint64 /*serverID*/ => UserData) _datas;
-    mapping(uint224 /*(serverID,roomID,messageID,reaction)*/ => bool /*reaction*/) _reactions;
+    mapping(address => UserData) _userDatas;
+    mapping(address => Permissions) _permissions;
+    // serverID => roomID => messageID => reaction => bool
+    mapping(uint64 => mapping(uint64 => mapping(uint64 => mapping(uint32 => bool)))) _reactions;
     uint _currentMessageHash;
     uint64 _timestamp;
 
@@ -71,11 +74,11 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
     function createRoom(uint64 serverID, TvmCell params, Payment payment) public onlyOwner {
         require(msg.value >= payment.amount + Gas.CREATE_ROOM_VALUE + Gas.CALL_VALUE, 69);
         address server = _serverAddress(serverID);
-        optional(UserData) data = _datas.fetch(serverID);
+        CallData data = _buildCallData(server, payment);
         if (payment.token.value == 0) {
-            _createRoomPayEver(server, params, data, payment);
+            _createRoomPayEver(server, data, params);
         } else {
-            TvmCell payload = abi.encode(params, data);
+            TvmCell payload = abi.encode(data, params);
             _executePayTIP3(payment, server, payload, Gas.CREATE_ROOM_VALUE);
         }
     }
@@ -89,22 +92,23 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
         optional(uint) forwardMessageHash,
         bool highlight,
         Payment payment
+//        address[] tagged,
+//        uint128[] taggedValue
     ) public externalMsg {
         require(version == Constants.MESSAGE_VERSION, 69);
-        tvm.accept();  // todo  maybe move up?
-        uint32 length = message.byteLength();
+        tvm.accept();
         if (forwardMessageHash.hasValue()) {
+            // forward message doesn't have `message` and `replyToMessageHash`
+            uint32 length = message.byteLength();
             require(length == 0 && !replyToMessageHash.hasValue(), 69);
-        } else {
-            require(length > 0, 69);
         }
 
         address room = _roomAddress(serverID, roomID);
-        optional(UserData) data = _datas.fetch(serverID);
+        CallData data = _buildCallData(room, payment);
         if (payment.token.value == 0) {
-            _sendMessagePayEver(room, highlight, data, payment);
+            _sendMessagePayEver(room, data, highlight);
         } else {
-            TvmCell payload = abi.encode(_currentMessageHash, highlight, data);
+            TvmCell payload = abi.encode(data, _currentMessageHash, highlight);
             _executePayTIP3(payment, room, payload, Gas.SEND_MESSAGE_VALUE);
         }
     }
@@ -118,10 +122,7 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
         bool undo
     ) public minValue(Gas.REACT_VALUE) onlyOwner {
         _reserve();
-        // todo change to mappings of mappings
-
-        uint224 key = (serverID << 160) | (roomID << 96) | (messageID << 32) | reaction;
-        bool hasReaction = _reactions.exists(key);
+        bool hasReaction = _reactions[serverID][roomID][messageID][reaction];
         require(hasReaction == undo, 69);
         address message = _messageAddress(serverID, roomID, messageID);
         Message(message).react{
@@ -130,9 +131,9 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
             bounce: true
         }(_owner, reaction, undo);
         if (undo) {
-            delete _reactions[key];
+            delete _reactions[serverID][roomID][messageID][reaction];
         } else {
-            _reactions[key] = true;
+            _reactions[serverID][roomID][messageID][reaction] = true;
         }
     }
 
@@ -146,20 +147,26 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
     }
 
 
-    function _createRoomPayEver(address server, TvmCell params, optional(UserData) data, Payment payment) private view {
-        Server(server).createRoom{
-            value: Gas.CREATE_ROOM_VALUE + payment.amount,
-            flag: MsgFlag.SENDER_PAYS_FEES,
-            bounce: true
-        }(params, _owner, data);
+    function _buildCallData(address recipient, Payment payment) private view returns (CallData) {
+        optional(UserData) userData = _userDatas.fetch(recipient);
+        optional(Permissions) permissions = _permissions.fetch(recipient);
+        return CallData(_owner, payment, userData, permissions);
     }
 
-    function _sendMessagePayEver(address room, bool highlight, optional(UserData) data, Payment payment) private view {
-        Room(room).acceptMessage{
-            value: Gas.SEND_MESSAGE_VALUE + payment.amount,
+    function _createRoomPayEver(address server, CallData data, TvmCell params) private pure {
+        Server(server).createRoom{
+            value: Gas.CREATE_ROOM_VALUE + data.payment.amount,
             flag: MsgFlag.SENDER_PAYS_FEES,
             bounce: true
-        }(_currentMessageHash, _owner, highlight, data);
+        }(data, params);
+    }
+
+    function _sendMessagePayEver(address room, CallData data, bool highlight) private view {
+        Room(room).acceptMessage{
+            value: Gas.SEND_MESSAGE_VALUE + data.payment.amount,
+            flag: MsgFlag.SENDER_PAYS_FEES,
+            bounce: true
+        }(data, _currentMessageHash, highlight);
     }
 
     function _executePayTIP3(Payment payment, address recipient, TvmCell payload, uint128 value) private {

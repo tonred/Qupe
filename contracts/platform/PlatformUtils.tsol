@@ -13,12 +13,6 @@ abstract contract PlatformUtils {
     address _root;
     TvmCell _platformCode;
 
-    modifier onlyProfile(address sender) {
-        address profile = _profileAddress(sender);
-        require(msg.sender == profile, 69);
-        _;
-    }
-
     // todo remove?
     modifier onlyServer(uint64 serverID) {
         address server = _serverAddress(serverID);

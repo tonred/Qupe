@@ -15,13 +15,12 @@ contract Chat is Server {
 
     function _init(TvmCell params) internal override {
         address owner;
-        mapping(uint8 => bool) defaultRights;
         (owner, _info, _roomCode) = abi.decode(params, (address, ChatInfo, TvmCell));
-        defaultRights[uint8(Action.CREATE_ROOM)] = true;
-        _initPermissions(owner, defaultRights);
+        Permissions defaultPermissions = PermissionsLibrary.single(Action.CREATE_ROOM);
+        _initPermissions(owner, defaultPermissions);
     }
 
-    function changeInfo(ChatInfo info) public cashBack hasPermission(Action.CONFIG) {
+    function changeInfo(CallData data, ChatInfo info) public cashBack hasPermission(data, Action.CONFIG) {
         _info = info;
     }
 
@@ -30,17 +29,9 @@ contract Chat is Server {
     }
 
 
-    function _checkCreateRoomParams(TvmCell params) internal pure override returns (bool) {
-//        try {
-//            abi.decode(params, (address, ChatInfo));
-//            return true;
-//        } catch (variant /*value*/, uint /*errorCode*/) {}
-        return false;
-    }
-
-    function _checkCreateRoomData(Payment payment, optional(UserData) /*data*/) internal view override returns (bool) {
+    function _checkCreateRoomData(CallData data) internal view override returns (bool) {
         Payment expected = _info.createRoomPayment;
-        return _checkPayment(payment, expected);
+        return _checkPayment(data.payment, expected);
     }
 
     function _buildCreateRoomInitialParams(TvmCell params, address /*creator*/) internal view override returns (TvmCell) {

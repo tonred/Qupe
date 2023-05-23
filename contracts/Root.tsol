@@ -75,3 +75,7 @@ contract Root is PlatformUtils, RandomNonce {
     }
 
 }
+
+// NFT
+// edit/delete message
+// rights

@@ -1,8 +1,0 @@
-pragma ever-solidity ^0.66.0;
-
-
-interface IUpgradable {
-    event CodeUpgraded();
-
-    function upgrade(TvmCell code) external internalMsg;
-}

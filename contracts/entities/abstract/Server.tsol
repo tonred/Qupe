@@ -10,10 +10,10 @@ import "./Room.tsol";
 abstract contract Server is Base {
     event RoomCreated(uint64 roomID, address room, address creator);
 
-    uint64 public _serverID;
+    uint64 _serverID;
 
-    TvmCell public _roomCode;
-    uint64 public _roomsCount;
+    TvmCell _roomCode;
+    uint64 _roomsCount;
 
 
     function onCodeUpgrade(address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) internal {
@@ -26,14 +26,8 @@ abstract contract Server is Base {
     function _init(TvmCell params) internal virtual override;
 
 
-    function createRoom(
-        TvmCell params,
-        address user,
-        optional(UserData) data
-    ) public minValue(Gas.CREATE_ROOM_VALUE) onlyProfile(user) {
-        Payment payment = _currentPayment(Gas.CREATE_ROOM_VALUE);
-        require(_permissions.check(user, Action.CREATE_ROOM), 69);
-        require(_checkCreateRoomData(payment, data), 69);
+    function createRoom(CallData data, TvmCell params) public hasPermission(data, Action.CREATE_ROOM) {
+        require(_checkCreateRoomData(data), 69);
         _createRoom(params, msg.sender);
     }
 
@@ -53,23 +47,18 @@ abstract contract Server is Base {
 
 
     function _onAcceptTokensTransfer(uint128 amount, address sender, TvmCell payload) internal override {
-        (TvmCell params, optional(UserData) data) = abi.decode(payload, (TvmCell, optional(UserData)));
-        Payment payment = Payment(_token, amount);
-        bool enough_value = msg.value >= Gas.CREATE_ROOM_VALUE;
-        bool has_permission = _permissions.check(sender, Action.CREATE_ROOM);
-        bool correct_params = _checkCreateRoomParams(params);
-        bool correct_data = _checkCreateRoomData(payment, data);
-        if (!enough_value || !has_permission || !correct_params || !correct_data) {
+        (CallData data, TvmCell params) = abi.decode(payload, (CallData, TvmCell));
+        bool correct_sender = _checkSender(sender, data.user);
+        bool has_permission = _checkPermissions(data, Action.CREATE_ROOM);
+        bool correct_data = _checkCreateRoomData(data);
+        if (!correct_sender || !has_permission || !correct_data) {
             _returnTokens(amount, sender);
             return;
         }
-        _createRoom(payload, sender);
+        _createRoom(params, sender);
     }
 
-    // todo unite `_checkCreateRoomParams`, `_checkCreateRoomData`, `_permissions` checks and return ErrorCode as uint16 (see DeNS)
-    function _checkCreateRoomParams(TvmCell params) internal pure virtual returns (bool);
-
-    function _checkCreateRoomData(Payment payment, optional(UserData) data) internal view virtual returns (bool);
+    function _checkCreateRoomData(CallData data) internal view virtual returns (bool);
 
     function _createRoom(TvmCell params, address creator) internal {
         uint64 roomID = _roomsCount++;
@@ -86,6 +75,15 @@ abstract contract Server is Base {
     }
 
     function _buildCreateRoomInitialParams(TvmCell params, address /*creator*/) internal view virtual returns (TvmCell);
+
+    function _setPermissions(address user, optional(Permissions) permissions) internal override {
+        address profile = _profileAddress(user);
+        IProfile(profile).setServerPermissions{
+            value: 0,
+            flag: MsgFlag.REMAINING_GAS,
+            bounce: false
+        }(_serverID, permissions);
+    }
 
     function _targetBalance() internal view inline override returns (uint128) {
         return Gas.SERVER_TARGET_BALANCE;

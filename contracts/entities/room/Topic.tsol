@@ -4,7 +4,6 @@ pragma AbiHeader time;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
-import "../../permissions/PermissionsLibrary.tsol";
 import "../../structures/Infos.tsol";
 import "../abstract/Room.tsol";
 
@@ -17,40 +16,31 @@ contract Topic is Room {
 
     function _init(TvmCell params) internal override {
         address owner;
-        mapping(uint8 => bool) defaultRights;
         (owner, _info, _messageCode) = abi.decode(params, (address, TopicInfo, TvmCell));
-        defaultRights[uint8(Action.SEND_MESSAGE)] = true;
-        _initPermissions(owner, defaultRights);
+        Permissions defaultPermissions = PermissionsLibrary.single(Action.SEND_MESSAGE);
+        _initPermissions(owner, defaultPermissions);
     }
 
-    function changeInfo(TopicInfo info) public cashBack hasPermission(Action.CONFIG) {
+    function changeInfo(CallData data, TopicInfo info) public cashBack hasPermission(data, Action.CONFIG) {
         _info = info;
     }
 
 
-    function _checkAcceptMessageData(
-        address user, bool highlight, Payment payment, optional(UserData) data
-    ) internal view override returns (bool) {
-        if (_isBanned(user)) {
-            return false;
-        }
+    function _checkAcceptMessageData(CallData data, bool highlight) internal view override returns (bool) {
         Payment expected = highlight ? _info.highlightMessagePayment : _info.messagePayment;
-        if (!_checkPayment(payment, expected)) {
+        if (!_checkPayment(data.payment, expected)) {
             return false;
         }
-        if (!data.hasValue()) {
+        if (!data.userData.hasValue()) {
             return false;
         }
-        UserData userData = data.get();
+        UserData userData = data.userData.get();
         return userData.reputation >= _info.messageReputation;
     }
 
-    function _acceptMessage(uint messageHash, address user, bool highlight) internal override {
+    function _acceptMessage(uint messageHash, bool highlight, address user) internal override {
         uint64 messageID = _messagesCount++;
-        emit MessageAccepted(messageID, messageHash);
-        if (highlight) {
-            emit MessageHighlighted(messageID, messageHash);
-        }
+        emit MessageAccepted(messageID, messageHash, highlight);
         // only for Topic
         TvmCell stateInit = _buildMessageStateInit(_serverID, _roomID, messageID);
         TvmCell params = abi.encode(messageHash, user);

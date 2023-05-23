@@ -4,17 +4,29 @@ pragma AbiHeader time;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
-import "../../permissions/PermissionsController.tsol";
+import "../../permissions/PermissionsLibrary.tsol";
 import "../../platform/PlatformUtils.tsol";
+import "../../structures/CallData.tsol";
 import "../../structures/Payment.tsol";
+import "../../utils/TransferUtils.tsol";
 import "../../vault/Vault.tsol";
 
 
-abstract contract Base is PermissionsController, Vault, PlatformUtils {
+abstract contract Base is Vault, PlatformUtils, TransferUtils {
+    using PermissionsLibrary for Permissions;
+
+    Permissions _defaultPermissions;
+
+    modifier hasPermission(CallData data, Action action) {
+        require(_checkSender(msg.sender, data.user), 69);
+        require(_checkPermissions(data, action), 69);
+        _;
+    }
+
 
     function _init(TvmCell params) internal virtual;
 
-    function withdraw(address token, address recipient) public minValue(Gas.CALL_VALUE) onlyAdmin {
+    function withdraw(CallData data, address token, address recipient) public hasPermission(data, Action.ADMIN) {
         if (token.value == 0) {
             tvm.rawReserve(_targetBalance(), 0);
             recipient.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});
@@ -26,15 +38,46 @@ abstract contract Base is PermissionsController, Vault, PlatformUtils {
         }
     }
 
-    function _targetBalance() internal view inline virtual returns (uint128);
-
-    function _currentPayment(uint128 fee) internal pure returns (Payment) {
-        return Payment(address(0), msg.value - fee);
+    function setPermissions(
+        CallData data,
+        address user,
+        optional(Permissions) permissions
+    ) public hasPermission(data, Action.ADMIN) {
+        if (permissions.hasValue()) {
+            require(permissions.get().validate(), 69);
+        }
+        _setPermissions(user, permissions);
     }
 
-    // todo what if payment token is NOT std address??? it used in comparisons
+    function setDefaultPermissions(CallData data, Permissions permissions) public cashBack hasPermission(data, Action.ADMIN) {
+        require(permissions.validate(), 69);
+        _defaultPermissions = permissions;
+    }
+
+
+    function _initPermissions(address owner, Permissions defaultPermissions) internal {
+        _defaultPermissions = defaultPermissions;
+        if (owner.value != 0) {
+            _setPermissions(owner, PermissionsLibrary.full());
+        }
+    }
+
+    function _checkSender(address sender, address user) internal view returns (bool) {
+        address profile = _profileAddress(user);
+        return sender == profile;
+    }
+
+    function _checkPermissions(CallData data, Action action) internal view returns (bool) {
+        Permissions permissions = data.permissions.hasValue() ? data.permissions.get() : _defaultPermissions;
+        return permissions.check(action);
+    }
+
+    function _setPermissions(address user, optional(Permissions) permissions) internal virtual;
+
     function _checkPayment(Payment actual, Payment expected) internal pure returns (bool) {
         return actual.token == expected.token && actual.amount >= expected.amount;
     }
+
+    function _targetBalance() internal view inline virtual returns (uint128);
 
 }

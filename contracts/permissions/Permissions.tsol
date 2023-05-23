@@ -2,16 +2,9 @@ pragma ever-solidity ^0.66.0;
 
 
 struct Permissions {
-    uint32 groupNonce;
-    // todo why enum cannot be a key? Doc says that it can be https://github.com/tonlabs/TON-Solidity-Compiler/blob/master/API.md#mapping
-    mapping(uint32 /*group*/ => mapping(uint8 /*action*/ => bool) /*rights*/) groups;
-    mapping(address /*user*/ => uint32 /*group*/) users;
-    uint32 defaultGroup;
+    bool[5] values;
 }
 
-// Rights = mapping(Action => bool)
-
-// todo admin can set withdraw rights to any user
 enum Action {
     ADMIN,          // 0
     CONFIG,         // 1

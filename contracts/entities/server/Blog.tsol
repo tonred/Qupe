@@ -15,28 +15,22 @@ contract Blog is Server {
 
     function _init(TvmCell params) internal override {
         address owner;
-        mapping(uint8 => bool) defaultRights;
         (owner, _info, _roomCode) = abi.decode(params, (address, BlogInfo, TvmCell));
-        defaultRights[uint8(Action.CREATE_ROOM)] = true;
-        _initPermissions(address(0), defaultRights);
+        Permissions defaultPermissions = PermissionsLibrary.single(Action.CREATE_ROOM);
+        _initPermissions(address(0), defaultPermissions);
 
-        mapping(uint8 => bool) ownerRights;
-        ownerRights[uint8(Action.CONFIG)] = true;
-        ownerRights[uint8(Action.CREATE_ROOM)] = true;
-        uint32 group = _permissions.createGroup(ownerRights);
-        _permissions.setUserGroup(owner, group);
+        Permissions ownerPermissions = PermissionsLibrary.none();
+        ownerPermissions.set(Action.CONFIG, true);
+        ownerPermissions.set(Action.CREATE_ROOM, true);
+        _setPermissions(owner, ownerPermissions);
     }
 
-    function changeInfo(BlogInfo info) public cashBack hasPermission(Action.CONFIG) {
+    function changeInfo(CallData data, BlogInfo info) public cashBack hasPermission(data, Action.CONFIG) {
         _info = info;
     }
 
 
-    function _checkCreateRoomParams(TvmCell params) internal pure override returns (bool) {
-        return params.toSlice().empty();
-    }
-
-    function _checkCreateRoomData(Payment /*payment*/, optional(UserData) /*data*/) internal view override returns (bool) {
+    function _checkCreateRoomData(CallData /*data*/) internal view override returns (bool) {
         return true;
     }
 

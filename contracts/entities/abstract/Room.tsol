@@ -1,7 +1,8 @@
 pragma ever-solidity ^0.66.0;
 
-import "./Base.tsol";
 import "../../structures/UserData.tsol";
+import "../interfaces/IProfile.tsol";
+import "./Base.tsol";
 
 pragma AbiHeader time;
 pragma AbiHeader expire;
@@ -9,8 +10,8 @@ pragma AbiHeader pubkey;
 
 
 abstract contract Room is Base {
-    event MessageAccepted(uint64 messageID, uint messageHash);
-    event MessageHighlighted(uint64 messageID, uint messageHash);
+    event MessageAccepted(uint64 messageID, uint messageHash, bool highlight);
+    // todo deletion
 
     uint64 _serverID;
     uint64 _roomID;
@@ -30,25 +31,23 @@ abstract contract Room is Base {
 
 
     function acceptMessage(
+        CallData data,
         uint messageHash,
-        address user,
-        bool highlight,
-        optional(UserData) data
-    ) public minValue(Gas.ACCEPT_MESSAGE_VALUE) onlyProfile(user) {
-        Payment payment = _currentPayment(Gas.ACCEPT_MESSAGE_VALUE);
-        require(_permissions.check(user, Action.SEND_MESSAGE), 69);
-        require(_checkAcceptMessageData(user, highlight, payment, data), 69);
-        _acceptMessage(messageHash, user, highlight);
+        bool highlight
+    ) public hasPermission(data, Action.SEND_MESSAGE) {
+        require(_checkAcceptMessageData(data, highlight), 69);
+        _acceptMessage(messageHash, highlight, data.user);
     }
 
-    function ban(address user) public minValue(Gas.CALL_VALUE) cashBack hasPermission(Action.BAN_UNBAN) {
-        _bans[user] = true;
+    function ban(CallData data, address user) public hasPermission(data, Action.BAN_UNBAN) {
+        _setPermissions(user, PermissionsLibrary.none());
     }
 
-    function unban(address user) public minValue(Gas.CALL_VALUE) cashBack hasPermission(Action.BAN_UNBAN) {
-        delete _bans[user];
+    function unban(CallData data, address user) public hasPermission(data, Action.BAN_UNBAN) {
+        _setPermissions(user, null);
     }
 
+    // todo manageRoom
 //    function changeParams(
 //        uint64 serverID,
 //        TvmCell params,
@@ -65,35 +64,33 @@ abstract contract Room is Base {
 
 
     function _onAcceptTokensTransfer(uint128 amount, address sender, TvmCell payload) internal override {
-        (uint messageHash, optional(UserData) data, bool highlight) =
-            abi.decode(payload, (uint, optional(UserData), bool));
-        Payment payment = Payment(_token, amount);
-        bool enough_value = msg.value >= Gas.ACCEPT_MESSAGE_VALUE;
-        bool has_permission = _permissions.check(sender, Action.SEND_MESSAGE);
-        bool correct_data = _checkAcceptMessageData(sender, highlight, payment, data);
-        if (!enough_value || !has_permission || !correct_data) {
+        (CallData data, uint messageHash, bool highlight) =
+            abi.decode(payload, (CallData, uint, bool));
+        bool correct_sender = _checkSender(sender, data.user);
+        bool has_permission = _checkPermissions(data, Action.SEND_MESSAGE);
+        bool correct_data = _checkAcceptMessageData(data, highlight);
+        if (!correct_sender || !has_permission || !correct_data) {
             _returnTokens(amount, sender);
             return;
         }
-        _acceptMessage(messageHash, sender, highlight);
+        _acceptMessage(messageHash, highlight, sender);
     }
 
-    function _checkAcceptMessageData(
-        address user, bool highlight, Payment payment, optional(UserData) data
-    ) internal view virtual returns (bool);
+    function _checkAcceptMessageData(CallData data, bool highlight) internal view virtual returns (bool);
 
-    function _acceptMessage(uint messageHash, address /*user*/, bool highlight) internal virtual {
+    function _acceptMessage(uint messageHash, bool highlight, address /*user*/) internal virtual {
         uint64 messageID = _messagesCount++;
-        emit MessageAccepted(messageID, messageHash);  // todo are user and highlight needed? + remove from args
-        if (highlight) {
-            emit MessageHighlighted(messageID, messageHash);
-        }
+        emit MessageAccepted(messageID, messageHash, highlight);
         // todo return gas
     }
 
-    function _isBanned(address user) internal view inline returns (bool) {
-        // todo bans stored on UserData side
-        return _bans.exists(user);
+    function _setPermissions(address user, optional(Permissions) permissions) internal override {
+        address profile = _profileAddress(user);
+        IProfile(profile).setRoomPermissions{
+            value: 0,
+            flag: MsgFlag.REMAINING_GAS,
+            bounce: false
+        }(_serverID, _roomID, permissions);
     }
 
     function _targetBalance() internal view inline override returns (uint128) {

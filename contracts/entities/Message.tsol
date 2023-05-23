@@ -44,7 +44,10 @@ contract Message is PlatformUtils {
         return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _reactions[reaction];
     }
 
-    function react(address user, uint32 reaction, bool undo) public onlyProfile(user) {
+    function react(address user, uint32 reaction, bool undo) public {
+        address profile = _profileAddress(user);
+        require(msg.sender == profile, 69);
+        // todo as modifier ?
         _reserve();
         undo ? _reactions[reaction]-- : _reactions[reaction]++;
         user.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});  // todo onReact (name all functions)

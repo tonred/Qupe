@@ -51,6 +51,8 @@ abstract contract Vault is BaseVault, IVault {
         _onAcceptTokensTransfer(amount, sender, payload);
     }
 
+    // todo method to sync balance with wallet
+
 
     function _onAcceptTokensTransfer(uint128 amount, address sender, TvmCell payload) internal virtual;
 

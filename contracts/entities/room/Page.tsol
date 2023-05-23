@@ -14,12 +14,10 @@ contract Page is Room {
 
     function _init(TvmCell params) internal override {
         _owner = abi.decode(params, address);
-        _initPermissions(address(0), emptyMap);
+        _initPermissions(address(0), PermissionsLibrary.none());
 
-        mapping(uint8 => bool) ownerRights;
-        ownerRights[uint8(Action.SEND_MESSAGE)] = true;
-        uint32 group = _permissions.createGroup(ownerRights);
-        _permissions.setUserGroup(_owner, group);
+        Permissions ownerPermissions = PermissionsLibrary.single(Action.SEND_MESSAGE);
+        _setPermissions(_owner, ownerPermissions);
     }
 
     function getOwner() public view responsible returns (address owner) {
@@ -27,10 +25,8 @@ contract Page is Room {
     }
 
 
-    function _checkAcceptMessageData(
-        address user, bool /*highlight*/, Payment /*payment*/, optional(UserData) /*data*/
-    ) internal view override returns (bool) {
-        return user == _owner;
+    function _checkAcceptMessageData(CallData data, bool /*highlight*/) internal view override returns (bool) {
+        return data.user == _owner;
     }
 
 }

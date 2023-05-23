@@ -1,0 +1,13 @@
+pragma ever-solidity ^0.66.0;
+
+import "../permissions/Permissions.tsol";
+import "./Payment.tsol";
+import "./UserData.tsol";
+
+
+struct CallData {
+    address user;
+    Payment payment;
+    optional(UserData) userData;
+    optional(Permissions) permissions;
+}

@@ -6,39 +6,33 @@ import "./Payment.tsol";
 // SERVERS
 
 struct ForumInfo {
-    string title;
-    string description;
+    bytes meta;
     Payment createRoomPayment;
     int64 createRoomReputation;
 }
 
 struct ChatInfo {
-    string title;
-    string description;
+    bytes meta;
     Payment createRoomPayment;
 }
 
 struct BlogInfo {
-    string title;
-    string description;
+    bytes meta;
 }
 
 
 // ROOMS
 
 struct TopicInfo {
-    string title;
-    string description;
-    string[] categories;  // todo indexes
+    bytes meta;
+    // todo categories as indexes
     Payment messagePayment;
     Payment highlightMessagePayment;
     int64 messageReputation;
 }
 
 struct ChannelInfo {
-    string title;
-    string description;
-    string[] categories;
+    bytes meta;
     Payment messagePayment;
     Payment highlightMessagePayment;
 }
