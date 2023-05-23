@@ -14,8 +14,10 @@ import "./Message.tsol";
 
 
 contract Profile is MultiVault, PlatformUtils, TransferUtils {
-    event Deposit(address token, uint128 amount);
-    // todo events for every action, send message, react, etc
+    event RoomCreated(uint64 serverID);
+    event MessageSent(uint messageHash, uint64 serverID, uint64 roomID, bool highlight);
+    event Reacted(uint64 serverID, uint64 roomID, uint64 messageID, uint32 reaction, bool undo);
+    event Deposited(address token, uint128 amount);
 
     address _owner;
 
@@ -73,6 +75,7 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
 
     function createRoom(uint64 serverID, TvmCell params, Payment payment) public onlyOwner {
         require(msg.value >= payment.amount + Gas.CREATE_ROOM_VALUE + Gas.CALL_VALUE, 69);
+        emit RoomCreated(serverID);
         address server = _serverAddress(serverID);
         CallData data = _buildCallData(server, payment);
         if (payment.token.value == 0) {
@@ -103,6 +106,7 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
             require(length == 0 && !replyToMessageHash.hasValue(), 69);
         }
 
+        emit MessageSent(_currentMessageHash, serverID, roomID, highlight);
         address room = _roomAddress(serverID, roomID);
         CallData data = _buildCallData(room, payment);
         if (payment.token.value == 0) {
@@ -113,7 +117,6 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
         }
     }
 
-    // todo what about bans? store in contract and check locally? (react to banned messages in banned room -_-)
     function react(
         uint64 serverID,
         uint64 roomID,
@@ -124,6 +127,8 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
         _reserve();
         bool hasReaction = _reactions[serverID][roomID][messageID][reaction];
         require(hasReaction == undo, 69);
+
+        emit Reacted(serverID, roomID, messageID, reaction, undo);
         address message = _messageAddress(serverID, roomID, messageID);
         Message(message).react{
             value: 0,
@@ -138,7 +143,7 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
     }
 
     function deposit() public pure minValue(Gas.MIN_TOP_UP_VALUE) {
-        emit Deposit(address(0), msg.value);
+        emit Deposited(address(0), msg.value);
     }
 
     function setPubkeys(uint[] pubkeys) public cashBack onlyOwner {
@@ -182,7 +187,7 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
 
     function _onAcceptTokensTransfer(address token, uint128 amount, address sender, TvmCell /*payload*/) internal override {
         _reserve();
-        emit Deposit(token, amount);
+        emit Deposited(token, amount);
         sender.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});
     }
 

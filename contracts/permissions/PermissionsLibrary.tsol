@@ -6,12 +6,6 @@ import "./Permissions.tsol";
 library PermissionsLibrary {
     uint8 constant COUNT = 5;
 
-    // todo modifier in library
-    modifier hasPermissionX(Permissions permissions, Action action) {
-        require(check(permissions, action), 69);
-        _;
-    }
-
     function validate(Permissions permissions) internal returns (bool) {
         return permissions.values.length == COUNT;
     }
@@ -36,8 +30,7 @@ library PermissionsLibrary {
 
     function single(Action action) internal returns (Permissions) {
         Permissions permission = none();
-        uint8 actionID = uint8(action);
-        permission.values[actionID] = true;
+        set(permission, action, true);
         return permission;
     }
 
