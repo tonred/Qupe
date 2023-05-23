@@ -10,8 +10,8 @@ library Gas {
     uint128 constant ACCEPT_MESSAGE_VALUE = 1 ever;
     uint128 constant SEND_MESSAGE_VALUE = 1 ever;
     uint128 constant PROFILE_TARGET_BALANCE = 1 ever;
-    uint128 constant SERVER_TARGET_BALANCE = 1 ever;
-    uint128 constant ROOM_TARGET_BALANCE = 1 ever;
+    uint128 constant SERVER_TARGET_BALANCE = 0.2 ever;
+    uint128 constant ROOM_TARGET_BALANCE = 0.2 ever;
     uint128 constant MIN_DEPOSIT_VALUE = 1 ever;
     uint128 constant CALL_VALUE = 1 ever;
     uint128 constant REACT_VALUE = 1 ever;
@@ -20,6 +20,6 @@ library Gas {
     uint128 constant DEPLOY_SERVER_VALUE = 1 ever;
     uint128 constant ROOT_TARGET_VALUE = 1 ever;
     uint128 constant DEPLOY_PROFILE_VALUE = 1 ever;
-    uint128 constant SET_PERMISSION_VALUE = 1 ever;
+    uint128 constant SET_PERMISSION_VALUE = 0.2 ever;
     uint128 constant ACCEPT_MESSAGE_FEE = 0.1 ever;
 }

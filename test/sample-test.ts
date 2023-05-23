@@ -97,8 +97,9 @@ describe("Test Quashers contracts", async function () {
         const tx = await locklift.tracing.trace(root.methods.createChat({
           owner: owner,
           info: {
-            title: 'Test chat Server #1',
-            description: 'Test chat Server #1 description with free messages',
+            meta: '',
+            // title: 'Test chat Server #1',
+            // description: 'Test chat Server #1 description with free messages',
             createRoomPayment: emptyPayment,
           },
           answerId: 0
@@ -129,9 +130,10 @@ describe("Test Quashers contracts", async function () {
             answerId: 0,
             owner,
             info: {
-              title: 'Test free chat room #1',
-              description: 'some description',
-              categories: [],
+              meta: '',
+              // title: 'Test free chat room #1',
+              // description: 'some description',
+              // categories: [],
               messagePayment: emptyPayment,
               highlightMessagePayment: emptyPayment,
             }
