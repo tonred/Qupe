@@ -11,9 +11,10 @@ import "./utils/Gas.tsol";
 import "./utils/TransferUtils.tsol";
 
 import "@broxus/contracts/contracts/libraries/MsgFlag.tsol";
+import "@broxus/contracts/contracts/utils/RandomNonce.tsol";
 
 
-contract Root is PlatformUtils {
+contract Root is PlatformUtils, RandomNonce {
 
     Codes _codes;
     uint64 _serversCount;
