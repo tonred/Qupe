@@ -10,4 +10,5 @@ library ErrorCodes {
     uint16 constant IS_NOT_TOKEN_WALLET = 1001;
     uint16 constant IS_NOT_OWNER = 1001;
     uint16 constant EXTERNAL_MSG_IS_EXPIRED = 1001;
+    uint16 constant EXTERNAL_MSG_REPLAY_PROTECTION = 1001;
 }
