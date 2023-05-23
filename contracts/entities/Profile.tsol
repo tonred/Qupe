@@ -21,6 +21,7 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
     mapping(uint64 /*serverID*/ => UserData) _datas;
     mapping(uint224 /*(serverID,roomID,messageID,reaction)*/ => bool /*reaction*/) _reactions;
     uint _currentMessageHash;
+    uint64 _timestamp;
 
 
     modifier onlyOwner() {
@@ -39,7 +40,11 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
 
 
     function afterSignatureCheck(TvmSlice body, TvmCell message) private inline returns (TvmSlice) {
-        body.decode(uint64);
+        uint64 maxTimestamp = (now + 30) * 1000;
+        uint64 msgTimestamp = body.decode(uint64);
+        require(msgTimestamp > _timestamp && msgTimestamp <= maxTimestamp, ErrorCodes.EXTERNAL_MSG_REPLAY_PROTECTION);
+        _timestamp = msgTimestamp;
+
         uint32 expireAt = body.decode(uint32);
         require(expireAt >= now, ErrorCodes.EXTERNAL_MSG_IS_EXPIRED);
 
