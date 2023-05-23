@@ -16,7 +16,7 @@ import "./Message.tsol";
 contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
     using PaymentLibrary for Payment;
 
-    event RoomCreated(uint64 serverID);
+    event CreateRoom(uint64 serverID);
     event MessageSent(uint messageHash, uint64 serverID, uint64 roomID, bool highlight);
     event Reacted(uint64 serverID, uint64 roomID, uint64 messageID, uint32 reaction, bool undo);
     event Deposited(address token, uint128 amount);
@@ -71,7 +71,7 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         uint128 minValue = Gas.CREATE_ROOM_VALUE + payment.evers();
         require(msg.value >= minValue, 69);
 
-        emit RoomCreated(serverID);
+        emit CreateRoom(serverID);
         address server = _serverAddress(serverID);
         CallData data = _buildCallData(server, payment);
         if (payment.isEver()) {
