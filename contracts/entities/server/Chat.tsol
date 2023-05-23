@@ -25,7 +25,7 @@ contract Chat is Server {
         _info = info;
     }
 
-    function encodeCreateRoomParams(address owner, ChatInfo info) public pure responsible returns (TvmCell params) {
+    function encodeCreateRoomParams(address owner, ChannelInfo info) public pure responsible returns (TvmCell params) {
         return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} abi.encode(owner, info);
     }
 
