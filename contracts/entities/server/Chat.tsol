@@ -31,10 +31,10 @@ contract Chat is Server {
 
 
     function _checkCreateRoomParams(TvmCell params) internal pure override returns (bool) {
-        try {
-            abi.decode(params, (address, ChatInfo));
-            return true;
-        } catch (variant /*value*/, uint /*errorCode*/) {}
+//        try {
+//            abi.decode(params, (address, ChatInfo));
+//            return true;
+//        } catch (variant /*value*/, uint /*errorCode*/) {}
         return false;
     }
 
