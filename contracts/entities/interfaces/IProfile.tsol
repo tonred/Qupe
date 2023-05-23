@@ -18,4 +18,12 @@ interface IProfile {
         address remainingGasTo
     ) external;
 
+    function onMessageAccepted(
+        uint64 serverID,
+        uint64 roomID,
+        uint64 messageID,
+        uint messageHash,
+        bool deployed
+    ) external;
+
 }

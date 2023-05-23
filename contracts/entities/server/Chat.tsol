@@ -9,6 +9,7 @@ import "../../structures/Infos.tsol";
 
 
 contract Chat is Server {
+    using PaymentLibrary for Payment;
 
     ChatInfo _info;
 
@@ -29,8 +30,8 @@ contract Chat is Server {
 
 
     function _checkCreateRoomData(CallData data) internal view override returns (bool) {
-        Payment expected = _info.createRoomPayment;
-        return _checkPayment(data.payment, expected);
+        Payment price = _info.createRoomPayment;
+        return data.payment.moreThan(price);
     }
 
     function _buildCreateRoomInitialParams(TvmCell params, address /*creator*/) internal view override returns (TvmCell) {

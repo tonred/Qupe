@@ -30,25 +30,25 @@ contract Root is PlatformUtils, RandomNonce {
     }
 
     function createForum(address owner, ForumInfo info) public responsible returns (address) {
-        _reserve();
+        _reserveTarget();
         TvmCell params = abi.encode(owner, info, _codes.topic, _codes.message);
         return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} _createServer(_codes.forum, params);
     }
 
     function createChat(address owner, ChatInfo info) public responsible returns (address) {
-        _reserve();
+        _reserveTarget();
         TvmCell params = abi.encode(owner, info, _codes.channel);
         return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} _createServer(_codes.chat, params);
     }
 
     function createBlog(address owner, BlogInfo info) public responsible returns (address) {
-        _reserve();
+        _reserveTarget();
         TvmCell params = abi.encode(owner, info, _codes.page);
         return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} _createServer(_codes.blog, params);
     }
 
     function createProfile(uint[] pubkeys) public view responsible returns (address) {
-        _reserve();
+        _reserveTarget();
         TvmCell stateInit = _buildProfileStateInit(msg.sender);
         TvmCell params = abi.encode(pubkeys);
         return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} new Platform{
@@ -70,12 +70,8 @@ contract Root is PlatformUtils, RandomNonce {
         }(code, params);
     }
 
-    function _reserve() internal pure virtual {
+    function _reserveTarget() private pure {
         tvm.rawReserve(Gas.ROOT_TARGET_VALUE, 0);
     }
 
 }
-
-// NFT
-// edit/delete message
-// rights

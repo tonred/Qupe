@@ -21,7 +21,7 @@ abstract contract Server is Base {
         _initPlatform(root, platformCode);
         _serverID = abi.decode(initialData, uint64);
         address owner = _init(initialParams);
-        _withdrawEvers(owner);
+        _withdrawEvers(owner, tvm.functionId(IUser.onRoomCreated));
     }
 
     function _init(TvmCell params) internal virtual override returns (address owner);
@@ -62,17 +62,17 @@ abstract contract Server is Base {
     function _checkCreateRoomData(CallData data) internal view virtual returns (bool);
 
     function _createRoom(TvmCell params, address creator) internal {
+        _reserve();
         uint64 roomID = _roomsCount++;
         TvmCell stateInit = _buildRoomStateInit(_serverID, roomID);
         params = _buildCreateRoomInitialParams(params, creator);
         address room = new Platform{
             stateInit: stateInit,
-            value: Gas.ROOM_VALUE,
-            flag: MsgFlag.SENDER_PAYS_FEES,
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: false
         }(_roomCode, params);
         emit RoomCreated(roomID, room, creator);
-        // todo return gas
     }
 
     function _buildCreateRoomInitialParams(TvmCell params, address /*creator*/) internal view virtual returns (TvmCell);

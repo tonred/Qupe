@@ -7,9 +7,9 @@ pragma AbiHeader pubkey;
 import "../../permissions/PermissionsLibrary.tsol";
 import "../../platform/PlatformUtils.tsol";
 import "../../structures/CallData.tsol";
-import "../../structures/Payment.tsol";
 import "../../utils/TransferUtils.tsol";
 import "../../vault/Vault.tsol";
+import "../interfaces/IUser.tsol";
 
 
 abstract contract Base is Vault, PlatformUtils, TransferUtils {
@@ -28,7 +28,7 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
 
     function withdraw(CallData data, address token, address recipient) public hasPermission(data, Action.ADMIN) {
         if (token.value == 0) {
-            _withdrawEvers(recipient);
+            _withdrawEvers(recipient, tvm.functionId(IUser.onWithdraw));
         } else if (token == _token) {
             TvmCell empty;
             _transferTokens(_balance, recipient, empty, 0, MsgFlag.REMAINING_GAS);
@@ -71,16 +71,17 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
         return permissions.check(action);
     }
 
-    function _withdrawEvers(address recipient) internal view {
+    function _withdrawEvers(address recipient, uint32 callbackFunctionID) internal view {
         _reserveTarget();
-        recipient.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});
+        recipient.transfer({
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
+            bounce: false,
+            body: abi.encode(callbackFunctionID)
+        });
     }
 
     function _setPermissions(address user, optional(Permissions) permissions, address remainingGasTo) internal virtual;
-
-    function _checkPayment(Payment actual, Payment expected) internal pure returns (bool) {
-        return actual.token == expected.token && actual.amount >= expected.amount;
-    }
 
     function _reserveTarget() internal view inline virtual;
 

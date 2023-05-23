@@ -1,0 +1,15 @@
+pragma ever-solidity ^0.66.0;
+
+
+interface IUser {
+
+    function onRoomCreated() external;
+    function onWithdraw() external;
+    function onTokenDeposited(address token, uint128 amount) external;
+
+    function onMessage(uint messageHash, bool deployed) external;
+    function onReact(uint32 reaction, bool undo) external;
+
+    function onPermissionChanged(address entity, bool removed) external;
+
+}

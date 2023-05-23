@@ -1,7 +1,9 @@
 pragma ever-solidity ^0.66.0;
 
+import "../../payment/PaymentLibrary.tsol";
 import "../../structures/UserData.tsol";
 import "../interfaces/IProfile.tsol";
+import "../interfaces/IUser.tsol";
 import "./Base.tsol";
 
 pragma AbiHeader time;
@@ -10,6 +12,8 @@ pragma AbiHeader pubkey;
 
 
 abstract contract Room is Base {
+    using PaymentLibrary for Payment;
+
     event MessageAccepted(uint64 messageID, uint messageHash, bool highlight);
     // todo deletion
 
@@ -25,7 +29,7 @@ abstract contract Room is Base {
         _initPlatform(root, platformCode);
         (_serverID, _roomID) = abi.decode(initialData, (uint64, uint64));
         address owner = _init(initialParams);
-        _withdrawEvers(owner);
+        _withdrawEvers(owner, tvm.functionId(IUser.onRoomCreated));
     }
 
     function _init(TvmCell params) internal virtual override returns (address owner);
@@ -37,7 +41,7 @@ abstract contract Room is Base {
         bool highlight
     ) public hasPermission(data, Action.SEND_MESSAGE) {
         require(_checkAcceptMessageData(data, highlight), 69);
-        _acceptMessage(messageHash, highlight, data.user);
+        _acceptMessage(data, messageHash, highlight);
     }
 
     function ban(CallData data, address user) public hasPermission(data, Action.BAN_UNBAN) {
@@ -74,15 +78,21 @@ abstract contract Room is Base {
             _returnTokens(amount, sender);
             return;
         }
-        _acceptMessage(messageHash, highlight, sender);
+        _acceptMessage(data, messageHash, highlight);
     }
 
     function _checkAcceptMessageData(CallData data, bool highlight) internal view virtual returns (bool);
 
-    function _acceptMessage(uint messageHash, bool highlight, address /*user*/) internal virtual {
+    function _acceptMessage(CallData data, uint messageHash, bool highlight) internal virtual {
+        uint128 additional = Gas.ACCEPT_MESSAGE_FEE + data.payment.evers();
+        tvm.rawReserve(additional, 4);
         uint64 messageID = _messagesCount++;
         emit MessageAccepted(messageID, messageHash, highlight);
-        // todo return gas
+        IProfile(msg.sender).onMessageAccepted{
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
+            bounce: false
+        }(_serverID, _roomID, messageID, messageHash, false);
     }
 
     function _setPermissions(address user, optional(Permissions) permissions, address remainingGasTo) internal override {

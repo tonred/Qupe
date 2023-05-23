@@ -14,11 +14,14 @@ import "./Message.tsol";
 
 
 contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
+    using PaymentLibrary for Payment;
+
     event RoomCreated(uint64 serverID);
     event MessageSent(uint messageHash, uint64 serverID, uint64 roomID, bool highlight);
     event Reacted(uint64 serverID, uint64 roomID, uint64 messageID, uint32 reaction, bool undo);
     event Deposited(address token, uint128 amount);
     event PermissionChanged(address entity, bool removed);
+    event MessageAccepted(uint messageHash, uint64 serverID, uint64 roomID, uint64 messageID, bool deployed);
 
     address _owner;
 
@@ -45,7 +48,6 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         _setPubkeys(pubkeys);
     }
 
-
     function afterSignatureCheck(TvmSlice body, TvmCell message) private inline returns (TvmSlice) {
         uint64 maxTimestamp = (now + 30) * 1000;
         uint64 msgTimestamp = body.decode(uint64);
@@ -64,22 +66,15 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         return body;
     }
 
-    // ? leave server
-    // ? connect to server
-    // ? onServerConnection
-
-    // ? change server reputation
-    // ? change server permissions
-
-    // send message (evers)
-    // send message (TIP3) + reply
 
     function createRoom(uint64 serverID, TvmCell params, Payment payment) public onlyOwner {
-        require(msg.value >= payment.amount + Gas.CREATE_ROOM_VALUE + Gas.CALL_VALUE, 69);
+        uint128 minValue = Gas.CREATE_ROOM_VALUE + payment.evers();
+        require(msg.value >= minValue, 69);
+
         emit RoomCreated(serverID);
         address server = _serverAddress(serverID);
         CallData data = _buildCallData(server, payment);
-        if (payment.token.value == 0) {
+        if (payment.isEver()) {
             _createRoomPayEver(server, data, params);
         } else {
             TvmCell payload = abi.encode(data, params);
@@ -96,6 +91,7 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         optional(uint) forwardMessageHash,
         bool highlight,
         Payment payment
+// todo
 //        address[] tagged,
 //        uint128[] taggedValue
     ) public externalMsg {
@@ -110,7 +106,7 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         emit MessageSent(_currentMessageHash, serverID, roomID, highlight);
         address room = _roomAddress(serverID, roomID);
         CallData data = _buildCallData(room, payment);
-        if (payment.token.value == 0) {
+        if (payment.isEver()) {
             _sendMessagePayEver(room, data, highlight);
         } else {
             TvmCell payload = abi.encode(data, _currentMessageHash, highlight);
@@ -143,7 +139,7 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         }
     }
 
-    function deposit() public pure minValue(Gas.MIN_TOP_UP_VALUE) {
+    function deposit() public pure minValue(Gas.MIN_DEPOSIT_VALUE) {
         emit Deposited(address(0), msg.value);
     }
 
@@ -171,6 +167,18 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         _reserve();
         address room = _roomAddress(serverID, roomID);
         _setPermissions(room, permissions, remainingGasTo);
+    }
+
+    function onMessageAccepted(
+        uint64 serverID,
+        uint64 roomID,
+        uint64 messageID,
+        uint messageHash,
+        bool deployed
+    ) public override {
+        address sender = deployed ? _messageAddress(serverID, roomID, messageID) : _roomAddress(serverID, roomID);
+        require(msg.sender == sender, 69);
+        emit MessageAccepted(messageHash, serverID, roomID, messageID, deployed);
     }
 
 
@@ -208,19 +216,20 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
     }
 
     function _setPermissions(address entity, optional(Permissions) permissions, address remainingGasTo) private {
-        emit PermissionChanged(entity, !permissions.hasValue());
-        if (permissions.hasValue()) {
-            _permissions[entity] = permissions.get();
-        } else {
+        bool removed = !permissions.hasValue();
+        emit PermissionChanged(entity, removed);
+        if (removed) {
             delete _permissions[entity];
+        } else {
+            _permissions[entity] = permissions.get();
         }
-        remainingGasTo.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});
+        IUser(remainingGasTo).onPermissionChanged{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(entity, removed);
     }
 
     function _onAcceptTokensTransfer(address token, uint128 amount, address sender, TvmCell /*payload*/) internal override {
         _reserve();
         emit Deposited(token, amount);
-        sender.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});
+        IUser(sender).onTokenDeposited{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(token, amount);
     }
 
 }

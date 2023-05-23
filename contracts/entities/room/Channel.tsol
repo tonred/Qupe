@@ -25,8 +25,8 @@ contract Channel is Room {
 
 
     function _checkAcceptMessageData(CallData data, bool highlight) internal view override returns (bool) {
-        Payment expected = highlight ? _info.highlightMessagePayment : _info.messagePayment;
-        return _checkPayment(data.payment, expected);
+        Payment price = highlight ? _info.highlightMessagePayment : _info.messagePayment;
+        return data.payment.moreThan(price);
     }
 
 }

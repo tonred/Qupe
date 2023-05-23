@@ -9,6 +9,7 @@ import "../../structures/Infos.tsol";
 
 
 contract Forum is Server {
+    using PaymentLibrary for Payment;
 
     ForumInfo _info;
     TvmCell _messageCode;
@@ -30,8 +31,8 @@ contract Forum is Server {
 
 
     function _checkCreateRoomData(CallData data) internal view override returns (bool) {
-        Payment expected = _info.createRoomPayment;
-        if (!_checkPayment(data.payment, expected)) {
+        Payment price = _info.createRoomPayment;
+        if (!data.payment.moreThan(price)) {
             return false;
         }
         if (!data.userData.hasValue()) {

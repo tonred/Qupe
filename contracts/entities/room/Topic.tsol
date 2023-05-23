@@ -26,8 +26,8 @@ contract Topic is Room {
 
 
     function _checkAcceptMessageData(CallData data, bool highlight) internal view override returns (bool) {
-        Payment expected = highlight ? _info.highlightMessagePayment : _info.messagePayment;
-        if (!_checkPayment(data.payment, expected)) {
+        Payment price = highlight ? _info.highlightMessagePayment : _info.messagePayment;
+        if (!data.payment.moreThan(price)) {
             return false;
         }
         if (!data.userData.hasValue()) {
@@ -37,19 +37,21 @@ contract Topic is Room {
         return userData.reputation >= _info.messageReputation;
     }
 
-    function _acceptMessage(uint messageHash, bool highlight, address user) internal override {
+    function _acceptMessage(CallData data, uint messageHash, bool highlight) internal override {
+        uint128 additional = Gas.ACCEPT_MESSAGE_FEE + data.payment.evers();
+        tvm.rawReserve(additional, 4);
         uint64 messageID = _messagesCount++;
         emit MessageAccepted(messageID, messageHash, highlight);
-        // only for Topic
+
         TvmCell stateInit = _buildMessageStateInit(_serverID, _roomID, messageID);
-        TvmCell params = abi.encode(messageHash, user);
+        TvmCell params = abi.encode(messageHash, data.user);
         new Platform{
             stateInit: stateInit,
             value: Gas.DEPLOY_MESSAGE_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES,
             bounce: false
         }(_messageCode, params);
-        // todo return gas
+        msg.sender.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});
     }
 
 }

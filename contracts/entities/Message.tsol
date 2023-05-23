@@ -6,6 +6,8 @@ pragma AbiHeader pubkey;
 
 import "../platform/PlatformUtils.tsol";
 import "../utils/Gas.tsol";
+import "./interfaces/IProfile.tsol";
+import "./interfaces/IUser.tsol";
 
 import "@broxus/contracts/contracts/libraries/MsgFlag.tsol";
 
@@ -17,23 +19,36 @@ contract Message is PlatformUtils {
     uint64 _messageID;
 
     uint _messageHash;
-    address _owner;  // todo use for edits/deletion or remove
+    address _owner;
     mapping(uint32 /*reaction*/ => uint64 /*count*/) _reactions;
 
 
+    modifier onlyProfile(address user) {
+        address profile = _profileAddress(user);
+        require(msg.sender == profile, 69);
+        _;
+    }
+
     function onCodeUpgrade(address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) internal {
         tvm.resetStorage();
+        _reserveTarget();
         _initPlatform(root, platformCode);
         (_serverID, _roomID, _messageID) = abi.decode(initialData, (uint64, uint64, uint64));
         (_messageHash, _owner) = abi.decode(initialParams, (uint, address));
+        IProfile(msg.sender).onMessageAccepted{
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
+            bounce: false
+        }(_serverID, _roomID, _messageID, _messageHash, true);
     }
+
 
     function getIDs() public view responsible returns (uint64 serverID, uint64 roomID, uint64 messageID) {
         return {value: 0, flag: MsgFlag.SENDER_PAYS_FEES, bounce: false} (_serverID, _roomID, _messageID);
     }
 
-    function getMessage() public view responsible returns (uint messageHash) {
-        return {value: 0, flag: MsgFlag.SENDER_PAYS_FEES, bounce: false} _messageHash;
+    function getDetails() public view responsible returns (uint messageHash, address owner) {
+        return {value: 0, flag: MsgFlag.SENDER_PAYS_FEES, bounce: false} (_messageHash, _owner);
     }
 
     function getReactions() public view responsible returns (mapping(uint32 => uint64) reactions) {
@@ -44,16 +59,13 @@ contract Message is PlatformUtils {
         return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _reactions[reaction];
     }
 
-    function react(address user, uint32 reaction, bool undo) public {
-        address profile = _profileAddress(user);
-        require(msg.sender == profile, 69);
-        // todo as modifier ?
-        _reserve();
+    function react(address user, uint32 reaction, bool undo) public onlyProfile(user) {
+        _reserveTarget();
         undo ? _reactions[reaction]-- : _reactions[reaction]++;
-        user.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});  // todo onReact (name all functions)
+        IUser(user).onReact{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(reaction, undo);
     }
 
-    function _reserve() internal pure virtual {
+    function _reserveTarget() internal pure {
         tvm.rawReserve(Gas.MESSAGE_TARGET_BALANCE, 0);
     }
 

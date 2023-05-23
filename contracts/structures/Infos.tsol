@@ -1,6 +1,6 @@
 pragma ever-solidity ^0.66.0;
 
-import "./Payment.tsol";
+import "../payment/Payment.tsol";
 
 
 // SERVERS

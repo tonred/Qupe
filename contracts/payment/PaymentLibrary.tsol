@@ -1,0 +1,20 @@
+pragma ever-solidity ^0.66.0;
+
+import "./Payment.tsol";
+
+
+library PaymentLibrary {
+
+    function isEver(Payment payment) internal returns (bool) {
+        return payment.token.value == 0;
+    }
+
+    function evers(Payment payment) internal returns (uint128) {
+        return isEver(payment) ? payment.amount : 0;
+    }
+
+    function moreThan(Payment payment, Payment price) internal returns (bool) {
+        return payment.token == price.token && payment.amount >= price.amount;
+    }
+
+}

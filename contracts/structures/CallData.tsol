@@ -1,7 +1,7 @@
 pragma ever-solidity ^0.66.0;
 
+import "../payment/Payment.tsol";
 import "../permissions/Permissions.tsol";
-import "./Payment.tsol";
 import "./UserData.tsol";
 
 
