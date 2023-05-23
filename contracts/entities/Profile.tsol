@@ -49,7 +49,7 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
     }
 
     function afterSignatureCheck(TvmSlice body, TvmCell message) private inline returns (TvmSlice) {
-        uint64 maxTimestamp = (now + 30) * 1000;
+        uint64 maxTimestamp = uint64(now + 30) * 1000;
         uint64 msgTimestamp = body.decode(uint64);
         require(msgTimestamp > _timestamp && msgTimestamp <= maxTimestamp, ErrorCodes.EXTERNAL_MSG_REPLAY_PROTECTION);
         _timestamp = msgTimestamp;
