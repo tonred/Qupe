@@ -21,7 +21,6 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
     mapping(uint => bool) public _pubkeys;
     mapping(uint64 /*serverID*/ => UserData) public _datas;
     mapping(uint224 /*(serverID,roomID,messageID,reaction)*/ => bool /*reaction*/) public _reactions;
-    uint64 public _nonce;
     uint _currentMessageHash;
 
 
@@ -36,9 +35,7 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
         _initPlatform(root, platformCode);
         _owner = abi.decode(initialData, address);
         uint[] pubkeys = abi.decode(initialParams, uint[]);
-        for (uint pubkey : pubkeys) {
-            _pubkeys[pubkey] = true;
-        }
+        _setPubkeys(pubkeys);
     }
 
 
@@ -83,16 +80,16 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
         uint64 serverID,
         uint64 roomID,
         string message,
-        optional(uint) replyToMessageID,
-        optional(uint) forwardMessageID,
+        optional(uint) replyToMessageHash,
+        optional(uint) forwardMessageHash,
         bool highlight,
         Payment payment
     ) public externalMsg {
         require(version == Constants.MESSAGE_VERSION, 69);
         tvm.accept();  // todo  maybe move up?
         uint32 length = message.byteLength();
-        if (forwardMessageID.hasValue()) {
-            require(length == 0 && !replyToMessageID.hasValue(), 69);
+        if (forwardMessageHash.hasValue()) {
+            require(length == 0 && !replyToMessageHash.hasValue(), 69);
         } else {
             require(length > 0, 69);
         }
@@ -136,6 +133,11 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
         emit Deposit(address(0), msg.value);
     }
 
+    function setPubkeys(uint[] pubkeys) public cashBack onlyOwner {
+        delete _pubkeys;
+        _setPubkeys(pubkeys);
+    }
+
 
     function _createRoomPayEver(address server, TvmCell params, optional(UserData) data, Payment payment) private view {
         Server(server).createRoom{
@@ -156,6 +158,12 @@ contract Profile is MultiVault, PlatformUtils, TransferUtils {
     function _executePayTIP3(Payment payment, address recipient, TvmCell payload, uint128 value) private {
         bool success = _transferTokens(payment.token, payment.amount, recipient, payload, value, MsgFlag.SENDER_PAYS_FEES);
         require(success, 69);
+    }
+
+    function _setPubkeys(uint[] pubkeys) private {
+        for (uint pubkey : pubkeys) {
+            _pubkeys[pubkey] = true;
+        }
     }
 
     function _onAcceptTokensTransfer(address token, uint128 amount, address sender, TvmCell /*payload*/) internal override {

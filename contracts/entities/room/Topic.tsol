@@ -52,7 +52,7 @@ contract Topic is Room {
         if (highlight) {
             emit MessageHighlighted(messageID, messageHash);
         }
-        // unique for Topic
+        // only for Topic
         TvmCell stateInit = _buildMessageStateInit(_serverID, _roomID, messageID);
         TvmCell params = abi.encode(messageHash, user);
         new Platform{

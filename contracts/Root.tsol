@@ -46,6 +46,18 @@ contract Root is PlatformUtils {
         return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} _createServer(_codes.blog, params);
     }
 
+    function createProfile(uint[] pubkeys) public view responsible returns (address) {
+        _reserve();
+        TvmCell stateInit = _buildProfileStateInit(msg.sender);
+        TvmCell params = abi.encode(pubkeys);
+        return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} new Platform{
+            stateInit: stateInit,
+            value: Gas.DEPLOY_PROFILE_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES,
+            bounce: false
+        }(_codes.profile, params);
+    }
+
     function _createServer(TvmCell code, TvmCell params) private returns (address) {
         uint64 serverID = _serversCount++;
         TvmCell stateInit = _buildServerStateInit(serverID);

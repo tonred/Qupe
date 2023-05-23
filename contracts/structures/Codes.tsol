@@ -12,6 +12,7 @@ struct Codes {
     TvmCell topic;
     TvmCell channel;
     TvmCell page;
-    // Message
+    // Others
     TvmCell message;
+    TvmCell profile;
 }
