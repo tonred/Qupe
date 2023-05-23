@@ -121,10 +121,8 @@ describe("Test Quashers contracts", async function () {
       });
       it("Deploy Chat channel", async function () {
         const owner = wallets.get('wallet1');
-        console.log(chat.address.toString())
         const serverId = await chat.fields._serverID()
-        console.log(serverId)
-        // uint64 serverID, TvmCell params, Payment payment
+        console.log(`Chat addr: ${chat.address.toString()}, Id: ${serverId}`)
         const tx = await locklift.tracing.trace(profile.methods.createRoom({
           serverID: serverId,
           params: (await chat.methods.encodeCreateRoomParams({
@@ -133,7 +131,9 @@ describe("Test Quashers contracts", async function () {
             info: {
               title: 'Test free chat room #1',
               description: 'some description',
-              createRoomPayment: emptyPayment
+              categories: [],
+              messagePayment: emptyPayment,
+              highlightMessagePayment: emptyPayment,
             }
           }).call()).params,
           payment: emptyPayment
