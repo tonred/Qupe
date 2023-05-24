@@ -25,6 +25,12 @@ abstract contract PlatformUtils {
         _;
     }
 
+    modifier onlyMessage(uint64 serverID, uint64 roomID, uint64 messageID) {
+        address message = _messageAddress(serverID, roomID, messageID);
+        require(msg.sender == message, 69);
+        _;
+    }
+
 
     function _initPlatform(address root, TvmCell platformCode) internal {
         _root = root;

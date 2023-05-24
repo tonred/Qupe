@@ -18,12 +18,16 @@ interface IProfile {
         address remainingGasTo
     ) external;
 
+    function onTag(uint64 serverID, uint64 roomID, uint64 messageID, address user) external view;
+
     function onMessageAccepted(
         uint64 serverID,
         uint64 roomID,
         uint64 messageID,
         uint messageHash,
         bool deployed
-    ) external;
+    ) external view;
+
+    function onReputationChanged(uint64 serverID, uint64 roomID, uint64 messageID, address user, int8 change) external;
 
 }

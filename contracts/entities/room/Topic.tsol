@@ -37,12 +37,8 @@ contract Topic is Room {
         return userData.reputation >= _info.messageReputation;
     }
 
-    function _acceptMessage(CallData data, uint messageHash, bool highlight) internal override {
-        uint128 additional = Gas.ACCEPT_MESSAGE_FEE + data.payment.evers();
-        tvm.rawReserve(additional, 4);
-        uint64 messageID = _messagesCount++;
-        emit MessageAccepted(messageID, messageHash, highlight);
-
+    function _acceptMessage(CallData data, uint messageHash, Tag[] tags, bool highlight) internal override {
+        uint64 messageID = _acceptMessageBase(data, messageHash, tags, highlight);
         TvmCell stateInit = _buildMessageStateInit(_serverID, _roomID, messageID);
         TvmCell params = abi.encode(messageHash, data.user);
         new Platform{

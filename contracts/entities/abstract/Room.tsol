@@ -1,6 +1,7 @@
 pragma ever-solidity ^0.66.0;
 
 import "../../payment/PaymentLibrary.tsol";
+import "../../structures/Tag.tsol";
 import "../../structures/UserData.tsol";
 import "../interfaces/IProfile.tsol";
 import "../interfaces/IUser.tsol";
@@ -38,10 +39,11 @@ abstract contract Room is Base {
     function acceptMessage(
         CallData data,
         uint messageHash,
+        Tag[] tags,
         bool highlight
     ) public hasPermission(data, Action.SEND_MESSAGE) {
         require(_checkAcceptMessageData(data, highlight), 69);
-        _acceptMessage(data, messageHash, highlight);
+        _acceptMessage(data, messageHash, tags, highlight);
     }
 
     function ban(CallData data, address user) public hasPermission(data, Action.BAN_UNBAN) {
@@ -69,8 +71,8 @@ abstract contract Room is Base {
 
 
     function _onAcceptTokensTransfer(uint128 amount, address sender, TvmCell payload) internal override {
-        (CallData data, uint messageHash, bool highlight) =
-            abi.decode(payload, (CallData, uint, bool));
+        (CallData data, uint messageHash, Tag[] tags, bool highlight) =
+            abi.decode(payload, (CallData, uint, Tag[], bool));
         bool correct_sender = _checkSender(sender, data.user);
         bool has_permission = _checkPermissions(data, Action.SEND_MESSAGE);
         bool correct_data = _checkAcceptMessageData(data, highlight);
@@ -78,21 +80,34 @@ abstract contract Room is Base {
             _returnTokens(amount, sender);
             return;
         }
-        _acceptMessage(data, messageHash, highlight);
+        _acceptMessage(data, messageHash, tags, highlight);
     }
 
     function _checkAcceptMessageData(CallData data, bool highlight) internal view virtual returns (bool);
 
-    function _acceptMessage(CallData data, uint messageHash, bool highlight) internal virtual {
-        uint128 additional = Gas.ACCEPT_MESSAGE_FEE + data.payment.evers();
-        tvm.rawReserve(additional, 4);
-        uint64 messageID = _messagesCount++;
-        emit MessageAccepted(messageID, messageHash, highlight);
+    function _acceptMessage(CallData data, uint messageHash, Tag[] tags, bool highlight) internal virtual {
+        uint64 messageID = _acceptMessageBase(data, messageHash, tags, highlight);
         IProfile(msg.sender).onMessageAccepted{
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: false
         }(_serverID, _roomID, messageID, messageHash, false);
+    }
+
+    function _acceptMessageBase(CallData data, uint messageHash, Tag[] tags, bool highlight) internal returns (uint64) {
+        uint128 additional = Gas.ACCEPT_MESSAGE_FEE + data.payment.evers();
+        tvm.rawReserve(additional, 4);
+        uint64 messageID = _messagesCount++;
+        emit MessageAccepted(messageID, messageHash, highlight);
+        for (Tag tag : tags) {
+            address profile = _profileAddress(tag.user);
+            IProfile(profile).onTag{
+                value: tag.value,
+                flag: MsgFlag.SENDER_PAYS_FEES,
+                bounce: true
+            }(_serverID, _roomID, messageID, data.user);
+        }
+        return messageID;
     }
 
     function _setPermissions(address user, optional(Permissions) permissions, address remainingGasTo) internal override {

@@ -4,6 +4,7 @@ pragma AbiHeader time;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
+import "../structures/Tag.tsol";
 import "../utils/Constants.tsol";
 import "../utils/ErrorCodes.tsol";
 import "../utils/Gas.tsol";
@@ -17,14 +18,20 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
     using PaymentLibrary for Payment;
 
     event CreateRoom(uint64 serverID);
-    event MessageSent(uint messageHash, uint64 serverID, uint64 roomID, bool highlight);
-    event Reacted(uint64 serverID, uint64 roomID, uint64 messageID, uint32 reaction, bool undo);
+    event SendMessage(uint messageHash, uint64 serverID, uint64 roomID, bool highlight);
+    event React(uint64 serverID, uint64 roomID, uint64 messageID, uint32 reaction, bool undo);
+    event ChangeReputation(uint64 serverID, uint64 roomID, uint64 messageID, optional(int8) to);
+
     event Deposited(address token, uint128 amount);
     event PermissionChanged(address entity, bool removed);
+    event Tagged(uint64 serverID, uint64 roomID, uint64 messageID, address user);
     event MessageAccepted(uint messageHash, uint64 serverID, uint64 roomID, uint64 messageID, bool deployed);
+    event ReputationChanged(uint64 serverID, uint64 roomID, uint64 messageID, address user, int8 change, int64 current);
+
 
     address _owner;
 
+    uint128 _minTagValue;
     mapping(uint => bool) _pubkeys;
     mapping(address => UserData) _userDatas;
     mapping(address => Permissions) _permissions;
@@ -44,7 +51,8 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         tvm.resetStorage();
         _initPlatform(root, platformCode);
         _owner = abi.decode(initialData, address);
-        uint[] pubkeys = abi.decode(initialParams, uint[]);
+        (uint128 minTagValue, uint[] pubkeys) = abi.decode(initialParams, (uint128, uint[]));
+        _minTagValue = minTagValue;
         _setPubkeys(pubkeys);
     }
 
@@ -86,31 +94,29 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         uint8 version,
         uint64 serverID,
         uint64 roomID,
-        string message,
+        bytes message,
+        Tag[] tags,
         optional(uint) replyToMessageHash,
         optional(uint) forwardMessageHash,
         bool highlight,
         Payment payment
-// todo
-//        address[] tagged,
-//        uint128[] taggedValue
     ) public externalMsg {
         require(version == Constants.MESSAGE_VERSION, 69);
         tvm.accept();
         if (forwardMessageHash.hasValue()) {
             // forward message doesn't have `message` and `replyToMessageHash`
-            uint32 length = message.byteLength();
-            require(length == 0 && !replyToMessageHash.hasValue(), 69);
+            require(message.length == 0 && !replyToMessageHash.hasValue(), 69);
         }
 
-        emit MessageSent(_currentMessageHash, serverID, roomID, highlight);
+        emit SendMessage(_currentMessageHash, serverID, roomID, highlight);
         address room = _roomAddress(serverID, roomID);
         CallData data = _buildCallData(room, payment);
+        uint128 value = Gas.SEND_MESSAGE_VALUE + payment.evers() + _sumTagsValue(tags);
         if (payment.isEver()) {
-            _sendMessagePayEver(room, data, highlight);
+            _sendMessagePayEver(room, data, tags, highlight, value);
         } else {
-            TvmCell payload = abi.encode(data, _currentMessageHash, highlight);
-            _executePayTIP3(payment, room, payload, Gas.SEND_MESSAGE_VALUE);
+            TvmCell payload = abi.encode(data, _currentMessageHash, tags, highlight);
+            _executePayTIP3(payment, room, payload, value);
         }
     }
 
@@ -125,7 +131,7 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         bool hasReaction = _reactions[serverID][roomID][messageID][reaction];
         require(hasReaction == undo, 69);
 
-        emit Reacted(serverID, roomID, messageID, reaction, undo);
+        emit React(serverID, roomID, messageID, reaction, undo);
         address message = _messageAddress(serverID, roomID, messageID);
         Message(message).react{
             value: 0,
@@ -139,14 +145,36 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         }
     }
 
+    function changeReputation(
+        uint64 serverID,
+        uint64 roomID,
+        uint64 messageID,
+        optional(int8) to
+    ) public view minValue(Gas.CHANGE_REPUTATION_VALUE) onlyOwner {
+        require(!to.hasValue() || math.abs(to.get()) == 1, 69);
+        _reserve();
+        address message = _messageAddress(serverID, roomID, messageID);
+        emit ChangeReputation(serverID, roomID, messageID, to);
+        Message(message).changeReputation{
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
+            bounce: true
+        }(_owner, to);
+    }
+
     function deposit() public pure minValue(Gas.MIN_DEPOSIT_VALUE) {
         emit Deposited(address(0), msg.value);
+    }
+
+    function setMinTagValue(uint128 minTagValue) public cashBack onlyOwner {
+        _minTagValue = minTagValue;
     }
 
     function setPubkeys(uint[] pubkeys) public cashBack onlyOwner {
         delete _pubkeys;
         _setPubkeys(pubkeys);
     }
+
 
     function setServerPermissions(
         uint64 serverID,
@@ -169,16 +197,35 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         _setPermissions(room, permissions, remainingGasTo);
     }
 
+    function onTag(uint64 serverID, uint64 roomID, uint64 messageID, address user) public view override onlyRoom(serverID, roomID) {
+        emit Tagged(serverID, roomID, messageID, user);
+    }
+
     function onMessageAccepted(
         uint64 serverID,
         uint64 roomID,
         uint64 messageID,
         uint messageHash,
         bool deployed
-    ) public override {
+    ) public view override {
         address sender = deployed ? _messageAddress(serverID, roomID, messageID) : _roomAddress(serverID, roomID);
         require(msg.sender == sender, 69);
         emit MessageAccepted(messageHash, serverID, roomID, messageID, deployed);
+    }
+
+    function onReputationChanged(
+        uint64 serverID,
+        uint64 roomID,
+        uint64 messageID,
+        address user,
+        int8 change
+    ) public override onlyMessage(serverID, roomID, messageID) {
+        _reserve();
+        address room = _roomAddress(serverID, roomID);
+        _userDatas[room].reputation += change;
+        int64 current = _userDatas[room].reputation;
+        emit ReputationChanged(serverID, roomID, messageID, user, change, current);
+        IUser(user).onReputationChanged{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(serverID, change, current);
     }
 
 
@@ -188,20 +235,26 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         return CallData(_owner, payment, userData, permissions);
     }
 
+    function _sumTagsValue(Tag[] tags) private pure returns (uint128 sum) {
+        for (Tag tag : tags) {
+            sum += tag.value + Gas.TAG_VALUE;
+        }
+    }
+
     function _createRoomPayEver(address server, CallData data, TvmCell params) private pure {
         Server(server).createRoom{
-            value: Gas.CREATE_ROOM_VALUE + data.payment.amount,
+            value: Gas.CREATE_ROOM_VALUE + data.payment.evers(),
             flag: MsgFlag.SENDER_PAYS_FEES,
             bounce: true
         }(data, params);
     }
 
-    function _sendMessagePayEver(address room, CallData data, bool highlight) private view {
+    function _sendMessagePayEver(address room, CallData data, Tag[] tags, bool highlight, uint128 value) private view {
         Room(room).acceptMessage{
-            value: Gas.SEND_MESSAGE_VALUE + data.payment.amount,
+            value: value,
             flag: MsgFlag.SENDER_PAYS_FEES,
             bounce: true
-        }(data, _currentMessageHash, highlight);
+        }(data, _currentMessageHash, tags, highlight);
     }
 
     function _executePayTIP3(Payment payment, address recipient, TvmCell payload, uint128 value) private {

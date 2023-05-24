@@ -47,10 +47,10 @@ contract Root is PlatformUtils, RandomNonce {
         return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} _createServer(_codes.blog, params);
     }
 
-    function createProfile(uint[] pubkeys) public view responsible returns (address) {
+    function createProfile(uint128 minTagValue, uint[] pubkeys) public view responsible returns (address) {
         _reserveTarget();
         TvmCell stateInit = _buildProfileStateInit(msg.sender);
-        TvmCell params = abi.encode(pubkeys);
+        TvmCell params = abi.encode(minTagValue, pubkeys);
         return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} new Platform{
             stateInit: stateInit,
             value: Gas.DEPLOY_PROFILE_VALUE,

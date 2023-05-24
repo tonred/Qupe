@@ -13,8 +13,10 @@ library Gas {
 
     uint128 constant ACCEPT_MESSAGE_FEE = 0.01 ever;
     uint128 constant SEND_MESSAGE_VALUE = uint128(0.1 ever) + ACCEPT_MESSAGE_FEE;
+    uint128 constant TAG_VALUE = uint128(0.1 ever);
     uint128 constant CALL_VALUE = 0.5 ever;
     uint128 constant REACT_VALUE = 1 ever;
+    uint128 constant CHANGE_REPUTATION_VALUE = 1 ever;
     uint128 constant SET_PERMISSION_VALUE = 0.1 ever;
 
     uint128 constant MIN_DEPOSIT_VALUE = 1 ever;

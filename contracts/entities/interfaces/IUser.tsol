@@ -9,6 +9,7 @@ interface IUser {
 
     function onMessage(uint messageHash, bool deployed) external;
     function onReact(uint32 reaction, bool undo) external;
+    function onReputationChanged(uint64 serverID, int8 change, int64 current) external;
 
     function onPermissionChanged(address entity, bool removed) external;
 
