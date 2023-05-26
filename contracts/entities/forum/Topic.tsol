@@ -1,9 +1,6 @@
 pragma ever-solidity ^0.66.0;
 
-pragma AbiHeader time;
-pragma AbiHeader expire;
-pragma AbiHeader pubkey;
-
+import "../../structures/ForumUserData.tsol";
 import "../../structures/Infos.tsol";
 import "../abstract/Room.tsol";
 
@@ -14,10 +11,11 @@ contract Topic is Room {
     TvmCell _messageCode;
 
 
-    function _init(TvmCell params) internal override returns (address owner) {
+    function _init(TvmCell params) internal override returns (address owner, address token) {
         (owner, _info, _messageCode) = abi.decode(params, (address, TopicInfo, TvmCell));
         Permissions defaultPermissions = PermissionsLibrary.single(Action.SEND_MESSAGE);
         _initPermissions(owner, defaultPermissions);
+        token = PaymentLibrary.jointToken(_info.messagePayment, _info.highlightMessagePayment);
     }
 
     function changeInfo(CallData data, TopicInfo info) public cashBack hasPermission(data, Action.CONFIG) {
@@ -33,7 +31,7 @@ contract Topic is Room {
         if (!data.userData.hasValue()) {
             return false;
         }
-        UserData userData = data.userData.get();
+        ForumUserData userData = abi.decode(data.userData.get(), ForumUserData);
         return userData.reputation >= _info.messageReputation;
     }
 

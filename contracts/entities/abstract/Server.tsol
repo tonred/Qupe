@@ -1,9 +1,5 @@
 pragma ever-solidity ^0.66.0;
 
-pragma AbiHeader time;
-pragma AbiHeader expire;
-pragma AbiHeader pubkey;
-
 import "./Room.tsol";
 
 
@@ -20,11 +16,12 @@ abstract contract Server is Base {
         tvm.resetStorage();
         _initPlatform(root, platformCode);
         _serverID = abi.decode(initialData, uint64);
-        address owner = _init(initialParams);
-        _withdrawEvers(owner, tvm.functionId(IUser.onRoomCreated));
+        (address owner, address token) = _init(initialParams);
+        _initVault(token);
+        _withdrawEvers(owner, tvm.functionId(IUser.onServerCreated));
     }
 
-    function _init(TvmCell params) internal virtual override returns (address owner);
+    function _init(TvmCell params) internal virtual override returns (address owner, address token);
 
 
     function createRoom(CallData data, TvmCell params) public hasPermission(data, Action.CREATE_ROOM) {

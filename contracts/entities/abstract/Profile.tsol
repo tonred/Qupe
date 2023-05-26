@@ -1,42 +1,29 @@
 pragma ever-solidity ^0.66.0;
 
-pragma AbiHeader time;
-pragma AbiHeader expire;
-pragma AbiHeader pubkey;
-
-import "../structures/Tag.tsol";
-import "../utils/Constants.tsol";
-import "../utils/ErrorCodes.tsol";
-import "../utils/Gas.tsol";
-import "../utils/TransferUtils.tsol";
-import "../vault/MultiVault.tsol";
-import "./abstract/Server.tsol";
-import "./Message.tsol";
+import "../../utils/Constants.tsol";
+import "../../vault/MultiVault.tsol";
+import "./Server.tsol";
 
 
-contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
+abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
     using PaymentLibrary for Payment;
 
     event CreateRoom(uint64 serverID);
     event SendMessage(uint messageHash, uint64 serverID, uint64 roomID, bool highlight);
-    event React(uint64 serverID, uint64 roomID, uint64 messageID, uint32 reaction, bool undo);
-    event ChangeReputation(uint64 serverID, uint64 roomID, uint64 messageID, optional(int8) to);
 
     event Deposited(address token, uint128 amount);
     event PermissionChanged(address entity, bool removed);
     event Tagged(uint64 serverID, uint64 roomID, uint64 messageID, address user);
     event MessageAccepted(uint messageHash, uint64 serverID, uint64 roomID, uint64 messageID, bool deployed);
-    event ReputationChanged(uint64 serverID, uint64 roomID, uint64 messageID, address user, int8 change, int64 current);
 
 
     address _owner;
 
+    uint128 _sendMessageValue;
     uint128 _minTagValue;
     mapping(uint => bool) _pubkeys;
-    mapping(address => UserData) _userDatas;
+    mapping(address => TvmCell) _userDatas;
     mapping(address => Permissions) _permissions;
-    // serverID => roomID => messageID => reaction => bool
-    mapping(uint64 => mapping(uint64 => mapping(uint64 => mapping(uint32 => bool)))) _reactions;
     uint _currentMessageHash;
     uint64 _timestamp;
 
@@ -51,8 +38,8 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         tvm.resetStorage();
         _initPlatform(root, platformCode);
         _owner = abi.decode(initialData, address);
-        (uint128 minTagValue, uint[] pubkeys) = abi.decode(initialParams, (uint128, uint[]));
-        _minTagValue = minTagValue;
+        uint[] pubkeys;
+        (_sendMessageValue, _minTagValue, pubkeys) = abi.decode(initialParams, (uint128, uint128, uint[]));
         _setPubkeys(pubkeys);
     }
 
@@ -75,21 +62,6 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
     }
 
 
-    function createRoom(uint64 serverID, TvmCell params, Payment payment) public onlyOwner {
-        uint128 minValue = Gas.CREATE_ROOM_VALUE + payment.evers();
-        require(msg.value >= minValue, 69);
-
-        emit CreateRoom(serverID);
-        address server = _serverAddress(serverID);
-        CallData data = _buildCallData(server, payment);
-        if (payment.isEver()) {
-            _createRoomPayEver(server, data, params);
-        } else {
-            TvmCell payload = abi.encode(data, params);
-            _executePayTIP3(payment, server, payload, Gas.CREATE_ROOM_VALUE);
-        }
-    }
-
     function sendMessage(
         uint8 version,
         uint64 serverID,
@@ -111,55 +83,13 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         emit SendMessage(_currentMessageHash, serverID, roomID, highlight);
         address room = _roomAddress(serverID, roomID);
         CallData data = _buildCallData(room, payment);
-        uint128 value = Gas.SEND_MESSAGE_VALUE + payment.evers() + _sumTagsValue(tags);
+        uint128 value = _sendMessageValue + payment.evers() + _sumTagsValue(tags);
         if (payment.isEver()) {
             _sendMessagePayEver(room, data, tags, highlight, value);
         } else {
             TvmCell payload = abi.encode(data, _currentMessageHash, tags, highlight);
             _executePayTIP3(payment, room, payload, value);
         }
-    }
-
-    function react(
-        uint64 serverID,
-        uint64 roomID,
-        uint64 messageID,
-        uint32 reaction,
-        bool undo
-    ) public minValue(Gas.REACT_VALUE) onlyOwner {
-        _reserve();
-        bool hasReaction = _reactions[serverID][roomID][messageID][reaction];
-        require(hasReaction == undo, 69);
-
-        emit React(serverID, roomID, messageID, reaction, undo);
-        address message = _messageAddress(serverID, roomID, messageID);
-        Message(message).react{
-            value: 0,
-            flag: MsgFlag.ALL_NOT_RESERVED,
-            bounce: true
-        }(_owner, reaction, undo);
-        if (undo) {
-            delete _reactions[serverID][roomID][messageID][reaction];
-        } else {
-            _reactions[serverID][roomID][messageID][reaction] = true;
-        }
-    }
-
-    function changeReputation(
-        uint64 serverID,
-        uint64 roomID,
-        uint64 messageID,
-        optional(int8) to
-    ) public view minValue(Gas.CHANGE_REPUTATION_VALUE) onlyOwner {
-        require(!to.hasValue() || math.abs(to.get()) == 1, 69);
-        _reserve();
-        address message = _messageAddress(serverID, roomID, messageID);
-        emit ChangeReputation(serverID, roomID, messageID, to);
-        Message(message).changeReputation{
-            value: 0,
-            flag: MsgFlag.ALL_NOT_RESERVED,
-            bounce: true
-        }(_owner, to);
     }
 
     function deposit() public pure minValue(Gas.MIN_DEPOSIT_VALUE) {
@@ -213,24 +143,24 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         emit MessageAccepted(messageHash, serverID, roomID, messageID, deployed);
     }
 
-    function onReputationChanged(
-        uint64 serverID,
-        uint64 roomID,
-        uint64 messageID,
-        address user,
-        int8 change
-    ) public override onlyMessage(serverID, roomID, messageID) {
-        _reserve();
-        address room = _roomAddress(serverID, roomID);
-        _userDatas[room].reputation += change;
-        int64 current = _userDatas[room].reputation;
-        emit ReputationChanged(serverID, roomID, messageID, user, change, current);
-        IUser(user).onReputationChanged{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(serverID, change, current);
+
+    function _createRoom(uint64 serverID, TvmCell params, Payment payment) internal {
+        uint128 minValue = Gas.CREATE_ROOM_VALUE + payment.evers();
+        require(msg.value >= minValue, 69);
+
+        emit CreateRoom(serverID);
+        address server = _serverAddress(serverID);
+        CallData data = _buildCallData(server, payment);
+        if (payment.isEver()) {
+            _createRoomPayEver(server, data, params);
+        } else {
+            TvmCell payload = abi.encode(data, params);
+            _executePayTIP3(payment, server, payload, Gas.CREATE_ROOM_VALUE);
+        }
     }
 
-
     function _buildCallData(address recipient, Payment payment) private view returns (CallData) {
-        optional(UserData) userData = _userDatas.fetch(recipient);
+        optional(TvmCell) userData = _userDatas.fetch(recipient);
         optional(Permissions) permissions = _permissions.fetch(recipient);
         return CallData(_owner, payment, userData, permissions);
     }
@@ -284,5 +214,7 @@ contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
         emit Deposited(token, amount);
         IUser(sender).onTokenDeposited{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(token, amount);
     }
+
+    // todo withdraw evers and tip3
 
 }

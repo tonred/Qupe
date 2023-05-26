@@ -1,6 +1,6 @@
 pragma ever-solidity ^0.66.0;
 
-import "../../permissions/Permissions.tsol";
+import "../../../permissions/Permissions.tsol";
 
 
 interface IProfile {
@@ -27,7 +27,5 @@ interface IProfile {
         uint messageHash,
         bool deployed
     ) external view;
-
-    function onReputationChanged(uint64 serverID, uint64 roomID, uint64 messageID, address user, int8 change) external;
 
 }

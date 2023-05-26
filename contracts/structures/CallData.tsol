@@ -2,12 +2,11 @@ pragma ever-solidity ^0.66.0;
 
 import "../payment/Payment.tsol";
 import "../permissions/Permissions.tsol";
-import "./UserData.tsol";
 
 
 struct CallData {
     address user;
     Payment payment;
-    optional(UserData) userData;
+    optional(TvmCell) userData;
     optional(Permissions) permissions;
 }

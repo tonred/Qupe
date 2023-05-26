@@ -2,14 +2,8 @@ pragma ever-solidity ^0.66.0;
 
 import "../../payment/PaymentLibrary.tsol";
 import "../../structures/Tag.tsol";
-import "../../structures/UserData.tsol";
-import "../interfaces/IProfile.tsol";
-import "../interfaces/IUser.tsol";
+import "./interfaces/IProfile.tsol";
 import "./Base.tsol";
-
-pragma AbiHeader time;
-pragma AbiHeader expire;
-pragma AbiHeader pubkey;
 
 
 abstract contract Room is Base {
@@ -29,11 +23,12 @@ abstract contract Room is Base {
         tvm.resetStorage();
         _initPlatform(root, platformCode);
         (_serverID, _roomID) = abi.decode(initialData, (uint64, uint64));
-        address owner = _init(initialParams);
+        (address owner, address token) = _init(initialParams);
+        _initVault(token);
         _withdrawEvers(owner, tvm.functionId(IUser.onRoomCreated));
     }
 
-    function _init(TvmCell params) internal virtual override returns (address owner);
+    function _init(TvmCell params) internal virtual override returns (address owner, address token);
 
 
     function acceptMessage(

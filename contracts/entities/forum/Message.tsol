@@ -1,13 +1,10 @@
 pragma ever-solidity ^0.66.0;
 
-pragma AbiHeader time;
-pragma AbiHeader expire;
-pragma AbiHeader pubkey;
-
-import "../platform/PlatformUtils.tsol";
-import "../utils/Gas.tsol";
-import "./interfaces/IProfile.tsol";
-import "./interfaces/IUser.tsol";
+import "../../platform/PlatformUtils.tsol";
+import "../../utils/Gas.tsol";
+import "../abstract/interfaces/IProfile.tsol";
+import "./interfaces/IForumProfile.tsol";
+import "./interfaces/IForumUser.tsol";
 
 import "@broxus/contracts/contracts/libraries/MsgFlag.tsol";
 
@@ -63,7 +60,7 @@ contract Message is PlatformUtils {
     function react(address user, uint32 reaction, bool undo) public onlyProfile(user) {
         _reserveTarget();
         undo ? _reactions[reaction]-- : _reactions[reaction]++;
-        IUser(user).onReact{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(reaction, undo);
+        IForumUser(user).onReact{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(reaction, undo);
     }
 
     function changeReputation(address user, optional(int8) to) public onlyProfile(user) {
@@ -89,7 +86,7 @@ contract Message is PlatformUtils {
         }
 
         address profile = _profileAddress(user);
-        IProfile(profile).onReputationChanged{
+        IForumProfile(profile).onReputationChanged{
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: false

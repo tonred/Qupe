@@ -1,0 +1,27 @@
+pragma ever-solidity ^0.66.0;
+
+import "../abstract/Root.tsol";
+
+
+contract ForumRoot is Root {
+
+    TvmCell _messageCode;
+
+    constructor(
+        TvmCell serverCode,
+        TvmCell roomCode,
+        TvmCell profileCode,
+        TvmCell messageCode,
+        TvmCell platformCode,
+        uint128 sendMessageValue
+    ) public Root(serverCode, roomCode, profileCode, platformCode, sendMessageValue) {
+        _messageCode = messageCode;
+    }
+
+    function create(address owner, ForumInfo info) public responsible returns (address) {
+        _reserveTarget();
+        TvmCell params = abi.encode(owner, info, _roomCode, _messageCode);
+        return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} _createServer(_serverCode, params);
+    }
+
+}
