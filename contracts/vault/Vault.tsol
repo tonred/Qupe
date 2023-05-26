@@ -13,7 +13,10 @@ abstract contract Vault is BaseVault, IVault {
     uint128 _balance;
 
 
-    function _initVault(address token) internal {  // todo rename to `_init`
+    function _initVault(address token) internal {
+        if (token.value == 0) {
+            return;
+        }
         _token = token;
         _deployWallet(token, Gas.DEPLOY_WALLET_VALUE);
     }

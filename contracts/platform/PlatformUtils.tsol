@@ -1,9 +1,5 @@
 pragma ton-solidity >= 0.57.0;
 
-pragma AbiHeader time;
-pragma AbiHeader expire;
-pragma AbiHeader pubkey;
-
 import "./Platform.tsol";
 import "./PlatformType.tsol";
 
@@ -22,6 +18,12 @@ abstract contract PlatformUtils {
     modifier onlyRoom(uint64 serverID, uint64 roomID) {
         address room = _roomAddress(serverID, roomID);
         require(msg.sender == room, 69);
+        _;
+    }
+
+    modifier onlyMessage(uint64 serverID, uint64 roomID, uint64 messageID) {
+        address message = _messageAddress(serverID, roomID, messageID);
+        require(msg.sender == message, 69);
         _;
     }
 

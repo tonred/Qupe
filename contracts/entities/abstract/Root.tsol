@@ -1,0 +1,67 @@
+pragma ever-solidity ^0.66.0;
+
+import "../../platform/PlatformUtils.tsol";
+import "../../structures/Infos.tsol";
+import "../../utils/Gas.tsol";
+import "../../utils/TransferUtils.tsol";
+
+import "@broxus/contracts/contracts/libraries/MsgFlag.tsol";
+import "@broxus/contracts/contracts/utils/RandomNonce.tsol";
+
+
+abstract contract Root is PlatformUtils, RandomNonce {
+
+    TvmCell _serverCode;
+    TvmCell _roomCode;
+    TvmCell _profileCode;
+    uint128 _sendMessageValue;
+    uint64 _serversCount;
+
+
+    constructor(
+        TvmCell serverCode,
+        TvmCell roomCode,
+        TvmCell profileCode,
+        TvmCell platformCode,
+        uint128 sendMessageValue
+    ) public {
+        tvm.accept();
+        _serverCode = serverCode;
+        _roomCode = roomCode;
+        _profileCode = profileCode;
+        _sendMessageValue = sendMessageValue;
+        _initPlatform(address(this), platformCode);
+    }
+
+    function getServersCount() public view responsible returns (uint64 count) {
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _serversCount;
+    }
+
+    function createProfile(uint128 minTagValue, uint[] pubkeys) public view responsible returns (address) {
+        _reserveTarget();
+        TvmCell stateInit = _buildProfileStateInit(msg.sender);
+        TvmCell params = abi.encode(_sendMessageValue, minTagValue, pubkeys);
+        return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} new Platform{
+            stateInit: stateInit,
+            value: Gas.DEPLOY_PROFILE_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES,
+            bounce: false
+        }(_profileCode, params);
+    }
+
+    function _createServer(TvmCell code, TvmCell params) internal returns (address) {
+        uint64 serverID = _serversCount++;
+        TvmCell stateInit = _buildServerStateInit(serverID);
+        return new Platform{
+            stateInit: stateInit,
+            value: Gas.DEPLOY_SERVER_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES,
+            bounce: false
+        }(code, params);
+    }
+
+    function _reserveTarget() internal pure {
+        tvm.rawReserve(Gas.ROOT_TARGET_VALUE, 0);
+    }
+
+}

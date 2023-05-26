@@ -1,0 +1,17 @@
+pragma ever-solidity ^0.66.0;
+
+pragma AbiHeader time;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+
+import "../abstract/Profile.tsol";
+
+
+contract BlogProfile is Profile {
+
+    function createRoom(uint64 serverID, Payment payment) public onlyOwner {
+        TvmCell empty;
+        _createRoom(serverID, empty, payment);
+    }
+
+}

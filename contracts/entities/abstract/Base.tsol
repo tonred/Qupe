@@ -1,15 +1,11 @@
 pragma ever-solidity ^0.66.0;
 
-pragma AbiHeader time;
-pragma AbiHeader expire;
-pragma AbiHeader pubkey;
-
 import "../../permissions/PermissionsLibrary.tsol";
 import "../../platform/PlatformUtils.tsol";
 import "../../structures/CallData.tsol";
 import "../../utils/TransferUtils.tsol";
 import "../../vault/Vault.tsol";
-import "../interfaces/IUser.tsol";
+import "./interfaces/IUser.tsol";
 
 
 abstract contract Base is Vault, PlatformUtils, TransferUtils {
@@ -23,12 +19,12 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
         _;
     }
 
+    function _init(TvmCell params) internal virtual returns (address owner, address token);
 
-    function _init(TvmCell params) internal virtual returns (address owner);
 
     function withdraw(CallData data, address token, address recipient) public hasPermission(data, Action.ADMIN) {
         if (token.value == 0) {
-            _withdrawEvers(recipient, tvm.functionId(IUser.onWithdraw));
+            _withdrawEvers(recipient, tvm.functionId(IUser.onEntityWithdraw));
         } else if (token == _token) {
             TvmCell empty;
             _transferTokens(_balance, recipient, empty, 0, MsgFlag.REMAINING_GAS);

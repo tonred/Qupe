@@ -1,9 +1,5 @@
 pragma ever-solidity ^0.66.0;
 
-pragma AbiHeader time;
-pragma AbiHeader expire;
-pragma AbiHeader pubkey;
-
 import "../abstract/Room.tsol";
 
 
@@ -12,13 +8,13 @@ contract Page is Room {
     address _owner;  // is not changeable
 
 
-    function _init(TvmCell params) internal override returns (address owner) {
+    function _init(TvmCell params) internal override returns (address owner, address token) {
         _owner = abi.decode(params, address);
         _initPermissions(address(0), PermissionsLibrary.none());
 
         Permissions ownerPermissions = PermissionsLibrary.single(Action.SEND_MESSAGE);
         _setPermissions(_owner, ownerPermissions, _owner);
-        return _owner;
+        return (_owner, address(0));
     }
 
     function getOwner() public view responsible returns (address owner) {

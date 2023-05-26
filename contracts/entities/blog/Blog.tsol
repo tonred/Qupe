@@ -1,22 +1,18 @@
 pragma ever-solidity ^0.66.0;
 
-pragma AbiHeader time;
-pragma AbiHeader expire;
-pragma AbiHeader pubkey;
-
-import "../abstract/Server.tsol";
 import "../../structures/Infos.tsol";
+import "../abstract/Server.tsol";
 
 
 contract Blog is Server {
 
     BlogInfo _info;
 
-
-    function _init(TvmCell params) internal override returns (address owner) {
+    function _init(TvmCell params) internal override returns (address owner, address token) {
         (owner, _info, _roomCode) = abi.decode(params, (address, BlogInfo, TvmCell));
         Permissions defaultPermissions = PermissionsLibrary.single(Action.CREATE_ROOM);
         _initPermissions(address(0), defaultPermissions);
+        token = address(0);
 
         Permissions ownerPermissions = PermissionsLibrary.none();
         ownerPermissions.set(Action.CONFIG, true);
@@ -27,7 +23,6 @@ contract Blog is Server {
     function changeInfo(CallData data, BlogInfo info) public cashBack hasPermission(data, Action.CONFIG) {
         _info = info;
     }
-
 
     function _checkCreateRoomData(CallData /*data*/) internal view override returns (bool) {
         return true;

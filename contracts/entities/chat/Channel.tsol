@@ -1,9 +1,5 @@
 pragma ever-solidity ^0.66.0;
 
-pragma AbiHeader time;
-pragma AbiHeader expire;
-pragma AbiHeader pubkey;
-
 import "../../structures/Infos.tsol";
 import "../abstract/Room.tsol";
 
@@ -13,10 +9,11 @@ contract Channel is Room {
     ChannelInfo _info;
 
 
-    function _init(TvmCell params) internal override returns (address owner) {
+    function _init(TvmCell params) internal override returns (address owner, address token) {
         (owner, _info) = abi.decode(params, (address, ChannelInfo));
         Permissions defaultPermissions = PermissionsLibrary.single(Action.SEND_MESSAGE);
         _initPermissions(owner, defaultPermissions);
+        token = PaymentLibrary.jointToken(_info.messagePayment, _info.highlightMessagePayment);
     }
 
     function changeInfo(CallData data, ChannelInfo info) public cashBack hasPermission(data, Action.CONFIG) {

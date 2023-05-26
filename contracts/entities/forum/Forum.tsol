@@ -1,11 +1,8 @@
 pragma ever-solidity ^0.66.0;
 
-pragma AbiHeader time;
-pragma AbiHeader expire;
-pragma AbiHeader pubkey;
-
-import "../abstract/Server.tsol";
+import "../../structures/ForumUserData.tsol";
 import "../../structures/Infos.tsol";
+import "../abstract/Server.tsol";
 
 
 contract Forum is Server {
@@ -15,20 +12,16 @@ contract Forum is Server {
     TvmCell _messageCode;
 
 
-    function _init(TvmCell params) internal override returns (address owner) {
+    function _init(TvmCell params) internal override returns (address owner, address token) {
         (owner, _info, _roomCode, _messageCode) = abi.decode(params, (address, ForumInfo, TvmCell, TvmCell));
         Permissions defaultPermissions = PermissionsLibrary.single(Action.CREATE_ROOM);
         _initPermissions(owner, defaultPermissions);
+        token = _info.createRoomPayment.token;
     }
 
     function changeInfo(CallData data, ForumInfo info) public cashBack hasPermission(data, Action.CONFIG) {
         _info = info;
     }
-
-    function encodeCreateRoomParams(address owner, TopicInfo info) public pure responsible returns (TvmCell params) {
-        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} abi.encode(owner, info);
-    }
-
 
     function _checkCreateRoomData(CallData data) internal view override returns (bool) {
         Payment price = _info.createRoomPayment;
@@ -38,7 +31,7 @@ contract Forum is Server {
         if (!data.userData.hasValue()) {
             return false;
         }
-        UserData userData = data.userData.get();
+        ForumUserData userData = abi.decode(data.userData.get(), ForumUserData);
         return userData.reputation >= _info.createRoomReputation;
     }
 

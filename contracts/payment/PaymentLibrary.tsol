@@ -17,4 +17,12 @@ library PaymentLibrary {
         return payment.token == price.token && payment.amount >= price.amount;
     }
 
+    function isJointVault(Payment first, Payment second) internal returns (bool) {
+        return isEver(first) || isEver(second) || first.token == second.token;
+    }
+
+    function jointToken(Payment first, Payment second) internal returns (address) {
+        return isEver(first) ? second.token : first.token;
+    }
+
 }

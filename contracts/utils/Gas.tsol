@@ -2,29 +2,31 @@ pragma ever-solidity ^0.66.0;
 
 
 library Gas {
-    // todo
-    uint128 constant MIN_VALUE = 0.2 ever;
+
+    uint128 constant CALL_VALUE = 0.5 ever;
 
     uint128 constant ROOT_TARGET_VALUE = 1 ever;
     uint128 constant PROFILE_TARGET_BALANCE = 1 ever;
     uint128 constant SERVER_TARGET_BALANCE = 1 ever;
     uint128 constant ROOM_TARGET_BALANCE = 1 ever;
-    uint128 constant MESSAGE_TARGET_BALANCE = 1 ever;
+    uint128 constant MESSAGE_TARGET_BALANCE = 0.5 ever;
 
     uint128 constant ACCEPT_MESSAGE_FEE = 0.01 ever;
-    uint128 constant SEND_MESSAGE_VALUE = uint128(0.1 ever) + ACCEPT_MESSAGE_FEE;
-    uint128 constant CALL_VALUE = 0.5 ever;
+//    uint128 constant SEND_MESSAGE_VALUE = uint128(0.1 ever) + ACCEPT_MESSAGE_FEE;  + DEPLOY_MESSAGE_VALUE for Forum
+    uint128 constant TAG_VALUE = uint128(0.1 ever);
     uint128 constant REACT_VALUE = 1 ever;
-    uint128 constant SET_PERMISSION_VALUE = 0.1 ever;
+    uint128 constant CHANGE_REPUTATION_VALUE = 1 ever;
+    uint128 constant SET_PERMISSION_VALUE = 0.5 ever;
 
     uint128 constant MIN_DEPOSIT_VALUE = 1 ever;
 
+    uint128 constant DEPLOY_PROFILE_VALUE = PROFILE_TARGET_BALANCE + CALL_VALUE;
     uint128 constant DEPLOY_SERVER_VALUE = SET_PERMISSION_VALUE + SERVER_TARGET_BALANCE + CALL_VALUE;
-    uint128 constant DEPLOY_ROOM_VALUE = ROOM_TARGET_BALANCE + MIN_VALUE;
-    uint128 constant DEPLOY_PROFILE_VALUE = PROFILE_TARGET_BALANCE + MIN_VALUE;
-    uint128 constant DEPLOY_MESSAGE_VALUE = MESSAGE_TARGET_BALANCE + MIN_VALUE;
-    uint128 constant CREATE_ROOM_VALUE = DEPLOY_ROOM_VALUE + MIN_VALUE;
+    uint128 constant DEPLOY_ROOM_VALUE = ROOM_TARGET_BALANCE + CALL_VALUE;
+    uint128 constant DEPLOY_MESSAGE_VALUE = MESSAGE_TARGET_BALANCE + CALL_VALUE;
+    uint128 constant CREATE_ROOM_VALUE = DEPLOY_ROOM_VALUE + CALL_VALUE;
 
-    uint128 constant CALL_DEPLOY_WALLET_VALUE = 1 ever;
-    uint128 constant DEPLOY_WALLET_VALUE = 1 ever;
+    uint128 constant CALL_DEPLOY_WALLET_VALUE = 0.9 ever;
+    uint128 constant DEPLOY_WALLET_VALUE = 0.1 ever;
+
 }
