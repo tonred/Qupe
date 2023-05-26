@@ -2,6 +2,7 @@ pragma ever-solidity ^0.66.0;
 
 import "./BaseVault.tsol";
 import "./IMultiVault.tsol";
+import "../utils/ErrorCodes.tsol";
 
 
 abstract contract MultiVault is BaseVault, IMultiVault {
@@ -27,7 +28,7 @@ abstract contract MultiVault is BaseVault, IMultiVault {
 
     function onWalletDeployed(address wallet) public override {
         address token = msg.sender;
-        require(_pendingWallets.exists(token) && token.value != 0, 69);
+        require(_pendingWallets.exists(token) && token.value != 0, ErrorCodes.CALLBACK_FROM_NOT_EXPECTED_TOKEN);
         delete _pendingWallets[token];
         _wallets[token] = wallet;
         _balances[token] = 0;

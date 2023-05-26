@@ -12,7 +12,7 @@ contract Platform {
 
 
     constructor(TvmCell code, TvmCell params) public functionID(0x4A2E4FD6) {
-        require(msg.sender == _deployer, ErrorCodes.IS_NOT_ROOT);
+        require(msg.sender == _deployer, ErrorCodes.SENDER_IS_NOT_ROOT);
         TvmCell platformCode = tvm.code();
         tvm.setcode(code);
         tvm.setCurrentCode(code);

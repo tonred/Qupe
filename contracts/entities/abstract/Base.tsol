@@ -4,6 +4,7 @@ import "../../permissions/PermissionsLibrary.tsol";
 import "../../platform/PlatformUtils.tsol";
 import "../../structures/CallData.tsol";
 import "../../utils/TransferUtils.tsol";
+import "../../utils/ErrorCodes.tsol";
 import "../../vault/Vault.tsol";
 import "./interfaces/IUser.tsol";
 
@@ -14,8 +15,8 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
     Permissions _defaultPermissions;
 
     modifier hasPermission(CallData data, Action action) {
-        require(_checkSender(msg.sender, data.user), 69);
-        require(_checkPermissions(data, action), 69);
+        require(_checkSender(msg.sender, data.user), ErrorCodes.SENDER_IS_NOT_PROFILE);
+        require(_checkPermissions(data, action), ErrorCodes.NO_PERMISSION_FOR_ACTION);
         _;
     }
 
@@ -29,7 +30,7 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
             TvmCell empty;
             _transferTokens(_balance, recipient, empty, 0, MsgFlag.REMAINING_GAS);
         } else {
-            revert(69);
+            revert(ErrorCodes.NOT_NATIVE_OR_STORED_TOKEN);
         }
     }
 
@@ -39,13 +40,13 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
         optional(Permissions) permissions
     ) public hasPermission(data, Action.ADMIN) {
         if (permissions.hasValue()) {
-            require(permissions.get().validate(), 69);
+            require(permissions.get().validate(), ErrorCodes.PERMISSIONS_NOT_VALID);
         }
         _setPermissions(user, permissions, data.user);
     }
 
     function setDefaultPermissions(CallData data, Permissions permissions) public cashBack hasPermission(data, Action.ADMIN) {
-        require(permissions.validate(), 69);
+        require(permissions.validate(), ErrorCodes.PERMISSIONS_NOT_VALID);
         _defaultPermissions = permissions;
     }
 

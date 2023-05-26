@@ -2,6 +2,7 @@ pragma ton-solidity >= 0.57.0;
 
 import "./Platform.tsol";
 import "./PlatformType.tsol";
+import "../utils/ErrorCodes.tsol";
 
 
 abstract contract PlatformUtils {
@@ -11,19 +12,19 @@ abstract contract PlatformUtils {
 
     modifier onlyServer(uint64 serverID) {
         address server = _serverAddress(serverID);
-        require(msg.sender == server, 69);
+        require(msg.sender == server, ErrorCodes.SENDER_IS_NOT_SERVER);
         _;
     }
 
     modifier onlyRoom(uint64 serverID, uint64 roomID) {
         address room = _roomAddress(serverID, roomID);
-        require(msg.sender == room, 69);
+        require(msg.sender == room, ErrorCodes.SENDER_IS_NOT_ROOM);
         _;
     }
 
     modifier onlyMessage(uint64 serverID, uint64 roomID, uint64 messageID) {
         address message = _messageAddress(serverID, roomID, messageID);
-        require(msg.sender == message, 69);
+        require(msg.sender == message, ErrorCodes.SENDER_IS_NOT_MESSAGE);
         _;
     }
 

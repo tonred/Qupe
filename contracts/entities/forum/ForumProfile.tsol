@@ -6,6 +6,7 @@ pragma AbiHeader pubkey;
 
 import "../../structures/ForumUserData.tsol";
 import "../../structures/Infos.tsol";
+import "../../utils/ErrorCodes.tsol";
 import "../abstract/Profile.tsol";
 import "./interfaces/IForumProfile.tsol";
 import "./interfaces/IForumUser.tsol";
@@ -32,7 +33,7 @@ contract ForumProfile is Profile, IForumProfile {
 
 
     function createRoom(uint64 serverID, address owner, TopicInfo info, Payment payment) public onlyOwner {
-        require(PaymentLibrary.isJointVault(info.messagePayment, info.highlightMessagePayment), 69);
+        require(PaymentLibrary.isJointVault(info.messagePayment, info.highlightMessagePayment), ErrorCodes.NOT_JOINT_VAULT);
         TvmCell params = abi.encode(owner, info);
         _createRoom(serverID, params, payment);
     }
@@ -46,7 +47,7 @@ contract ForumProfile is Profile, IForumProfile {
     ) public minValue(Gas.REACT_VALUE) onlyOwner {
         _reserve();
         bool hasReaction = _reactions[serverID][roomID][messageID][reaction];
-        require(hasReaction == undo, 69);
+        require(hasReaction == undo, ErrorCodes.INVALID_REACTION);
 
         emit React(serverID, roomID, messageID, reaction, undo);
         address message = _messageAddress(serverID, roomID, messageID);
@@ -68,7 +69,7 @@ contract ForumProfile is Profile, IForumProfile {
         uint64 messageID,
         optional(int8) to
     ) public view minValue(Gas.CHANGE_REPUTATION_VALUE) onlyOwner {
-        require(!to.hasValue() || math.abs(to.get()) == 1, 69);
+        require(!to.hasValue() || math.abs(to.get()) == 1, ErrorCodes.INVALID_REPUTATION_VALUE);
         _reserve();
         address message = _messageAddress(serverID, roomID, messageID);
         emit ChangeReputation(serverID, roomID, messageID, to);

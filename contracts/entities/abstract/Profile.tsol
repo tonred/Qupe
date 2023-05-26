@@ -1,6 +1,7 @@
 pragma ever-solidity ^0.66.0;
 
 import "../../utils/Constants.tsol";
+import "../../utils/ErrorCodes.tsol";
 import "../../vault/MultiVault.tsol";
 import "./Server.tsol";
 
@@ -46,17 +47,17 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     function afterSignatureCheck(TvmSlice body, TvmCell message) private inline returns (TvmSlice) {
         uint64 maxTimestamp = uint64(now + 30) * 1000;
         uint64 msgTimestamp = body.decode(uint64);
-        require(msgTimestamp > _timestamp && msgTimestamp <= maxTimestamp, ErrorCodes.EXTERNAL_MSG_REPLAY_PROTECTION);
+        require(msgTimestamp > _timestamp && msgTimestamp <= maxTimestamp, ErrorCodes.EXTERNAL_MESSAGE_REPLAY);
         _timestamp = msgTimestamp;
 
         uint32 expireAt = body.decode(uint32);
-        require(expireAt >= now, ErrorCodes.EXTERNAL_MSG_IS_EXPIRED);
+        require(expireAt >= now, ErrorCodes.EXTERNAL_MESSAGE_EXPIRED);
 
         uint pubkey = msg.pubkey();
-        require(_pubkeys.exists(pubkey) && pubkey != 0, 69);
+        require(_pubkeys.exists(pubkey) && pubkey != 0, ErrorCodes.WRONG_PUBLIC_KEY);
 
         uint messageHash = tvm.hash(message);
-        require(messageHash != _currentMessageHash, 69);
+        require(messageHash != _currentMessageHash, ErrorCodes.MESSAGE_ALREADY_PROCESSED);
         _currentMessageHash = messageHash;
         return body;
     }
@@ -73,11 +74,11 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         bool highlight,
         Payment payment
     ) public externalMsg {
-        require(version == Constants.MESSAGE_VERSION, 69);
+        require(version == Constants.MESSAGE_VERSION, ErrorCodes.WRONG_MESSAGE_VERSION);
         tvm.accept();
         if (forwardMessageHash.hasValue()) {
             // forward message doesn't have `message` and `replyToMessageHash`
-            require(message.length == 0 && !replyToMessageHash.hasValue(), 69);
+            require(message.length == 0 && !replyToMessageHash.hasValue(), ErrorCodes.FORWARDED_MESSAGE_WITH_CONTENT);
         }
 
         emit SendMessage(_currentMessageHash, serverID, roomID, highlight);
@@ -139,14 +140,14 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         bool deployed
     ) public view override {
         address sender = deployed ? _messageAddress(serverID, roomID, messageID) : _roomAddress(serverID, roomID);
-        require(msg.sender == sender, 69);
+        require(msg.sender == sender, ErrorCodes.SENDER_IS_NOT_ROOM);
         emit MessageAccepted(messageHash, serverID, roomID, messageID, deployed);
     }
 
 
     function _createRoom(uint64 serverID, TvmCell params, Payment payment) internal {
         uint128 minValue = Gas.CREATE_ROOM_VALUE + payment.evers();
-        require(msg.value >= minValue, 69);
+        require(msg.value >= minValue, ErrorCodes.TOO_LOW_MESSAGE_VALUE);
 
         emit CreateRoom(serverID);
         address server = _serverAddress(serverID);
@@ -189,7 +190,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
 
     function _executePayTIP3(Payment payment, address recipient, TvmCell payload, uint128 value) private {
         bool success = _transferTokens(payment.token, payment.amount, recipient, payload, value, MsgFlag.SENDER_PAYS_FEES);
-        require(success, 69);
+        require(success, ErrorCodes.ZERO_VALUE_OR_TOKEN_NOT_EXISTS);
     }
 
     function _setPubkeys(uint[] pubkeys) private {

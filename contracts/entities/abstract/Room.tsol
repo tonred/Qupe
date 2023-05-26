@@ -2,6 +2,7 @@ pragma ever-solidity ^0.66.0;
 
 import "../../payment/PaymentLibrary.tsol";
 import "../../structures/Tag.tsol";
+import "../../utils/ErrorCodes.tsol";
 import "./interfaces/IProfile.tsol";
 import "./Base.tsol";
 
@@ -37,7 +38,7 @@ abstract contract Room is Base {
         Tag[] tags,
         bool highlight
     ) public hasPermission(data, Action.SEND_MESSAGE) {
-        require(_checkAcceptMessageData(data, highlight), 69);
+        require(_checkAcceptMessageData(data, highlight), ErrorCodes.INVALID_MESSAGE_DATA);
         _acceptMessage(data, messageHash, tags, highlight);
     }
 

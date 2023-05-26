@@ -2,6 +2,7 @@ pragma ever-solidity ^0.66.0;
 
 import "../../platform/PlatformUtils.tsol";
 import "../../utils/Gas.tsol";
+import "../../utils/ErrorCodes.tsol";
 import "../abstract/interfaces/IProfile.tsol";
 import "./interfaces/IForumProfile.tsol";
 import "./interfaces/IForumUser.tsol";
@@ -23,7 +24,7 @@ contract Message is PlatformUtils {
 
     modifier onlyProfile(address user) {
         address profile = _profileAddress(user);
-        require(msg.sender == profile, 69);
+        require(msg.sender == profile, ErrorCodes.SENDER_IS_NOT_PROFILE);
         _;
     }
 
