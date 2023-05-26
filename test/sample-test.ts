@@ -33,23 +33,23 @@ const emptyPayment = {
   amount: 0
 }
 const contracts = [
-  'Root',
-  'Forum',
+  'ChatRoot',
+  // 'Forum',
   'Chat',
-  'Blog',
-  'Topic',
+  // 'Blog',
+  // 'Topic',
   'Channel',
-  'Page',
-  'Message',
-  'Profile',
+  // 'Page',
+  // 'Message',
+  'ChatProfile',
   'Platform',
 ]
-let root: Contract<FactorySource["Root"]>;
-let profile: Contract<FactorySource["Profile"]>;
+let root: Contract<FactorySource["ChatRoot"]>;
+let profile: Contract<FactorySource["ChatProfile"]>;
 let signer: Signer;
 let wallets = new Map<string, Address>()
 
-describe("Test Quashers contracts", async function () {
+describe("Test Quashers Chat contracts", async function () {
   before(async () => {
     signer = (await locklift.keystore.getSigner("0"))!;
 
@@ -74,32 +74,28 @@ describe("Test Quashers contracts", async function () {
 
     it("Deploy root contract", async function () {
       const {contract: deployedRoot, tx} = await locklift.factory.deployContract({
-        contract: "Root",
+        contract: "ChatRoot",
         publicKey: signer.publicKey,
         initParams: {
           _randomNonce: locklift.utils.getRandomNonce(),
         },
         constructorParams: {
-          codes: {
-            forum: locklift.factory.getContractArtifacts('Forum').code,
-            chat: locklift.factory.getContractArtifacts('Chat').code,
-            blog: locklift.factory.getContractArtifacts('Blog').code,
-            topic: locklift.factory.getContractArtifacts('Topic').code,
-            channel: locklift.factory.getContractArtifacts('Channel').code,
-            page: locklift.factory.getContractArtifacts('Page').code,
-            message: locklift.factory.getContractArtifacts('Message').code,
-            profile: locklift.factory.getContractArtifacts('Profile').code,
-          },
-          platformCode: locklift.factory.getContractArtifacts('Platform').code
+          serverCode: locklift.factory.getContractArtifacts('Chat').code,
+          roomCode: locklift.factory.getContractArtifacts('Channel').code,
+          profileCode: locklift.factory.getContractArtifacts('ChatProfile').code,
+          platformCode: locklift.factory.getContractArtifacts('Platform').code,
+          sendMessageValue: toNano(0.1),
         },
         value: locklift.utils.toNano(2),
       });
       root = deployedRoot
       expect(await root.fields._constructorFlag()).to.be.true;
+      success(`Root deployed: ${root.address.toString()}`)
     });
     it("Deploy Profile", async function () {
       const owner = wallets.get('wallet1');
       const tx = await locklift.tracing.trace(root.methods.createProfile({
+        minTagValue: 0,
         pubkeys: [`0x${signer.publicKey}`],
         answerId: 0
       }).send({
@@ -112,7 +108,7 @@ describe("Test Quashers contracts", async function () {
       for (let deploy of tx.traceTree.findByTypeWithFullData({type: 'deploy', name: 'constructor'})) {
         if (deploy.contract.name === 'Platform') {
           const profileAddr = new Address(deploy.msg.dst)
-          profile = await locklift.factory.getDeployedContract('Profile', profileAddr)
+          profile = await locklift.factory.getDeployedContract('ChatProfile', profileAddr)
         }
       }
       pending('Deposit tokens gas to Profile')
@@ -129,7 +125,7 @@ describe("Test Quashers contracts", async function () {
       let channel: Contract<FactorySource["Channel"]>;
       it("Deploy chat with free messages", async function () {
         const owner = wallets.get('wallet1');
-        const tx = await locklift.tracing.trace(root.methods.createChat({
+        const tx = await locklift.tracing.trace(root.methods.create({
           owner: owner,
           info: {
             meta: encodeData({
@@ -141,7 +137,7 @@ describe("Test Quashers contracts", async function () {
           answerId: 0
         }).send({
           from: owner,
-          amount: toNano(2),
+          amount: toNano(3),
         }));
         await tx.traceTree?.beautyPrint();
 
@@ -155,24 +151,32 @@ describe("Test Quashers contracts", async function () {
         await logDiff(tx)
         success(`Chat deployed: ${chat.address.toString()}, Id: ${await chat.fields._serverID()}`)
       });
+      // it("Set default permissions for server", async function () {
+      //   const owner = wallets.get('wallet1');
+      //   const tx = await locklift.tracing.trace(profile.methods.setServerPermissions({
+      //     serverID: await chat.fields._serverID(),
+      //     permissions: {values: [false, false, false, true, true]},
+      //     remainingGasTo: owner
+      //   }).send({from: owner, amount: toNano(3)}))
+      //   await tx.traceTree?.beautyPrint();
+      //   log('Gas used: ', fromNano(tx.traceTree.totalGasUsed()))
+      //   await logDiff(tx)
+      // })
       it("Deploy Chat channel", async function () {
         const owner = wallets.get('wallet1');
 
         const tx = await locklift.tracing.trace(profile.methods.createRoom({
           serverID: await chat.fields._serverID(),
-          params: (await chat.methods.encodeCreateRoomParams({
-            answerId: 0,
-            owner,
-            info: {
-              meta: encodeData({
-                title: 'Test free chat room #1',
-                description: 'some description',
-                categories: [],
-              }),
-              messagePayment: emptyPayment,
-              highlightMessagePayment: emptyPayment,
-            }
-          }).call()).params,
+          info: {
+            meta: encodeData({
+              title: 'Test free chat room #1',
+              description: 'some description',
+              categories: [],
+            }),
+            messagePayment: emptyPayment,
+            highlightMessagePayment: emptyPayment,
+          },
+          owner,
           payment: emptyPayment
         }).send({from: owner, amount: toNano(2)}));
         await tx.traceTree?.beautyPrint();
@@ -191,10 +195,11 @@ describe("Test Quashers contracts", async function () {
           version: 1,
           serverID: serverID,
           roomID: roomID,
-          message: 'First test message',
+          message: encodeData({'c': 'First test message'}),
           replyToMessageHash: null,
           forwardMessageHash: null,
           highlight: false,
+          tags: [],
           payment: emptyPayment
         }).sendExternal({publicKey: signer.publicKey}));
         await tx.traceTree?.beautyPrint();
@@ -207,10 +212,11 @@ describe("Test Quashers contracts", async function () {
             version: 1,
             serverID: serverID,
             roomID: roomID,
-            message: `Spam #${i}`,
+            message: encodeData({'c': `Spam #${i}`}),
             replyToMessageHash: null,
             forwardMessageHash: null,
             highlight: false,
+            tags: [],
             payment: emptyPayment
           }).sendExternal({publicKey: signer.publicKey}));
         }
@@ -219,10 +225,11 @@ describe("Test Quashers contracts", async function () {
           version: 1,
           serverID: serverID,
           roomID: roomID,
-          message: 'Last test message',
+          message: encodeData({'c': 'Last test message'}),
           replyToMessageHash: null,
           forwardMessageHash: null,
           highlight: false,
+          tags: [],
           payment: emptyPayment
         }).sendExternal({publicKey: signer.publicKey}));
         await tx2.traceTree?.beautyPrint();
