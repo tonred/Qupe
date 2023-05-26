@@ -15,9 +15,10 @@ library PermissionsLibrary {
         return permissions.values[actionID];
     }
 
-    function set(Permissions permissions, Action action, bool value) internal {
+    function set(Permissions permissions, Action action, bool value) internal returns (Permissions) {
         uint8 actionID = uint8(action);
         permissions.values[actionID] = value;
+        return permissions;
     }
 
     function full() internal returns (Permissions) {
@@ -30,7 +31,7 @@ library PermissionsLibrary {
 
     function single(Action action) internal returns (Permissions) {
         Permissions permission = none();
-        set(permission, action, true);
+        permission = set(permission, action, true);
         return permission;
     }
 
