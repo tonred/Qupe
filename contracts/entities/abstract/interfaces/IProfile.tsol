@@ -10,14 +10,14 @@ interface IProfile {
     function setServerPermissions(
         uint64 serverID,
         optional(Permissions) permissions,
-        address remainingGasTo
+        address callbackTo
     ) external;
 
     function setRoomPermissions(
         uint64 serverID,
         uint64 roomID,
         optional(Permissions) permissions,
-        address remainingGasTo
+        address callbackTo
     ) external;
 
     function onTagged(uint64 serverID, uint64 roomID, uint64 messageID, address user) external view;

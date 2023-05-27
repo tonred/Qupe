@@ -38,12 +38,12 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         _;
     }
 
-    modifier onlyJoined(uint64 serverID, address remainingGasTo) {
+    modifier onlyJoined(uint64 serverID, address callbackTo) {
         if (_servers[serverID]) {
-            if (remainingGasTo.value == 0) {
+            if (callbackTo.value == 0) {
                 revert(ErrorCodes.IS_NOT_JOINED_TO_SEVER);
             }
-            IUser(remainingGasTo).onErrorNotJoined{
+            IUser(callbackTo).onErrorNotJoined{
                 value: 0,
                 flag: MsgFlag.REMAINING_GAS,
                 bounce: false
@@ -163,22 +163,22 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     function setServerPermissions(
         uint64 serverID,
         optional(Permissions) permissions,
-        address remainingGasTo
-    ) public override onlyServer(serverID) onlyJoined(serverID, remainingGasTo) {
+        address callbackTo
+    ) public override onlyServer(serverID) onlyJoined(serverID, callbackTo) {
         _reserve();
         address server = _serverAddress(serverID);
-        _setPermissions(server, permissions, remainingGasTo);
+        _setPermissions(server, permissions, callbackTo);
     }
 
     function setRoomPermissions(
         uint64 serverID,
         uint64 roomID,
         optional(Permissions) permissions,
-        address remainingGasTo
-    ) public override onlyRoom(serverID, roomID) onlyJoined(serverID, remainingGasTo) {
+        address callbackTo
+    ) public override onlyRoom(serverID, roomID) onlyJoined(serverID, callbackTo) {
         _reserve();
         address room = _roomAddress(serverID, roomID);
-        _setPermissions(room, permissions, remainingGasTo);
+        _setPermissions(room, permissions, callbackTo);
     }
 
     function onTagged(
@@ -257,7 +257,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         }
     }
 
-    function _setPermissions(address entity, optional(Permissions) permissions, address remainingGasTo) private {
+    function _setPermissions(address entity, optional(Permissions) permissions, address callbackTo) private {
         bool removed = !permissions.hasValue();
         emit PermissionChanged(entity, removed);
         if (removed) {
@@ -265,7 +265,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         } else {
             _permissions[entity] = permissions.get();
         }
-        IUser(remainingGasTo).onPermissionChanged{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(entity, removed);
+        IUser(callbackTo).onPermissionChanged{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(entity, removed);
     }
 
     function _onAcceptTokensTransfer(address token, uint128 amount, address /*sender*/, TvmCell /*payload*/) internal override {

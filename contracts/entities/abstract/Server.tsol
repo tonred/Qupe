@@ -89,13 +89,13 @@ abstract contract Server is Base {
 
     function _buildCreateRoomInitialParams(TvmCell params, address /*creator*/) internal view virtual returns (TvmCell);
 
-    function _setPermissions(address user, optional(Permissions) permissions, address remainingGasTo) internal override {
+    function _setPermissions(address user, optional(Permissions) permissions, address callbackTo) internal override {
         address profile = _profileAddress(user);
         IProfile(profile).setServerPermissions{
             value: Gas.SET_PERMISSION_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES,
             bounce: false
-        }(_serverID, permissions, remainingGasTo);
+        }(_serverID, permissions, callbackTo);
     }
 
     function _reserveTarget() internal view inline override {

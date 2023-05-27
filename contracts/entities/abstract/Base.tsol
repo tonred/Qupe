@@ -77,7 +77,7 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
         });
     }
 
-    function _setPermissions(address user, optional(Permissions) permissions, address remainingGasTo) internal virtual;
+    function _setPermissions(address user, optional(Permissions) permissions, address callbackTo) internal virtual;
 
     function _reserveTarget() internal view inline virtual;
 
