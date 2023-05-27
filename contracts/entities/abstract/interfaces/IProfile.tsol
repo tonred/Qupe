@@ -5,6 +5,8 @@ import "../../../permissions/Permissions.tsol";
 
 interface IProfile {
 
+    function onJoined(uint64 serverID) external;
+
     function setServerPermissions(
         uint64 serverID,
         optional(Permissions) permissions,
@@ -18,7 +20,7 @@ interface IProfile {
         address remainingGasTo
     ) external;
 
-    function onTag(uint64 serverID, uint64 roomID, uint64 messageID, address user) external view;
+    function onTagged(uint64 serverID, uint64 roomID, uint64 messageID, address user) external view;
 
     function onMessageAccepted(
         uint64 serverID,

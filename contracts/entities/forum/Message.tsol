@@ -2,7 +2,6 @@ pragma ever-solidity ^0.66.0;
 
 import "../../platform/PlatformUtils.tsol";
 import "../../utils/Gas.tsol";
-import "../../utils/ErrorCodes.tsol";
 import "../abstract/interfaces/IProfile.tsol";
 import "./interfaces/IForumProfile.tsol";
 import "./interfaces/IForumUser.tsol";

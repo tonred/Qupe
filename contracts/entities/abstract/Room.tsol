@@ -2,7 +2,6 @@ pragma ever-solidity ^0.66.0;
 
 import "../../payment/PaymentLibrary.tsol";
 import "../../structures/Tag.tsol";
-import "../../utils/ErrorCodes.tsol";
 import "./interfaces/IProfile.tsol";
 import "./Base.tsol";
 
@@ -97,7 +96,7 @@ abstract contract Room is Base {
         emit MessageAccepted(messageID, messageHash, highlight);
         for (Tag tag : tags) {
             address profile = _profileAddress(tag.user);
-            IProfile(profile).onTag{
+            IProfile(profile).onTagged{
                 value: tag.value,
                 flag: MsgFlag.SENDER_PAYS_FEES,
                 bounce: true

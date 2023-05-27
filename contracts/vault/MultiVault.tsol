@@ -2,7 +2,6 @@ pragma ever-solidity ^0.66.0;
 
 import "./BaseVault.tsol";
 import "./IMultiVault.tsol";
-import "../utils/ErrorCodes.tsol";
 
 
 abstract contract MultiVault is BaseVault, IMultiVault {

@@ -15,8 +15,8 @@ contract Blog is Server {
         token = address(0);
 
         Permissions ownerPermissions = PermissionsLibrary.none();
-        ownerPermissions = ownerPermissions.set(Action.CONFIG, true);
-        ownerPermissions = ownerPermissions.set(Action.CREATE_ROOM, true);
+        ownerPermissions.set(Action.CONFIG, true);
+        ownerPermissions.set(Action.CREATE_ROOM, true);
         _setPermissions(owner, ownerPermissions, owner);
     }
 

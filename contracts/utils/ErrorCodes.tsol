@@ -2,37 +2,38 @@ pragma ever-solidity ^0.66.0;
 
 
 library ErrorCodes {
-    // todo
-    uint16 constant SENDER_IS_NOT_ROOT = 1000;
-    uint16 constant SENDER_IS_NOT_ROOM = 1001;
-    uint16 constant SENDER_IS_NOT_PROFILE = 1002;
-    uint16 constant SENDER_IS_NOT_SERVER = 1003;
-    uint16 constant SENDER_IS_NOT_MESSAGE = 1004;
-    uint16 constant IS_NOT_TOKEN_ROOT = 1005;
-    uint16 constant IS_NOT_TOKEN_WALLET = 1006;
-    uint16 constant IS_NOT_OWNER = 1007;
-    uint16 constant CALLBACK_FROM_NOT_EXPECTED_TOKEN = 1008;
 
-    uint16 constant WRONG_MESSAGE_VERSION = 1100;
-    uint16 constant FORWARDED_MESSAGE_WITH_CONTENT = 1101;
-    uint16 constant ZERO_VALUE_OR_TOKEN_NOT_EXISTS = 1102;
-    uint16 constant INVALID_REACTION = 1103;
-    uint16 constant INVALID_REPUTATION_VALUE = 1104;
-    uint16 constant INVALID_MESSAGE_DATA = 1105;
+    uint16 constant SENDER_IS_NOT_ROOT =                1000;
+    uint16 constant SENDER_IS_NOT_ROOM =                1001;
+    uint16 constant SENDER_IS_NOT_PROFILE =             1002;
+    uint16 constant SENDER_IS_NOT_SERVER =              1003;
+    uint16 constant SENDER_IS_NOT_MESSAGE =             1004;
+    uint16 constant IS_NOT_TOKEN_ROOT =                 1005;
+    uint16 constant IS_NOT_TOKEN_WALLET =               1006;
+    uint16 constant IS_NOT_OWNER =                      1007;
+    uint16 constant CALLBACK_FROM_NOT_EXPECTED_TOKEN =  1008;
 
-    uint16 constant TOO_LOW_MESSAGE_VALUE = 1200;
+    uint16 constant WRONG_MESSAGE_VERSION =             1100;
+    uint16 constant FORWARDED_MESSAGE_WITH_CONTENT =    1101;
+    uint16 constant ZERO_VALUE_OR_TOKEN_NOT_EXISTS =    1102;
+    uint16 constant INVALID_REACTION =                  1103;
+    uint16 constant INVALID_REPUTATION_VALUE =          1104;
+    uint16 constant INVALID_MESSAGE_DATA =              1105;
+    uint16 constant IS_NOT_JOINED_TO_SEVER =            1106;
+    uint16 constant IS_ALREADY_JOINED_TO_SERVER =       1107;
 
-    uint16 constant WRONG_PUBLIC_KEY = 1300;
-    uint16 constant MESSAGE_ALREADY_PROCESSED = 1301;
-    uint16 constant EXTERNAL_MESSAGE_EXPIRED = 1302;
-    uint16 constant EXTERNAL_MESSAGE_REPLAY = 1303;
+    uint16 constant TOO_LOW_MESSAGE_VALUE =             1200;
 
-    uint16 constant PERMISSIONS_NOT_VALID = 1400;
-    uint16 constant NO_PERMISSION_FOR_ACTION = 1401;
+    uint16 constant WRONG_PUBLIC_KEY =                  1300;
+    uint16 constant MESSAGE_ALREADY_PROCESSED =         1301;
+    uint16 constant EXTERNAL_MESSAGE_EXPIRED =          1302;
+    uint16 constant EXTERNAL_MESSAGE_REPLAY =           1303;
 
-    uint16 constant NOT_NATIVE_OR_STORED_TOKEN = 1500;
-    uint16 constant NOT_JOINT_VAULT = 1501;
-    uint16 constant INVALID_DATA = 1502;
+    uint16 constant PERMISSIONS_NOT_VALID =             1400;
+    uint16 constant NO_PERMISSION_FOR_ACTION =          1401;
 
+    uint16 constant NOT_NATIVE_OR_STORED_TOKEN =        1500;
+    uint16 constant NOT_JOINT_VAULT =                   1501;
+    uint16 constant INVALID_DATA =                      1502;
 
 }

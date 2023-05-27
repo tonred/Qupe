@@ -1,16 +1,17 @@
 pragma ever-solidity ^0.66.0;
 
 import "./Room.tsol";
-import "../../utils/ErrorCodes.tsol";
 
 
 abstract contract Server is Base {
+    event Joined(address user);
     event RoomCreated(uint64 roomID, address room, address creator);
 
     uint64 _serverID;
 
     TvmCell _roomCode;
     uint64 _roomsCount;
+    uint64 _usersCount;
 
 
     function onCodeUpgrade(address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) internal {
@@ -24,6 +25,19 @@ abstract contract Server is Base {
 
     function _init(TvmCell params) internal virtual override returns (address owner, address token);
 
+
+    function join(uint64 /*serverID*/, address user) public {
+        _reserve();
+        address profile = msg.sender;
+        require(_checkSender(profile, user), ErrorCodes.SENDER_IS_NOT_PROFILE);
+        _usersCount += 1;
+        emit Joined(user);
+        IProfile(profile).onJoined{
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
+            bounce: false
+        }(_serverID);
+    }
 
     function createRoom(CallData data, TvmCell params) public hasPermission(data, Action.CREATE_ROOM) {
         require(_checkCreateRoomData(data), ErrorCodes.INVALID_DATA);

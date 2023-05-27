@@ -2,7 +2,6 @@ pragma ton-solidity >= 0.57.0;
 
 import "./Platform.tsol";
 import "./PlatformType.tsol";
-import "../utils/ErrorCodes.tsol";
 
 
 abstract contract PlatformUtils {

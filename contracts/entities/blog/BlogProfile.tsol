@@ -9,7 +9,7 @@ import "../abstract/Profile.tsol";
 
 contract BlogProfile is Profile {
 
-    function createRoom(uint64 serverID, Payment payment) public onlyOwner {
+    function createRoom(uint64 serverID, Payment payment) public onlyOwner onlyJoined(serverID, address(0)) {
         TvmCell empty;
         _createRoom(serverID, empty, payment);
     }

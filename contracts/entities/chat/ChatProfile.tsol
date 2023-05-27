@@ -5,13 +5,17 @@ pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
 import "../../structures/Infos.tsol";
-import "../../utils/ErrorCodes.tsol";
 import "../abstract/Profile.tsol";
 
 
 contract ChatProfile is Profile {
 
-    function createRoom(uint64 serverID, address owner, ChannelInfo info, Payment payment) public onlyOwner {
+    function createRoom(
+        uint64 serverID,
+        address owner,
+        ChannelInfo info,
+        Payment payment
+    ) public onlyOwner onlyJoined(serverID, address(0)) {
         require(PaymentLibrary.isJointVault(info.messagePayment, info.highlightMessagePayment), ErrorCodes.NOT_JOINT_VAULT);
         TvmCell params = abi.encode(owner, info);
         _createRoom(serverID, params, payment);

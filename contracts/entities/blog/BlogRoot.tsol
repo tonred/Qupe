@@ -13,7 +13,7 @@ contract BlogRoot is Root {
         uint128 sendMessageValue
     ) public Root(serverCode, roomCode, profileCode, platformCode, sendMessageValue) {}
 
-    function create(address owner, BlogInfo info) public responsible returns (address) {
+    function createRoom(address owner, BlogInfo info) public responsible returns (address) {
         _reserveTarget();
         TvmCell params = abi.encode(owner, info, _roomCode);
         return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} _createServer(_serverCode, params);

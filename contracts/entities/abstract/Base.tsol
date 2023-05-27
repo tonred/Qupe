@@ -4,7 +4,6 @@ import "../../permissions/PermissionsLibrary.tsol";
 import "../../platform/PlatformUtils.tsol";
 import "../../structures/CallData.tsol";
 import "../../utils/TransferUtils.tsol";
-import "../../utils/ErrorCodes.tsol";
 import "../../vault/Vault.tsol";
 import "./interfaces/IUser.tsol";
 

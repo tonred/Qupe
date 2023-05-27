@@ -6,7 +6,6 @@ pragma AbiHeader pubkey;
 
 import "../../structures/ForumUserData.tsol";
 import "../../structures/Infos.tsol";
-import "../../utils/ErrorCodes.tsol";
 import "../abstract/Profile.tsol";
 import "./interfaces/IForumProfile.tsol";
 import "./interfaces/IForumUser.tsol";
@@ -32,7 +31,12 @@ contract ForumProfile is Profile, IForumProfile {
     }
 
 
-    function createRoom(uint64 serverID, address owner, TopicInfo info, Payment payment) public onlyOwner {
+    function createRoom(
+        uint64 serverID,
+        address owner,
+        TopicInfo info,
+        Payment payment
+    ) public onlyOwner onlyJoined(serverID, address(0)) {
         require(PaymentLibrary.isJointVault(info.messagePayment, info.highlightMessagePayment), ErrorCodes.NOT_JOINT_VAULT);
         TvmCell params = abi.encode(owner, info);
         _createRoom(serverID, params, payment);

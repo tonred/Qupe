@@ -1,7 +1,6 @@
 pragma ever-solidity ^0.66.0;
 
 import "../../utils/Constants.tsol";
-import "../../utils/ErrorCodes.tsol";
 import "../../vault/MultiVault.tsol";
 import "./Server.tsol";
 
@@ -9,9 +8,11 @@ import "./Server.tsol";
 abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
     using PaymentLibrary for Payment;
 
+    event Join(uint64 serverID);
     event CreateRoom(uint64 serverID);
     event SendMessage(uint messageHash, uint64 serverID, uint64 roomID, bool highlight);
 
+    event Joined(uint64 serverID);
     event Deposited(address token, uint128 amount);
     event PermissionChanged(address entity, bool removed);
     event Tagged(uint64 serverID, uint64 roomID, uint64 messageID, address user);
@@ -20,9 +21,12 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
 
     address _owner;
 
+    bytes _meta;
     uint128 _sendMessageValue;
     uint128 _minTagValue;
     mapping(uint => bool) _pubkeys;
+
+    mapping(uint64 => bool) _servers;
     mapping(address => TvmCell) _userDatas;
     mapping(address => Permissions) _permissions;
     uint _currentMessageHash;
@@ -34,13 +38,28 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         _;
     }
 
+    modifier onlyJoined(uint64 serverID, address remainingGasTo) {
+        if (_servers[serverID]) {
+            if (remainingGasTo.value == 0) {
+                revert(ErrorCodes.IS_NOT_JOINED_TO_SEVER);
+            }
+            IUser(remainingGasTo).onErrorNotJoined{
+                value: 0,
+                flag: MsgFlag.REMAINING_GAS,
+                bounce: false
+            }(serverID, _owner);
+            return;
+        }
+        _;
+    }
+
 
     function onCodeUpgrade(address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) internal {
         tvm.resetStorage();
         _initPlatform(root, platformCode);
         _owner = abi.decode(initialData, address);
         uint[] pubkeys;
-        (_sendMessageValue, _minTagValue, pubkeys) = abi.decode(initialParams, (uint128, uint128, uint[]));
+        (_meta, _sendMessageValue, _minTagValue, pubkeys) = abi.decode(initialParams, (bytes, uint128, uint128, uint[]));
         _setPubkeys(pubkeys);
     }
 
@@ -63,6 +82,33 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     }
 
 
+    function getServers() public view responsible returns (uint64[] serverIDs) {
+        for ((uint64 serverID, bool joined) : _servers) {
+            if (joined) {
+                serverIDs.push(serverID);
+            }
+        }
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} serverIDs;
+    }
+
+    function getPermissions(address entity) public view responsible returns (Permissions permissions) {
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _permissions[entity];
+    }
+
+
+    function join(uint64 serverID) public minValue(Gas.JOIN_VALUE) onlyOwner {
+        require(!_servers.exists(serverID), ErrorCodes.IS_ALREADY_JOINED_TO_SERVER);
+        _reserve();
+        _servers[serverID] = false;
+        emit Join(serverID);
+        address server = _serverAddress(serverID);
+        Server(server).join{
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
+            bounce: false
+        }(serverID, _owner);
+    }
+
     function sendMessage(
         uint8 version,
         uint64 serverID,
@@ -73,7 +119,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         optional(uint) forwardMessageHash,
         bool highlight,
         Payment payment
-    ) public externalMsg {
+    ) public externalMsg onlyJoined(serverID, address(0)) {
         require(version == Constants.MESSAGE_VERSION, ErrorCodes.WRONG_MESSAGE_VERSION);
         tvm.accept();
         if (forwardMessageHash.hasValue()) {
@@ -107,11 +153,18 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     }
 
 
+    function onJoined(uint64 serverID) public override onlyServer(serverID) {
+        _reserve();
+        _servers[serverID] = true;
+        emit Joined(serverID);
+        IUser(_owner).onJoined{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(serverID);
+    }
+
     function setServerPermissions(
         uint64 serverID,
         optional(Permissions) permissions,
         address remainingGasTo
-    ) public override onlyServer(serverID) {
+    ) public override onlyServer(serverID) onlyJoined(serverID, remainingGasTo) {
         _reserve();
         address server = _serverAddress(serverID);
         _setPermissions(server, permissions, remainingGasTo);
@@ -122,13 +175,18 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         uint64 roomID,
         optional(Permissions) permissions,
         address remainingGasTo
-    ) public override onlyRoom(serverID, roomID) {
+    ) public override onlyRoom(serverID, roomID) onlyJoined(serverID, remainingGasTo) {
         _reserve();
         address room = _roomAddress(serverID, roomID);
         _setPermissions(room, permissions, remainingGasTo);
     }
 
-    function onTag(uint64 serverID, uint64 roomID, uint64 messageID, address user) public view override onlyRoom(serverID, roomID) {
+    function onTagged(
+        uint64 serverID,
+        uint64 roomID,
+        uint64 messageID,
+        address user
+    ) public view override onlyRoom(serverID, roomID) onlyJoined(serverID, user) {
         emit Tagged(serverID, roomID, messageID, user);
     }
 
@@ -210,12 +268,22 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         IUser(remainingGasTo).onPermissionChanged{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(entity, removed);
     }
 
-    function _onAcceptTokensTransfer(address token, uint128 amount, address sender, TvmCell /*payload*/) internal override {
+    function _onAcceptTokensTransfer(address token, uint128 amount, address /*sender*/, TvmCell /*payload*/) internal override {
         _reserve();
         emit Deposited(token, amount);
-        IUser(sender).onTokenDeposited{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(token, amount);
+        IUser(_owner).onTokenDeposited{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(token, amount);
     }
 
     // todo withdraw evers and tip3
+
+
+    onBounce(TvmSlice body) external {
+        uint32 functionId = body.decode(uint32);
+        if (functionId == tvm.functionId(Server.join)) {
+            // server is not exists
+            uint64 serverID = body.decode(uint64);
+            delete _servers[serverID];
+        }
+    }
 
 }

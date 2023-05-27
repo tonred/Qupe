@@ -4,6 +4,8 @@ import "./Permissions.tsol";
 
 
 library PermissionsLibrary {
+    using PermissionsLibrary for Permissions;
+
     uint8 constant COUNT = 5;
 
     function validate(Permissions permissions) internal returns (bool) {
@@ -15,10 +17,9 @@ library PermissionsLibrary {
         return permissions.values[actionID];
     }
 
-    function set(Permissions permissions, Action action, bool value) internal returns (Permissions) {
+    function set(Permissions permissions, Action action, bool value) internal {
         uint8 actionID = uint8(action);
         permissions.values[actionID] = value;
-        return permissions;
     }
 
     function full() internal returns (Permissions) {
@@ -31,7 +32,7 @@ library PermissionsLibrary {
 
     function single(Action action) internal returns (Permissions) {
         Permissions permission = none();
-        permission = set(permission, action, true);
+        permission.set(action, true);
         return permission;
     }
 

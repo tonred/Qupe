@@ -37,16 +37,17 @@ abstract contract Root is PlatformUtils, RandomNonce {
         return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _serversCount;
     }
 
-    function createProfile(uint128 minTagValue, uint[] pubkeys) public view responsible returns (address) {
+    function createProfile(bytes meta, uint128 minTagValue, uint[] pubkeys) public view responsible returns (address profile) {
         _reserveTarget();
         TvmCell stateInit = _buildProfileStateInit(msg.sender);
-        TvmCell params = abi.encode(_sendMessageValue, minTagValue, pubkeys);
-        return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} new Platform{
+        TvmCell params = abi.encode(meta, _sendMessageValue, minTagValue, pubkeys);
+        profile = new Platform{
             stateInit: stateInit,
             value: Gas.DEPLOY_PROFILE_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES,
             bounce: false
         }(_profileCode, params);
+        return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} profile;
     }
 
     function _createServer(TvmCell code, TvmCell params) internal returns (address) {
