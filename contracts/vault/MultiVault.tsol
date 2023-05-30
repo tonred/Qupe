@@ -57,7 +57,7 @@ abstract contract MultiVault is BaseVault, IMultiVault {
         address /*remainingGasTo*/,
         TvmCell payload
     ) public override {
-        if (!_wallets.exists(msg.sender)) {
+        if (!_wallets.exists(token) || msg.sender != _wallets[token]) {
             _returnTokens(amount, sender);
             return;
         }
