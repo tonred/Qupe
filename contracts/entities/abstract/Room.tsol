@@ -10,7 +10,8 @@ abstract contract Room is Base {
     using PaymentLibrary for Payment;
 
     event MessageAccepted(uint64 messageID, uint messageHash, bool highlight);
-    // todo deletion
+    event Banned(address user);
+    event Unbanned(address user);
 
     uint64 _serverID;
     uint64 _roomID;
@@ -42,11 +43,17 @@ abstract contract Room is Base {
     }
 
     function ban(CallData data, address user) public hasPermission(data, Action.BAN_UNBAN) {
+        _reserve();
+        emit Banned(user);
         _setPermissions(user, PermissionsLibrary.none(), data.user);
+        IUser(user).onBan{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(_serverID, _roomID);
     }
 
     function unban(CallData data, address user) public hasPermission(data, Action.BAN_UNBAN) {
+        _reserve();
+        emit Unbanned(user);
         _setPermissions(user, null, data.user);
+        IUser(user).onUnban{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(_serverID, _roomID);
     }
 
     // todo manageRoom

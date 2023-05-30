@@ -18,7 +18,9 @@ library Gas {
     uint128 constant CHANGE_REPUTATION_VALUE = 1 ever;
     uint128 constant SET_PERMISSION_VALUE = 0.5 ever;
 
+    uint128 constant PROFILE_PROXY_VALUE = 1 ever;  // more than SET_PERMISSION_VALUE
     uint128 constant MIN_DEPOSIT_VALUE = 1 ever;
+    uint128 constant CREATE_WALLET_VALUE = 1.2 ever;  // more than CALL_DEPLOY_WALLET_VALUE + DEPLOY_WALLET_VALUE
 
     uint128 constant DEPLOY_PROFILE_VALUE = PROFILE_TARGET_BALANCE + CALL_VALUE;
     uint128 constant DEPLOY_SERVER_VALUE = SET_PERMISSION_VALUE + SERVER_TARGET_BALANCE + CALL_VALUE;
@@ -28,5 +30,6 @@ library Gas {
 
     uint128 constant CALL_DEPLOY_WALLET_VALUE = 0.9 ever;
     uint128 constant DEPLOY_WALLET_VALUE = 0.1 ever;
+    uint128 constant SYNC_WALLET_VALUE = 0.2 ever;
 
 }

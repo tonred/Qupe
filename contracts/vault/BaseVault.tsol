@@ -24,6 +24,18 @@ abstract contract BaseVault is IAcceptTokensTransferCallback {
 
     function onWalletDeployed(address wallet) public virtual;
 
+    function _syncRaw(address wallet) internal pure {
+        ITokenWallet(wallet).balance{
+            value: Gas.SYNC_WALLET_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES,
+            bounce: false,
+            callback: onSync
+        }();
+    }
+
+    function onSync(uint128 balance) public virtual;
+
+
     function _returnTokens(uint128 amount, address recipient) internal pure {
         TvmCell empty;
         _transferTokensRaw(amount, recipient, empty, msg.sender, 0, MsgFlag.REMAINING_GAS);

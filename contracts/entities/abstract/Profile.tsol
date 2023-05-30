@@ -13,7 +13,10 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     event SendMessage(uint messageHash, uint64 serverID, uint64 roomID, bool highlight);
 
     event Joined(uint64 serverID);
+    event CreateWallet(address token);
+    event SyncWallet(address token);
     event Deposited(address token, uint128 amount);
+    event Withdrawn(address token, uint128 amount, address recipient);
     event PermissionChanged(address entity, bool removed);
     event Tagged(uint64 serverID, uint64 roomID, uint64 messageID, address user);
     event MessageAccepted(uint messageHash, uint64 serverID, uint64 roomID, uint64 messageID, bool deployed);
@@ -139,8 +142,95 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         }
     }
 
+    function withdrawFrom(
+        address entity,
+        address token,
+        address recipient
+    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+        CallData data = _buildCallData(entity, null);
+        Base(entity).withdraw{
+            value: 0,
+            flag: MsgFlag.REMAINING_GAS,
+            bounce: true
+        }(data, token, recipient);
+    }
+
+    function setPermissions(
+        address entity,
+        address user,
+        optional(Permissions) permissions
+    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+        CallData data = _buildCallData(entity, null);
+        Base(entity).setPermissions{
+            value: 0,
+            flag: MsgFlag.REMAINING_GAS,
+            bounce: true
+        }(data, user, permissions);
+    }
+
+    function setDefaultPermissions(
+        address entity,
+        Permissions permissions
+    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+        CallData data = _buildCallData(entity, null);
+        Base(entity).setDefaultPermissions{
+            value: 0,
+            flag: MsgFlag.REMAINING_GAS,
+            bounce: true
+        }(data, permissions);
+    }
+
+    function ban(uint64 serverID, uint64 roomID, address user) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+        address room = _roomAddress(serverID, roomID);
+        CallData data = _buildCallData(room, null);
+        Room(room).ban{
+            value: 0,
+            flag: MsgFlag.REMAINING_GAS,
+            bounce: true
+        }(data, user);
+    }
+
+    function unban(uint64 serverID, uint64 roomID, address user) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+        address room = _roomAddress(serverID, roomID);
+        CallData data = _buildCallData(room, null);
+        Room(room).unban{
+            value: 0,
+            flag: MsgFlag.REMAINING_GAS,
+            bounce: true
+        }(data, user);
+    }
+
+    function createWallet(address token) public minValue(Gas.CREATE_WALLET_VALUE) cashBack onlyOwner {
+        emit CreateWallet(token);
+        _createWallet(token, Gas.CALL_DEPLOY_WALLET_VALUE);
+    }
+
+    function syncWallet(address token) public minValue(Gas.CALL_VALUE) cashBack onlyOwner {
+        emit SyncWallet(token);
+        _sync(token);
+    }
+
     function deposit() public pure minValue(Gas.MIN_DEPOSIT_VALUE) {
         emit Deposited(address(0), msg.value);
+    }
+
+    function withdraw(address token, uint128 amount, address recipient) public minValue(Gas.CALL_VALUE) onlyOwner {
+        emit Withdrawn(token, amount, recipient);
+        if (token.value == 0) {
+            _reserveTarget();
+            IUser(_owner).onWithdraw{
+                value: amount,
+                flag: MsgFlag.SENDER_PAYS_FEES,
+                bounce: false
+            }();
+        } else if (_wallets.exists(token)) {
+            _reserve();
+            TvmCell empty;
+            bool success = _transferTokens(token, amount, recipient, empty, 0, MsgFlag.REMAINING_GAS);
+            require(success, ErrorCodes.ZERO_VALUE_OR_TOKEN_NOT_EXISTS);
+        } else {
+            revert(ErrorCodes.NOT_NATIVE_OR_STORED_TOKEN);
+        }
     }
 
     function setMinTagValue(uint128 minTagValue) public cashBack onlyOwner {
@@ -218,7 +308,8 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         }
     }
 
-    function _buildCallData(address recipient, Payment payment) private view returns (CallData) {
+    function _buildCallData(address recipient, optional(Payment) paymentOptional) private view returns (CallData) {
+        Payment payment = paymentOptional.hasValue() ? paymentOptional.get() : Payment(address(0), 0);
         optional(TvmCell) userData = _userDatas.fetch(recipient);
         optional(Permissions) permissions = _permissions.fetch(recipient);
         return CallData(_owner, payment, userData, permissions);
@@ -274,7 +365,9 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         IUser(_owner).onTokenDeposited{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(token, amount);
     }
 
-    // todo withdraw evers and tip3
+    function _reserveTarget() internal pure {
+        tvm.rawReserve(Gas.PROFILE_TARGET_BALANCE, 0);
+    }
 
 
     onBounce(TvmSlice body) external {

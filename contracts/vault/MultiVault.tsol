@@ -5,10 +5,13 @@ import "./IMultiVault.tsol";
 
 
 abstract contract MultiVault is BaseVault, IMultiVault {
+    event MultiVaultNewWallet(address token, address wallet);
+    event MultiVaultSync(address token, uint128 balance);
 
     mapping(address /*token*/ => bool) _pendingWallets;
     mapping(address /*token*/ => address /*wallet*/) _wallets;
     mapping(address /*token*/ => uint128 /*balance*/) _balances;
+    mapping(address /*wallet*/ => address /*root*/) _pendingSyncs;
 
 
     function _createWallets(address[] tokens, uint128 value) internal {
@@ -31,6 +34,7 @@ abstract contract MultiVault is BaseVault, IMultiVault {
         delete _pendingWallets[token];
         _wallets[token] = wallet;
         _balances[token] = 0;
+        emit MultiVaultNewWallet(token, wallet);
     }
 
     function getTokens() public view responsible override returns (address[] tokens) {
@@ -59,6 +63,22 @@ abstract contract MultiVault is BaseVault, IMultiVault {
         }
         _balances[token] += amount;
         _onAcceptTokensTransfer(token, amount, sender, payload);
+    }
+
+    function _sync(address token) internal {
+        require(_wallets.exists(token) && token.value != 0, ErrorCodes.IS_NOT_TOKEN_ROOT);
+        address wallet = _wallets[token];
+        _pendingSyncs[wallet] = token;
+        _syncRaw(wallet);
+    }
+
+    function onSync(uint128 balance) public override {
+        address wallet = msg.sender;
+        require(_pendingSyncs.exists(wallet), ErrorCodes.IS_NOT_TOKEN_WALLET);
+        address token = _pendingSyncs[wallet];
+        delete _pendingSyncs[wallet];
+        _balances[token] = balance;
+        emit MultiVaultSync(token, balance);
     }
 
 

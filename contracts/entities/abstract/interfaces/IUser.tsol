@@ -11,6 +11,9 @@ interface IUser {
     function onJoined(uint64 serverID) external;
     function onErrorNotJoined(uint64 serverID, address user) external;
     function onPermissionChanged(address entity, bool removed) external;
+    function onBan(uint64 serverID, uint64 roomID) external;
+    function onUnban(uint64 serverID, uint64 roomID) external;
     function onTokenDeposited(address token, uint128 amount) external;
+    function onWithdraw() external;
 
 }

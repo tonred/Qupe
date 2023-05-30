@@ -7,6 +7,7 @@ import "tip3/contracts/interfaces/IBurnableTokenWallet.tsol";
 
 
 abstract contract Vault is BaseVault, IVault {
+    event VaultSync(uint128 balance);
 
     address _token;
     address _wallet;
@@ -22,7 +23,7 @@ abstract contract Vault is BaseVault, IVault {
     }
 
     function onWalletDeployed(address wallet) public override {
-        require(msg.sender == _token && _token.value != 0, ErrorCodes.IS_NOT_TOKEN_ROOT);
+        require(msg.sender == _token && msg.sender.value != 0, ErrorCodes.IS_NOT_TOKEN_ROOT);
         _wallet = wallet;
     }
 
@@ -54,7 +55,15 @@ abstract contract Vault is BaseVault, IVault {
         _onAcceptTokensTransfer(amount, sender, payload);
     }
 
-    // todo method to sync balance with wallet
+    function _sync() internal view {
+        _syncRaw(_wallet);
+    }
+
+    function onSync(uint128 balance) public override {
+        require(msg.sender == _wallet && msg.sender.value != 0, ErrorCodes.IS_NOT_TOKEN_WALLET);
+        _balance = balance;
+        emit VaultSync(balance);
+    }
 
 
     function _onAcceptTokensTransfer(uint128 amount, address sender, TvmCell payload) internal virtual;
