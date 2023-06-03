@@ -20,14 +20,14 @@ contract BlogProfile is Profile {
         BlogInfo info
     ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
         _reserve();
+        emit ChangeServerInfo(serverID);
         address server = _serverAddress(serverID);
         CallData data = _buildCallData(server, null);
         Blog(server).changeInfo{
             value: 0,
-            flag: MsgFlag.REMAINING_GAS,
+            flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: true
         }(data, info);
-        emit ChangeServerInfo(serverID);
     }
 
 }

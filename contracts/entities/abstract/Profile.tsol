@@ -22,6 +22,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     event Tagged(uint64 serverID, uint64 roomID, uint64 messageID, address user);
     event MessageAccepted(uint messageHash, uint64 serverID, uint64 roomID, uint64 messageID, bool deployed);
 
+    // in implementation
     event ChangeServerInfo(uint64 serverID);
     event ChangeRoomInfo(uint64 serverID, uint64 roomID);
 
@@ -112,7 +113,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         Server(server).join{
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED,
-            bounce: false
+            bounce: true
         }(serverID, _owner);
     }
 

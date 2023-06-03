@@ -47,14 +47,14 @@ contract ForumProfile is Profile, IForumProfile {
         ForumInfo info
     ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
         _reserve();
+        emit ChangeServerInfo(serverID);
         address server = _serverAddress(serverID);
         CallData data = _buildCallData(server, null);
         Forum(server).changeInfo{
             value: 0,
-            flag: MsgFlag.REMAINING_GAS,
+            flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: true
         }(data, info);
-        emit ChangeServerInfo(serverID);
     }
 
     function changeRoomInfo(
@@ -63,14 +63,14 @@ contract ForumProfile is Profile, IForumProfile {
         TopicInfo info
     ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
         _reserve();
+        emit ChangeRoomInfo(serverID, roomID);
         address room = _roomAddress(serverID, roomID);
         CallData data = _buildCallData(room, null);
         Topic(room).changeInfo{
             value: 0,
-            flag: MsgFlag.REMAINING_GAS,
+            flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: true
         }(data, info);
-        emit ChangeRoomInfo(serverID, roomID);
     }
 
     function react(
@@ -106,8 +106,8 @@ contract ForumProfile is Profile, IForumProfile {
     ) public view minValue(Gas.CHANGE_REPUTATION_VALUE) onlyOwner {
         require(!to.hasValue() || math.abs(to.get()) == 1, ErrorCodes.INVALID_REPUTATION_VALUE);
         _reserve();
-        address message = _messageAddress(serverID, roomID, messageID);
         emit ChangeReputation(serverID, roomID, messageID, to);
+        address message = _messageAddress(serverID, roomID, messageID);
         Message(message).changeReputation{
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED,

@@ -27,14 +27,14 @@ contract ChatProfile is Profile {
         ChatInfo info
     ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
         _reserve();
+        emit ChangeServerInfo(serverID);
         address server = _serverAddress(serverID);
         CallData data = _buildCallData(server, null);
         Chat(server).changeInfo{
             value: 0,
-            flag: MsgFlag.REMAINING_GAS,
+            flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: true
         }(data, info);
-        emit ChangeServerInfo(serverID);
     }
 
     function changeRoomInfo(
@@ -43,14 +43,14 @@ contract ChatProfile is Profile {
         ChannelInfo info
     ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
         _reserve();
+        emit ChangeRoomInfo(serverID, roomID);
         address room = _roomAddress(serverID, roomID);
         CallData data = _buildCallData(room, null);
         Channel(room).changeInfo{
             value: 0,
-            flag: MsgFlag.REMAINING_GAS,
+            flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: true
         }(data, info);
-        emit ChangeRoomInfo(serverID, roomID);
     }
 
 }
