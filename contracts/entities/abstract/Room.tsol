@@ -26,7 +26,13 @@ abstract contract Room is Base {
         (_serverID, _roomID) = abi.decode(initialData, (uint64, uint64));
         (address owner, address token) = _init(initialParams);
         _initVault(token);
-        _withdrawEvers(owner, tvm.functionId(IUser.onRoomCreated));
+
+        _reserveTarget();
+        IUser(owner).onRoomCreated{
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
+            bounce: false
+        }(_serverID, _roomID);
     }
 
     function _init(TvmCell params) internal virtual override returns (address owner, address token);

@@ -18,9 +18,17 @@ abstract contract Server is Base {
         tvm.resetStorage();
         _initPlatform(root, platformCode);
         _serverID = abi.decode(initialData, uint64);
+        _usersCount = 1;  // creator
         (address owner, address token) = _init(initialParams);
         _initVault(token);
-        _withdrawEvers(owner, tvm.functionId(IUser.onServerCreated));
+
+        _reserveTarget();
+        address profile = _profileAddress(owner);
+        IProfile(profile).onServerCreated{
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
+            bounce: false
+        }(_serverID);
     }
 
     function _init(TvmCell params) internal virtual override returns (address owner, address token);

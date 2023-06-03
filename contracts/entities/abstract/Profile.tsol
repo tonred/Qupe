@@ -12,6 +12,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     event CreateRoom(uint64 serverID);
     event SendMessage(uint messageHash, uint64 serverID, uint64 roomID, bool highlight);
 
+    event ServerCreated(uint64 serverID);
     event Joined(uint64 serverID);
     event CreateWallet(address token);
     event SyncWallet(address token);
@@ -246,10 +247,16 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     }
 
 
+    function onServerCreated(uint64 serverID) public override onlyServer(serverID) {
+        _reserve();
+        emit ServerCreated(serverID);
+        _join(serverID);
+        IUser(_owner).onServerCreated{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(serverID);
+    }
+
     function onJoined(uint64 serverID) public override onlyServer(serverID) {
         _reserve();
-        _servers[serverID] = true;
-        emit Joined(serverID);
+        _join(serverID);
         IUser(_owner).onJoined{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(serverID);
     }
 
@@ -295,6 +302,11 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         emit MessageAccepted(messageHash, serverID, roomID, messageID, deployed);
     }
 
+
+    function _join(uint64 serverID) private inline {
+        _servers[serverID] = true;
+        emit Joined(serverID);
+    }
 
     function _createRoom(uint64 serverID, TvmCell params, Payment payment) internal {
         uint128 minValue = Gas.CREATE_ROOM_VALUE + payment.evers();

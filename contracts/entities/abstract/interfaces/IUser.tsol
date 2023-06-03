@@ -3,17 +3,18 @@ pragma ever-solidity ^0.66.0;
 
 interface IUser {
 
-    // used in `Base._withdrawEvers`
-    function onRoomCreated() external;
-    function onServerCreated() external;
-    function onEntityWithdraw() external;
-
+    // sender is profile
+    function onServerCreated(uint64 serverID) external;
     function onJoined(uint64 serverID) external;
     function onErrorNotJoined(uint64 serverID, address user) external;
     function onPermissionChanged(address entity, bool removed) external;
-    function onBan(uint64 serverID, uint64 roomID) external;
-    function onUnban(uint64 serverID, uint64 roomID) external;
     function onTokenDeposited(address token, uint128 amount) external;
     function onWithdraw() external;
+
+    // sender is server/room
+    function onRoomCreated(uint64 serverID, uint64 roomID) external;
+    function onWithdrawEvers() external;
+    function onBan(uint64 serverID, uint64 roomID) external;
+    function onUnban(uint64 serverID, uint64 roomID) external;
 
 }

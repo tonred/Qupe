@@ -5,6 +5,8 @@ import "../../../permissions/Permissions.tsol";
 
 interface IProfile {
 
+    function onServerCreated(uint64 serverID) external;
+
     function onJoined(uint64 serverID) external;
 
     function setServerPermissions(

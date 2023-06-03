@@ -33,7 +33,8 @@ contract Message is PlatformUtils {
         _initPlatform(root, platformCode);
         (_serverID, _roomID, _messageID) = abi.decode(initialData, (uint64, uint64, uint64));
         (_messageHash, _owner) = abi.decode(initialParams, (uint, address));
-        IProfile(msg.sender).onMessageAccepted{
+        address profile = _profileAddress(_owner);
+        IProfile(profile).onMessageAccepted{
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: false

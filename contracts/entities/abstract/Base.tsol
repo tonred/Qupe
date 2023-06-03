@@ -24,7 +24,7 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
 
     function withdraw(CallData data, address token, address recipient) public hasPermission(data, Action.ADMIN) {
         if (token.value == 0) {
-            _withdrawEvers(recipient, tvm.functionId(IUser.onEntityWithdraw));
+            _withdrawEvers(recipient);
         } else if (token == _token) {
             TvmCell empty;
             _transferTokens(_balance, recipient, empty, 0, MsgFlag.REMAINING_GAS);
@@ -67,14 +67,13 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
         return permissions.check(action);
     }
 
-    function _withdrawEvers(address recipient, uint32 callbackFunctionID) internal view {
+    function _withdrawEvers(address recipient) private view {
         _reserveTarget();
-        recipient.transfer({
+        IUser(recipient).onWithdrawEvers{
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED,
-            bounce: false,
-            body: abi.encode(callbackFunctionID)
-        });
+            bounce: false
+        }();
     }
 
     function _setPermissions(address user, optional(Permissions) permissions, address callbackTo) internal virtual;
