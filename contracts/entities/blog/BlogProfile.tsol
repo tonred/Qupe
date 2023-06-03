@@ -5,6 +5,7 @@ pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
 import "../abstract/Profile.tsol";
+import "./Blog.tsol";
 
 
 contract BlogProfile is Profile {
@@ -12,6 +13,21 @@ contract BlogProfile is Profile {
     function createRoom(uint64 serverID, Payment payment) public onlyOwner onlyJoined(serverID, address(0)) {
         TvmCell empty;
         _createRoom(serverID, empty, payment);
+    }
+
+    function changeServerInfo(
+        uint64 serverID,
+        BlogInfo info
+    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+        _reserve();
+        address server = _serverAddress(serverID);
+        CallData data = _buildCallData(server, null);
+        Blog(server).changeInfo{
+            value: 0,
+            flag: MsgFlag.REMAINING_GAS,
+            bounce: true
+        }(data, info);
+        emit ChangeServerInfo(serverID);
     }
 
 }

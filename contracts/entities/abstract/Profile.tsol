@@ -21,6 +21,9 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     event Tagged(uint64 serverID, uint64 roomID, uint64 messageID, address user);
     event MessageAccepted(uint messageHash, uint64 serverID, uint64 roomID, uint64 messageID, bool deployed);
 
+    event ChangeServerInfo(uint64 serverID);
+    event ChangeRoomInfo(uint64 serverID, uint64 roomID);
+
 
     address _owner;
 
@@ -308,10 +311,10 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         }
     }
 
-    function _buildCallData(address recipient, optional(Payment) paymentOptional) private view returns (CallData) {
+    function _buildCallData(address entity, optional(Payment) paymentOptional) internal view returns (CallData) {
         Payment payment = paymentOptional.hasValue() ? paymentOptional.get() : Payment(address(0), 0);
-        optional(TvmCell) userData = _userDatas.fetch(recipient);
-        optional(Permissions) permissions = _permissions.fetch(recipient);
+        optional(TvmCell) userData = _userDatas.fetch(entity);
+        optional(Permissions) permissions = _permissions.fetch(entity);
         return CallData(_owner, payment, userData, permissions);
     }
 
