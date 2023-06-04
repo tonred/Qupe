@@ -42,35 +42,25 @@ contract ForumProfile is Profile, IForumProfile {
         _createRoom(serverID, params, payment);
     }
 
-    function changeServerInfo(
-        uint64 serverID,
-        ForumInfo info
-    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
-        _reserve();
-        emit ChangeServerInfo(serverID);
-        address server = _serverAddress(serverID);
-        CallData data = _buildCallData(server, null);
-        Forum(server).changeInfo{
-            value: 0,
-            flag: MsgFlag.ALL_NOT_RESERVED,
-            bounce: true
-        }(data, info);
-    }
-
-    function changeRoomInfo(
+    function sendMessage(
+        uint8 version,
         uint64 serverID,
         uint64 roomID,
-        TopicInfo info
-    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
-        _reserve();
-        emit ChangeRoomInfo(serverID, roomID);
-        address room = _roomAddress(serverID, roomID);
-        CallData data = _buildCallData(room, null);
-        Topic(room).changeInfo{
-            value: 0,
-            flag: MsgFlag.ALL_NOT_RESERVED,
-            bounce: true
-        }(data, info);
+        bytes message,
+        Tag[] tags,
+        optional(uint) replyToMessageHash,
+        optional(uint) forwardMessageHash,
+        bool highlight,
+        Payment payment
+    ) public externalMsg onlyJoined(serverID, address(0)) {
+        require(version == Constants.MESSAGE_VERSION, ErrorCodes.WRONG_MESSAGE_VERSION);
+        if (forwardMessageHash.hasValue()) {
+            // forward message doesn't have `message` and `replyToMessageHash`
+            require(message.length == 0 && !replyToMessageHash.hasValue(), ErrorCodes.FORWARDED_MESSAGE_WITH_CONTENT);
+        }
+        tvm.accept();
+        TvmCell properties = abi.encode(highlight);
+        _sendMessage(serverID, roomID, tags, properties, payment);
     }
 
     function react(
@@ -134,6 +124,37 @@ contract ForumProfile is Profile, IForumProfile {
             flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: false
         }(serverID, change, current);
+    }
+
+    function changeServerInfo(
+        uint64 serverID,
+        ForumInfo info
+    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+        _reserve();
+        emit ChangeServerInfo(serverID);
+        address server = _serverAddress(serverID);
+        CallData data = _buildCallData(server, null);
+        Forum(server).changeInfo{
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
+            bounce: true
+        }(data, info);
+    }
+
+    function changeRoomInfo(
+        uint64 serverID,
+        uint64 roomID,
+        TopicInfo info
+    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+        _reserve();
+        emit ChangeRoomInfo(serverID, roomID);
+        address room = _roomAddress(serverID, roomID);
+        CallData data = _buildCallData(room, null);
+        Topic(room).changeInfo{
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
+            bounce: true
+        }(data, info);
     }
 
 

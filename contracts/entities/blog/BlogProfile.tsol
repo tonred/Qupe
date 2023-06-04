@@ -11,8 +11,28 @@ import "./Blog.tsol";
 contract BlogProfile is Profile {
 
     function createRoom(uint64 serverID, Payment payment) public onlyOwner onlyJoined(serverID, address(0)) {
-        TvmCell empty;
-        _createRoom(serverID, empty, payment);
+        TvmCell params;
+        _createRoom(serverID, params, payment);
+    }
+
+    function sendMessage(
+        uint8 version,
+        uint64 serverID,
+        uint64 roomID,
+        bytes message,
+        Tag[] tags,
+        optional(uint) replyToMessageHash,
+        optional(uint) forwardMessageHash,
+        Payment payment
+    ) public externalMsg onlyJoined(serverID, address(0)) {
+        require(version == Constants.MESSAGE_VERSION, ErrorCodes.WRONG_MESSAGE_VERSION);
+        if (forwardMessageHash.hasValue()) {
+            // forward message doesn't have `message` and `replyToMessageHash`
+            require(message.length == 0 && !replyToMessageHash.hasValue(), ErrorCodes.FORWARDED_MESSAGE_WITH_CONTENT);
+        }
+        tvm.accept();
+        TvmCell properties;
+        _sendMessage(serverID, roomID, tags, properties, payment);
     }
 
     function changeServerInfo(

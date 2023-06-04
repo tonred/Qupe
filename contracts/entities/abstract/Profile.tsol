@@ -11,7 +11,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
 
     event Join(uint64 serverID);
     event CreateRoom(uint64 serverID);
-    event SendMessage(uint messageHash, uint64 serverID, uint64 roomID, bool highlight);
+    event SendMessage(uint messageHash, uint64 serverID, uint64 roomID);
 
     event ServerCreated(uint64 serverID);
     event Joined(uint64 serverID);
@@ -116,36 +116,6 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
             flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: true
         }(serverID, _owner);
-    }
-
-    function sendMessage(
-        uint8 version,
-        uint64 serverID,
-        uint64 roomID,
-        bytes message,
-        Tag[] tags,
-        optional(uint) replyToMessageHash,
-        optional(uint) forwardMessageHash,
-        bool highlight,
-        Payment payment
-    ) public externalMsg onlyJoined(serverID, address(0)) {
-        require(version == Constants.MESSAGE_VERSION, ErrorCodes.WRONG_MESSAGE_VERSION);
-        tvm.accept();
-        if (forwardMessageHash.hasValue()) {
-            // forward message doesn't have `message` and `replyToMessageHash`
-            require(message.length == 0 && !replyToMessageHash.hasValue(), ErrorCodes.FORWARDED_MESSAGE_WITH_CONTENT);
-        }
-
-        emit SendMessage(_currentMessageHash, serverID, roomID, highlight);
-        address room = _roomAddress(serverID, roomID);
-        CallData data = _buildCallData(room, payment);
-        uint128 value = _sendMessageValue + payment.evers() + _sumTagsValue(tags);
-        if (payment.isEver()) {
-            _sendMessagePayEver(room, data, tags, highlight, value);
-        } else {
-            TvmCell payload = abi.encode(data, _currentMessageHash, tags, highlight);
-            _executePayTIP3(payment, room, payload, value);
-        }
     }
 
     function withdrawFrom(
@@ -348,6 +318,25 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         }
     }
 
+    function _sendMessage(
+        uint64 serverID,
+        uint64 roomID,
+        Tag[] tags,
+        TvmCell properties,
+        Payment payment
+    ) internal {
+        emit SendMessage(_currentMessageHash, serverID, roomID);
+        address room = _roomAddress(serverID, roomID);
+        CallData data = _buildCallData(room, payment);
+        uint128 value = _sendMessageValue + payment.evers() + _sumTagsValue(tags);
+        if (payment.isEver()) {
+            _sendMessagePayEver(room, data, tags, properties, value);
+        } else {
+            TvmCell payload = abi.encode(data, _currentMessageHash, tags, properties);
+            _executePayTIP3(payment, room, payload, value);
+        }
+    }
+
     function _buildCallData(address entity, optional(Payment) paymentOptional) internal view returns (CallData) {
         Payment payment = paymentOptional.hasValue() ? paymentOptional.get() : Payment(address(0), 0);
         optional(TvmCell) userData = _userDatas.fetch(entity);
@@ -369,12 +358,12 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         }(data, params);
     }
 
-    function _sendMessagePayEver(address room, CallData data, Tag[] tags, bool highlight, uint128 value) private view {
+    function _sendMessagePayEver(address room, CallData data, Tag[] tags, TvmCell properties, uint128 value) private view {
         Room(room).acceptMessage{
             value: value,
             flag: MsgFlag.SENDER_PAYS_FEES,
             bounce: true
-        }(data, _currentMessageHash, tags, highlight);
+        }(data, _currentMessageHash, tags, properties);
     }
 
     function _executePayTIP3(Payment payment, address recipient, TvmCell payload, uint128 value) private {

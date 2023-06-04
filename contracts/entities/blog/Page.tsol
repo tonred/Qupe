@@ -22,7 +22,7 @@ contract Page is Room {
     }
 
 
-    function _checkAcceptMessageData(CallData data, bool /*highlight*/) internal view override returns (bool) {
+    function _checkAcceptMessageData(CallData data, TvmCell /*properties*/) internal view override returns (bool) {
         return data.user == _owner;
     }
 

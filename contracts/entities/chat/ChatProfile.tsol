@@ -22,6 +22,27 @@ contract ChatProfile is Profile {
         _createRoom(serverID, params, payment);
     }
 
+    function sendMessage(
+        uint8 version,
+        uint64 serverID,
+        uint64 roomID,
+        bytes message,
+        Tag[] tags,
+        optional(uint) replyToMessageHash,
+        optional(uint) forwardMessageHash,
+        bool highlight,
+        Payment payment
+    ) public externalMsg onlyJoined(serverID, address(0)) {
+        require(version == Constants.MESSAGE_VERSION, ErrorCodes.WRONG_MESSAGE_VERSION);
+        if (forwardMessageHash.hasValue()) {
+            // forward message doesn't have `message` and `replyToMessageHash`
+            require(message.length == 0 && !replyToMessageHash.hasValue(), ErrorCodes.FORWARDED_MESSAGE_WITH_CONTENT);
+        }
+        tvm.accept();
+        TvmCell properties = abi.encode(highlight);
+        _sendMessage(serverID, roomID, tags, properties, payment);
+    }
+
     function changeServerInfo(
         uint64 serverID,
         ChatInfo info
