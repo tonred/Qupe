@@ -38,7 +38,7 @@ contract BlogProfile is Profile {
     function changeServerInfo(
         uint64 serverID,
         BlogInfo info
-    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner onlyJoined(serverID, address(0)) {
         _reserve();
         emit ChangeServerInfo(serverID);
         address server = _serverAddress(serverID);

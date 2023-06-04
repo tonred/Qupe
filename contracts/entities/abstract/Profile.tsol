@@ -164,7 +164,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         address[] usersList,
         optional(Permissions)[] permissionsList,
         Permissions defaultPermissions
-    ) public view cashBack onlyOwner {
+    ) public view cashBack onlyOwner onlyJoined(serverID, address(0)) {
         require(usersList.length == permissionsList.length, ErrorCodes.PERMISSIONS_NOT_VALID);
         for (optional(Permissions) permissions : permissionsList) {
             require(PermissionsLibrary.validate(permissions), ErrorCodes.PERMISSIONS_NOT_VALID);
@@ -179,7 +179,11 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         }(data, roomID, usersList, permissionsList, defaultPermissions);
     }
 
-    function ban(uint64 serverID, uint64 roomID, address user) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+    function ban(
+        uint64 serverID,
+        uint64 roomID,
+        address user
+    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner onlyJoined(serverID, address(0)) {
         address room = _roomAddress(serverID, roomID);
         CallData data = _buildCallData(room, null);
         Room(room).ban{
@@ -189,7 +193,11 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         }(data, user);
     }
 
-    function unban(uint64 serverID, uint64 roomID, address user) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+    function unban(
+        uint64 serverID,
+        uint64 roomID,
+        address user
+    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner onlyJoined(serverID, address(0)) {
         address room = _roomAddress(serverID, roomID);
         CallData data = _buildCallData(room, null);
         Room(room).unban{

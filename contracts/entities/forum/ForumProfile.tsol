@@ -69,7 +69,7 @@ contract ForumProfile is Profile, IForumProfile {
         uint64 messageID,
         uint32 reaction,
         bool undo
-    ) public minValue(Gas.REACT_VALUE) onlyOwner {
+    ) public minValue(Gas.REACT_VALUE) onlyOwner onlyJoined(serverID, address(0)) {
         _reserve();
         bool hasReaction = _reactions[serverID][roomID][messageID][reaction];
         require(hasReaction == undo, ErrorCodes.INVALID_REACTION);
@@ -93,7 +93,7 @@ contract ForumProfile is Profile, IForumProfile {
         uint64 roomID,
         uint64 messageID,
         optional(int8) to
-    ) public view minValue(Gas.CHANGE_REPUTATION_VALUE) onlyOwner {
+    ) public view minValue(Gas.CHANGE_REPUTATION_VALUE) onlyOwner onlyJoined(serverID, address(0)) {
         require(!to.hasValue() || math.abs(to.get()) == 1, ErrorCodes.INVALID_REPUTATION_VALUE);
         _reserve();
         emit ChangeReputation(serverID, roomID, messageID, to);
@@ -111,7 +111,7 @@ contract ForumProfile is Profile, IForumProfile {
         uint64 messageID,
         address user,
         int8 change
-    ) public override onlyMessage(serverID, roomID, messageID) {
+    ) public override onlyMessage(serverID, roomID, messageID) onlyJoined(serverID, user) {
         _reserve();
         address server = _serverAddress(serverID);
         ForumUserData userData = _getUserData(server);
@@ -129,7 +129,7 @@ contract ForumProfile is Profile, IForumProfile {
     function changeServerInfo(
         uint64 serverID,
         ForumInfo info
-    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner onlyJoined(serverID, address(0)) {
         _reserve();
         emit ChangeServerInfo(serverID);
         address server = _serverAddress(serverID);
@@ -145,7 +145,7 @@ contract ForumProfile is Profile, IForumProfile {
         uint64 serverID,
         uint64 roomID,
         TopicInfo info
-    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner onlyJoined(serverID, address(0)) {
         _reserve();
         emit ChangeRoomInfo(serverID, roomID);
         address room = _roomAddress(serverID, roomID);

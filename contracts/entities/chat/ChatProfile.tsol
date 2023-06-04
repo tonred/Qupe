@@ -46,7 +46,7 @@ contract ChatProfile is Profile {
     function changeServerInfo(
         uint64 serverID,
         ChatInfo info
-    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner onlyJoined(serverID, address(0)) {
         _reserve();
         emit ChangeServerInfo(serverID);
         address server = _serverAddress(serverID);
@@ -62,7 +62,7 @@ contract ChatProfile is Profile {
         uint64 serverID,
         uint64 roomID,
         ChannelInfo info
-    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner onlyJoined(serverID, address(0)) {
         _reserve();
         emit ChangeRoomInfo(serverID, roomID);
         address room = _roomAddress(serverID, roomID);
