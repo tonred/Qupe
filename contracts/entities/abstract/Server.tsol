@@ -52,19 +52,20 @@ abstract contract Server is Base {
         _createRoom(params, msg.sender);
     }
 
-    // todo
-//    function changeRoomParams(
-//        TvmCell params,
-//        bool resetPermissions,
-//        uint64 roomID
-//    ) public minValue(Gas.CALL_VALUE) onlyAdmin {
-//        address room = _roomAddress(_serverID, roomID);
-//        Room(room).changeParams{
-//            value: 0,
-//            flag: MsgFlag.REMAINING_GAS,
-//            bounce: false
-//        }(_serverID, params, resetPermissions, msg.sender);
-//    }
+    function forceChangeRoomPermissions(
+        CallData data,
+        uint64 roomID,
+        address[] usersList,
+        optional(Permissions)[] permissionsList,
+        Permissions defaultPermissions
+    ) public view hasPermission(data, Action.ADMIN) {
+        address room = _roomAddress(_serverID, roomID);
+        Room(room).forceChangePermissions{
+            value: 0,
+            flag: MsgFlag.REMAINING_GAS,
+            bounce: false
+        }(_serverID, usersList, permissionsList, defaultPermissions, data.user);
+    }
 
 
     function _onAcceptTokensTransfer(uint128 amount, address sender, TvmCell payload) internal override {

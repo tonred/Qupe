@@ -16,7 +16,6 @@ abstract contract Room is Base {
     uint64 _serverID;
     uint64 _roomID;
 
-    mapping(address => bool) _bans;
     uint64 _messagesCount;
 
 
@@ -48,6 +47,21 @@ abstract contract Room is Base {
         _acceptMessage(data, messageHash, tags, highlight);
     }
 
+    function forceChangePermissions(
+        uint64 serverID,
+        address[] usersList,
+        optional(Permissions)[] permissionsList,
+        Permissions defaultPermissions,
+        address callbackTo
+    ) public onlyServer(serverID) {
+        _reserve();
+        for (uint i = 0; i < usersList.length; i++) {
+            _setPermissions(usersList[i], permissionsList[i], callbackTo);
+        }
+        _defaultPermissions = defaultPermissions;
+        IUser(callbackTo).onForceChangePermissions{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(serverID, _roomID);
+    }
+
     function ban(CallData data, address user) public hasPermission(data, Action.BAN_UNBAN) {
         _reserve();
         emit Banned(user);
@@ -61,21 +75,6 @@ abstract contract Room is Base {
         _setPermissions(user, null, data.user);
         IUser(user).onUnban{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(_serverID, _roomID);
     }
-
-    // todo manageRoom
-//    function changeParams(
-//        uint64 serverID,
-//        TvmCell params,
-//        bool resetPermissions,
-//        address remainingGasTo
-//    ) public onlyServer(serverID) {
-//        _reserve();
-//        address owner = _init(params);
-//        if (resetPermissions) {
-//            _resetPermissions(owner);
-//        }
-//        remainingGasTo.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});
-//    }
 
 
     function _onAcceptTokensTransfer(uint128 amount, address sender, TvmCell payload) internal override {

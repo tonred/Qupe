@@ -7,6 +7,7 @@ import "./Server.tsol";
 
 abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
     using PaymentLibrary for Payment;
+    using PermissionsLibrary for optional(Permissions);
 
     event Join(uint64 serverID);
     event CreateRoom(uint64 serverID);
@@ -165,6 +166,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         address user,
         optional(Permissions) permissions
     ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+        require(permissions.validate(), ErrorCodes.PERMISSIONS_NOT_VALID);
         CallData data = _buildCallData(entity, null);
         Base(entity).setPermissions{
             value: 0,
@@ -177,12 +179,34 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         address entity,
         Permissions permissions
     ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
+        require(PermissionsLibrary.validate(permissions), ErrorCodes.PERMISSIONS_NOT_VALID);
         CallData data = _buildCallData(entity, null);
         Base(entity).setDefaultPermissions{
             value: 0,
             flag: MsgFlag.REMAINING_GAS,
             bounce: true
         }(data, permissions);
+    }
+
+    function forceChangeRoomPermissions(
+        uint64 serverID,
+        uint64 roomID,
+        address[] usersList,
+        optional(Permissions)[] permissionsList,
+        Permissions defaultPermissions
+    ) public view cashBack onlyOwner {
+        require(usersList.length == permissionsList.length, ErrorCodes.PERMISSIONS_NOT_VALID);
+        for (optional(Permissions) permissions : permissionsList) {
+            require(PermissionsLibrary.validate(permissions), ErrorCodes.PERMISSIONS_NOT_VALID);
+        }
+        uint128 value = uint128(usersList.length) * Gas.SET_PERMISSION_VALUE + Gas.PROFILE_PROXY_VALUE;
+        address server = _serverAddress(serverID);
+        CallData data = _buildCallData(server, null);
+        Server(server).forceChangeRoomPermissions{
+            value: value,
+            flag: MsgFlag.SENDER_PAYS_FEES,
+            bounce: true
+        }(data, roomID, usersList, permissionsList, defaultPermissions);
     }
 
     function ban(uint64 serverID, uint64 roomID, address user) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {

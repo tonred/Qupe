@@ -38,14 +38,10 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
         address user,
         optional(Permissions) permissions
     ) public hasPermission(data, Action.ADMIN) {
-        if (permissions.hasValue()) {
-            require(permissions.get().validate(), ErrorCodes.PERMISSIONS_NOT_VALID);
-        }
         _setPermissions(user, permissions, data.user);
     }
 
     function setDefaultPermissions(CallData data, Permissions permissions) public cashBack hasPermission(data, Action.ADMIN) {
-        require(permissions.validate(), ErrorCodes.PERMISSIONS_NOT_VALID);
         _defaultPermissions = permissions;
     }
 

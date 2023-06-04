@@ -8,8 +8,11 @@ library PermissionsLibrary {
 
     uint8 constant COUNT = 5;
 
-    function validate(Permissions permissions) internal returns (bool) {
-        return permissions.values.length == COUNT;
+    function validate(optional(Permissions) permissions) internal returns (bool) {
+        if (!permissions.hasValue()) {
+            return true;
+        }
+        return permissions.get().values.length == COUNT;
     }
 
     function check(Permissions permissions, Action action) internal returns (bool) {
