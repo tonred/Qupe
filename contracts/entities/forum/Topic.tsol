@@ -11,11 +11,14 @@ contract Topic is Room {
     TvmCell _messageCode;
 
 
-    function _init(TvmCell params) internal override returns (address owner, address token) {
+    function _init(TvmCell params) internal override returns (
+        address owner, address token, optional(Permissions) ownerPermissions
+    ) {
         (owner, _info, _messageCode) = abi.decode(params, (address, TopicInfo, TvmCell));
-        Permissions defaultPermissions = PermissionsLibrary.single(Action.SEND_MESSAGE);
-        _initPermissions(owner, defaultPermissions);
         token = PaymentLibrary.jointToken(_info.messagePayment, _info.highlightMessagePayment);
+        ownerPermissions = PermissionsLibrary.full();
+        Permissions defaultPermissions = PermissionsLibrary.single(Action.SEND_MESSAGE);
+        _initPermissions(defaultPermissions);
     }
 
     function changeInfo(CallData data, TopicInfo info) public cashBack hasPermission(data, Action.CONFIG) {

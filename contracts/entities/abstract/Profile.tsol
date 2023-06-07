@@ -14,6 +14,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     event SendMessage(uint messageHash, uint64 serverID, uint64 roomID);
 
     event ServerCreated(uint64 serverID);
+    event RoomCreated(uint64 serverID, uint64 roomID);
     event Joined(uint64 serverID);
     event CreateWallet(address token);
     event SyncWallet(address token);
@@ -250,11 +251,25 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     }
 
 
-    function onServerCreated(uint64 serverID) public override onlyServer(serverID) {
+    function onServerCreated(uint64 serverID, optional(Permissions) permissions) public override onlyServer(serverID) {
         _reserve();
         emit ServerCreated(serverID);
         _join(serverID);
+        address server = _serverAddress(serverID);
+        _setPermissions(server, permissions);
         IUser(_owner).onServerCreated{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(serverID);
+    }
+
+    function onRoomCreated(
+        uint64 serverID,
+        uint64 roomID,
+        optional(Permissions) permissions
+    ) public override onlyRoom(serverID, roomID) {
+        _reserve();
+        emit RoomCreated(serverID, roomID);
+        address room = _roomAddress(serverID, roomID);
+        _setPermissions(room, permissions);
+        IUser(_owner).onRoomCreated{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(serverID, roomID);
     }
 
     function onJoined(uint64 serverID) public override onlyServer(serverID) {
@@ -270,7 +285,8 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     ) public override onlyServer(serverID) onlyJoined(serverID, callbackTo) {
         _reserve();
         address server = _serverAddress(serverID);
-        _setPermissions(server, permissions, callbackTo);
+        _setPermissions(server, permissions);
+        IUser(callbackTo).onPermissionChanged{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(server, true);
     }
 
     function setRoomPermissions(
@@ -281,7 +297,8 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     ) public override onlyRoom(serverID, roomID) onlyJoined(serverID, callbackTo) {
         _reserve();
         address room = _roomAddress(serverID, roomID);
-        _setPermissions(room, permissions, callbackTo);
+        _setPermissions(room, permissions);
+        IUser(callbackTo).onPermissionChanged{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(room, false);
     }
 
     function onTagged(
@@ -385,7 +402,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         }
     }
 
-    function _setPermissions(address entity, optional(Permissions) permissions, address callbackTo) private {
+    function _setPermissions(address entity, optional(Permissions) permissions) private {
         bool removed = !permissions.hasValue();
         emit PermissionChanged(entity, removed);
         if (removed) {
@@ -393,7 +410,6 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         } else {
             _permissions[entity] = permissions.get();
         }
-        IUser(callbackTo).onPermissionChanged{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(entity, removed);
     }
 
     function _onAcceptTokensTransfer(address token, uint128 amount, address /*sender*/, TvmCell /*payload*/) internal override {

@@ -5,7 +5,9 @@ import "../../../permissions/Permissions.tsol";
 
 interface IProfile {
 
-    function onServerCreated(uint64 serverID) external;
+    function onServerCreated(uint64 serverID, optional(Permissions) permissions) external;
+
+    function onRoomCreated(uint64 serverID, uint64 roomID, optional(Permissions) permissions) external;
 
     function onJoined(uint64 serverID) external;
 

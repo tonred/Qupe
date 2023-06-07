@@ -18,7 +18,7 @@ contract ForumRoot is Root {
         _messageCode = messageCode;
     }
 
-    function createRoom(address owner, ForumInfo info) public responsible returns (address) {
+    function createServer(address owner, ForumInfo info) public responsible returns (address) {
         _reserveTarget();
         TvmCell params = abi.encode(owner, info, _roomCode, _messageCode);
         return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} _createServer(_serverCode, params);

@@ -9,11 +9,14 @@ contract Channel is Room {
     ChannelInfo _info;
 
 
-    function _init(TvmCell params) internal override returns (address owner, address token) {
+    function _init(TvmCell params) internal override returns (
+        address owner, address token, optional(Permissions) ownerPermissions
+    ) {
         (owner, _info) = abi.decode(params, (address, ChannelInfo));
-        Permissions defaultPermissions = PermissionsLibrary.single(Action.SEND_MESSAGE);
-        _initPermissions(owner, defaultPermissions);
         token = PaymentLibrary.jointToken(_info.messagePayment, _info.highlightMessagePayment);
+        ownerPermissions = PermissionsLibrary.full();
+        Permissions defaultPermissions = PermissionsLibrary.single(Action.SEND_MESSAGE);
+        _initPermissions(defaultPermissions);
     }
 
     function changeInfo(CallData data, ChannelInfo info) public cashBack hasPermission(data, Action.CONFIG) {

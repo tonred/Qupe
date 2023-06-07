@@ -12,11 +12,14 @@ contract Forum is Server {
     TvmCell _messageCode;
 
 
-    function _init(TvmCell params) internal override returns (address owner, address token) {
+    function _init(TvmCell params) internal override returns (
+        address owner, address token, optional(Permissions) ownerPermissions
+    ) {
         (owner, _info, _roomCode, _messageCode) = abi.decode(params, (address, ForumInfo, TvmCell, TvmCell));
-        Permissions defaultPermissions = PermissionsLibrary.single(Action.CREATE_ROOM);
-        _initPermissions(owner, defaultPermissions);
         token = _info.createRoomPayment.token;
+        ownerPermissions = PermissionsLibrary.full();
+        Permissions defaultPermissions = PermissionsLibrary.single(Action.CREATE_ROOM);
+        _initPermissions(defaultPermissions);
     }
 
     function changeInfo(CallData data, ForumInfo info) public cashBack hasPermission(data, Action.CONFIG) {

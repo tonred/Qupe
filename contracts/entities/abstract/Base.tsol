@@ -19,8 +19,6 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
         _;
     }
 
-    function _init(TvmCell params) internal virtual returns (address owner, address token);
-
 
     function withdraw(CallData data, address token, address recipient) public hasPermission(data, Action.ADMIN) {
         if (token.value == 0) {
@@ -46,11 +44,8 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
     }
 
 
-    function _initPermissions(address owner, Permissions defaultPermissions) internal {
+    function _initPermissions(Permissions defaultPermissions) internal {
         _defaultPermissions = defaultPermissions;
-        if (owner.value != 0) {
-            _setPermissions(owner, PermissionsLibrary.full(), owner);
-        }
     }
 
     function _checkSender(address sender, address user) internal view returns (bool) {
