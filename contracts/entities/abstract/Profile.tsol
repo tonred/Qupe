@@ -51,7 +51,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     }
 
     modifier onlyJoined(uint64 serverID, address callbackTo) {
-        if (_servers[serverID]) {
+        if (!_servers[serverID]) {
             if (callbackTo.value == 0) {
                 revert(ErrorCodes.IS_NOT_JOINED_TO_SEVER);
             }
@@ -107,6 +107,9 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _permissions[entity];
     }
 
+    function updateMeta(bytes meta) public minValue(Gas.UPDATE_META_VALUE) cashBack onlyOwner {
+        _meta = meta;
+    }
 
     function join(uint64 serverID) public minValue(Gas.JOIN_VALUE) onlyOwner {
         require(!_servers.exists(serverID), ErrorCodes.IS_ALREADY_JOINED_TO_SERVER);
