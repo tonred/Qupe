@@ -12,10 +12,14 @@ contract Channel is Room {
     function _init(TvmCell params) internal override returns (
         address owner, address token, optional(Permissions) ownerPermissions
     ) {
-        (owner, _info) = abi.decode(params, (address, ChannelInfo));
+        bool defaultSendPermissions;
+        (owner, defaultSendPermissions, _info) = abi.decode(params, (address, bool, ChannelInfo));
         token = PaymentLibrary.jointToken(_info.messagePayment, _info.highlightMessagePayment);
         ownerPermissions = PermissionsLibrary.full();
-        Permissions defaultPermissions = PermissionsLibrary.single(Action.SEND_MESSAGE);
+        Permissions defaultPermissions = PermissionsLibrary.none();
+        if (defaultSendPermissions) {
+             defaultPermissions = PermissionsLibrary.single(Action.SEND_MESSAGE);
+        }
         _initPermissions(defaultPermissions);
     }
 

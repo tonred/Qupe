@@ -11,6 +11,7 @@ library Gas {
     uint128 constant ROOM_TARGET_BALANCE = 1 ever;
     uint128 constant MESSAGE_TARGET_BALANCE = 0.5 ever;
 
+    uint128 constant UPDATE_META_VALUE = 0.5 ever;
     uint128 constant JOIN_VALUE = 1 ever;
     uint128 constant ACCEPT_MESSAGE_FEE = 0.01 ever;
     uint128 constant TAG_VALUE = uint128(0.1 ever);

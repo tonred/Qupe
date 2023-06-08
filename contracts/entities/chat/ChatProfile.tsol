@@ -14,11 +14,12 @@ contract ChatProfile is Profile {
     function createRoom(
         uint64 serverID,
         address owner,
+        bool anyCanSendMessage,
         ChannelInfo info,
         Payment payment
     ) public onlyOwner onlyJoined(serverID, address(0)) {
         require(PaymentLibrary.isJointVault(info.messagePayment, info.highlightMessagePayment), ErrorCodes.NOT_JOINT_VAULT);
-        TvmCell params = abi.encode(owner, info);
+        TvmCell params = abi.encode(owner, anyCanSendMessage, info);
         _createRoom(serverID, params, payment);
     }
 

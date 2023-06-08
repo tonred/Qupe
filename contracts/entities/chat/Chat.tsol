@@ -15,7 +15,7 @@ contract Chat is Server {
         (owner, _info, _roomCode) = abi.decode(params, (address, ChatInfo, TvmCell));
         token = _info.createRoomPayment.token;
         ownerPermissions = PermissionsLibrary.full();
-        Permissions defaultPermissions = PermissionsLibrary.single(Action.CREATE_ROOM);
+        Permissions defaultPermissions = PermissionsLibrary.none();
         _initPermissions(defaultPermissions);
     }
 
