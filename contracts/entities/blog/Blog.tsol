@@ -13,11 +13,7 @@ contract Blog is Server {
     ) {
         (owner, _info, _roomCode) = abi.decode(params, (address, BlogInfo, TvmCell));
         token = address(0);
-
-        ownerPermissions = PermissionsLibrary.none();
-        ownerPermissions.get().set(Action.CONFIG, true);
-        ownerPermissions.get().set(Action.CREATE_ROOM, true);
-
+        ownerPermissions = PermissionsLibrary.many([Action.CONFIG, Action.CREATE_ROOM]);
         Permissions defaultPermissions = PermissionsLibrary.single(Action.CREATE_ROOM);
         _initPermissions(defaultPermissions);
     }

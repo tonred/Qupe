@@ -10,8 +10,7 @@ abstract contract Room is Base {
     using PaymentLibrary for Payment;
 
     event MessageAccepted(uint64 messageID, uint messageHash);
-    event Banned(address user);
-    event Unbanned(address user);
+    event SetBan(address user, bool isBan);
 
     uint64 _serverID;
     uint64 _roomID;
@@ -65,18 +64,15 @@ abstract contract Room is Base {
         IUser(callbackTo).onForceChangePermissions{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(serverID, _roomID);
     }
 
-    function ban(CallData data, address user) public hasPermission(data, Action.BAN_UNBAN) {
+    function setBan(CallData data, address user, bool isBan) public view hasPermission(data, Action.BAN_UNBAN) {
         _reserve();
-        emit Banned(user);
-        _setPermissions(user, PermissionsLibrary.none(), data.user);
-        IUser(user).onBan{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(_serverID, _roomID);
-    }
-
-    function unban(CallData data, address user) public hasPermission(data, Action.BAN_UNBAN) {
-        _reserve();
-        emit Unbanned(user);
-        _setPermissions(user, null, data.user);
-        IUser(user).onUnban{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(_serverID, _roomID);
+        emit SetBan(user, isBan);
+        address profile = _profileAddress(user);
+        IProfile(profile).onSetBan{
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
+            bounce: true
+        }(_serverID, _roomID, isBan, data.user);
     }
 
 

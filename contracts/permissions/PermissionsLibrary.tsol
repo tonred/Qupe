@@ -8,6 +8,34 @@ library PermissionsLibrary {
 
     uint8 constant COUNT = 5;
 
+
+    function none() internal returns (Permissions) {
+        return Permissions([false, false, false, false, false]);
+    }
+
+    function full() internal returns (Permissions) {
+        return Permissions([true, true, true, true, true]);
+    }
+
+    function single(Action action) internal returns (Permissions) {
+        Permissions permission = none();
+        permission.set(action, true);
+        return permission;
+    }
+
+    function many(Action[] actions) internal returns (Permissions) {
+        Permissions permission = none();
+        for (Action action : actions) {
+            permission.set(action, true);
+        }
+        return permission;
+    }
+
+    function set(Permissions permissions, Action action, bool value) internal {
+        uint8 actionID = uint8(action);
+        permissions.values[actionID] = value;
+    }
+
     function validate(optional(Permissions) permissions) internal returns (bool) {
         if (!permissions.hasValue()) {
             return true;
@@ -20,23 +48,13 @@ library PermissionsLibrary {
         return permissions.values[actionID];
     }
 
-    function set(Permissions permissions, Action action, bool value) internal {
-        uint8 actionID = uint8(action);
-        permissions.values[actionID] = value;
-    }
-
-    function full() internal returns (Permissions) {
-        return Permissions([true, true, true, true, true]);
-    }
-
-    function none() internal returns (Permissions) {
-        return Permissions([false, false, false, false, false]);
-    }
-
-    function single(Action action) internal returns (Permissions) {
-        Permissions permission = none();
-        permission.set(action, true);
-        return permission;
+    function equals(Permissions left, Permissions right) internal returns (bool) {
+        for (uint8 i = 0; i < COUNT; i++) {
+            if (left.values[i] != right.values[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

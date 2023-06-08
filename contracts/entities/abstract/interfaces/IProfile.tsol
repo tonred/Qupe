@@ -24,6 +24,13 @@ interface IProfile {
         address callbackTo
     ) external;
 
+    function onSetBan(
+        uint64 serverID,
+        uint64 roomID,
+        bool isBan,
+        address callbackTo
+    ) external;
+
     function onTagged(uint64 serverID, uint64 roomID, uint64 messageID, address user) external view;
 
     function onMessageAccepted(

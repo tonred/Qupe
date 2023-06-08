@@ -7,6 +7,7 @@ import "./Server.tsol";
 
 abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
     using PaymentLibrary for Payment;
+    using PermissionsLibrary for Permissions;
     using PermissionsLibrary for optional(Permissions);
 
     event Join(uint64 serverID);
@@ -20,6 +21,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     event SyncWallet(address token);
     event Deposited(address token, uint128 amount);
     event Withdrawn(address token, uint128 amount, address recipient);
+    event SetBan(uint64 serverID, uint64 roomID, bool isBan);
     event PermissionChanged(address entity, bool removed);
     event Tagged(uint64 serverID, uint64 roomID, uint64 messageID, address user);
     event MessageAccepted(uint messageHash, uint64 serverID, uint64 roomID, uint64 messageID, bool deployed);
@@ -150,7 +152,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         address entity,
         Permissions permissions
     ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner {
-        require(PermissionsLibrary.validate(permissions), ErrorCodes.PERMISSIONS_NOT_VALID);
+        require(permissions.validate(), ErrorCodes.PERMISSIONS_NOT_VALID);
         CallData data = _buildCallData(entity, null);
         Base(entity).setDefaultPermissions{
             value: 0,
@@ -168,7 +170,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     ) public view cashBack onlyOwner onlyJoined(serverID, address(0)) {
         require(usersList.length == permissionsList.length, ErrorCodes.PERMISSIONS_NOT_VALID);
         for (optional(Permissions) permissions : permissionsList) {
-            require(PermissionsLibrary.validate(permissions), ErrorCodes.PERMISSIONS_NOT_VALID);
+            require(permissions.validate(), ErrorCodes.PERMISSIONS_NOT_VALID);
         }
         uint128 value = uint128(usersList.length) * Gas.SET_PERMISSION_VALUE + Gas.PROFILE_PROXY_VALUE;
         address server = _serverAddress(serverID);
@@ -180,32 +182,19 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         }(data, roomID, usersList, permissionsList, defaultPermissions);
     }
 
-    function ban(
+    function setBan(
         uint64 serverID,
         uint64 roomID,
-        address user
+        address user,
+        bool isBan
     ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner onlyJoined(serverID, address(0)) {
         address room = _roomAddress(serverID, roomID);
         CallData data = _buildCallData(room, null);
-        Room(room).ban{
+        Room(room).setBan{
             value: 0,
             flag: MsgFlag.REMAINING_GAS,
             bounce: true
-        }(data, user);
-    }
-
-    function unban(
-        uint64 serverID,
-        uint64 roomID,
-        address user
-    ) public view minValue(Gas.PROFILE_PROXY_VALUE) onlyOwner onlyJoined(serverID, address(0)) {
-        address room = _roomAddress(serverID, roomID);
-        CallData data = _buildCallData(room, null);
-        Room(room).unban{
-            value: 0,
-            flag: MsgFlag.REMAINING_GAS,
-            bounce: true
-        }(data, user);
+        }(data, user, isBan);
     }
 
     function createWallet(address token) public minValue(Gas.CREATE_WALLET_VALUE) cashBack onlyOwner {
@@ -299,6 +288,29 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
         address room = _roomAddress(serverID, roomID);
         _setPermissions(room, permissions);
         IUser(callbackTo).onPermissionChanged{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(room, false);
+    }
+
+    function onSetBan(
+        uint64 serverID,
+        uint64 roomID,
+        bool isBan,
+        address callbackTo
+    ) public override onlyRoom(serverID, roomID) onlyJoined(serverID, callbackTo) {
+        _reserve();
+        address room = _roomAddress(serverID, roomID);
+        optional(Permissions) permissions = _permissions.fetch(room);
+        if (!permissions.hasValue() || permissions.get().equals(PermissionsLibrary.none())) {
+            // user already has custom permissions (set by admin), so it cannot be banned/unbanned
+            IUser(callbackTo).onErrorSetBanToCustom{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(serverID, roomID, _owner);
+            return;
+        }
+        emit SetBan(serverID, roomID, isBan);
+        if (isBan) {
+            _setPermissions(room, PermissionsLibrary.none());
+        } else {
+            _setPermissions(room, null);
+        }
+        IUser(callbackTo).onSetBan{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(serverID, roomID, isBan);
     }
 
     function onTagged(
