@@ -56,7 +56,7 @@ describe("Test Quashers Chat contracts", async function () {
     for (let i = 0; i < 2; i++) {
       const {account} = await locklift.factory.accounts.addNewAccount({
         type: WalletTypes.EverWallet,
-        value: toNano(100),
+        value: toNano(20),
         publicKey: signer.publicKey,
       });
       wallets.set(`wallet${i}`, account.address)
@@ -95,12 +95,13 @@ describe("Test Quashers Chat contracts", async function () {
     it("Deploy Profile", async function () {
       const owner = wallets.get('wallet1');
       const tx = await locklift.tracing.trace(root.methods.createProfile({
+        meta: encodeData({displayName: 'First user', avatar: 'QmUKiMzjKpHLSjHHQGhdXj17kyDDcGDiNEM9DevnjLm7PA'}),
         minTagValue: 0,
         pubkeys: [`0x${signer.publicKey}`],
         answerId: 0
       }).send({
         from: owner,
-        amount: toNano(20),
+        amount: toNano(4),
       }));
       await tx.traceTree?.beautyPrint();
       log('Gas used: ', fromNano(tx.traceTree.totalGasUsed()))
@@ -125,7 +126,7 @@ describe("Test Quashers Chat contracts", async function () {
       let channel: Contract<FactorySource["Channel"]>;
       it("Deploy chat with free messages", async function () {
         const owner = wallets.get('wallet1');
-        const tx = await locklift.tracing.trace(root.methods.create({
+        const tx = await locklift.tracing.trace(root.methods.createServer({
           owner: owner,
           info: {
             meta: encodeData({
@@ -150,6 +151,7 @@ describe("Test Quashers Chat contracts", async function () {
         log('Gas used: ', fromNano(tx.traceTree.totalGasUsed()))
         await logDiff(tx)
         success(`Chat deployed: ${chat.address.toString()}, Id: ${await chat.fields._serverID()}`)
+
       });
       // it("Set default permissions for server", async function () {
       //   const owner = wallets.get('wallet1');
@@ -167,6 +169,7 @@ describe("Test Quashers Chat contracts", async function () {
 
         const tx = await locklift.tracing.trace(profile.methods.createRoom({
           serverID: await chat.fields._serverID(),
+          anyCanSendMessage: true,
           info: {
             meta: encodeData({
               title: 'Test free chat room #1',
@@ -184,8 +187,10 @@ describe("Test Quashers Chat contracts", async function () {
         await logDiff(tx)
         for (let event of tx.traceTree.findByType({type: 'event', name: 'RoomCreated'})) {
           const {roomID, room: roomAddr} = event.params
-          success(`Room deployed: ${roomAddr.toString()}, Id: ${roomID}`)
-          channel = await locklift.factory.getDeployedContract('Channel', roomAddr)
+          if (roomAddr) {
+            success(`Room deployed: ${roomAddr.toString()}, Id: ${roomID}`)
+            channel = await locklift.factory.getDeployedContract('Channel', roomAddr)
+          }
         }
       });
       it("Send messages", async function () {
