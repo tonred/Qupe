@@ -1,0 +1,187 @@
+{
+	"ABI version": 2,
+	"version": "2.3",
+	"header": ["time"],
+	"functions": [
+		{
+			"name": "changeInfo",
+			"inputs": [
+				{"components":[{"name":"user","type":"address"},{"components":[{"name":"token","type":"address"},{"name":"amount","type":"uint128"}],"name":"payment","type":"tuple"},{"name":"userData","type":"optional(cell)"},{"components":[{"name":"values","type":"bool[]"}],"name":"permissions","type":"optional(tuple)"}],"name":"data","type":"tuple"},
+				{"components":[{"name":"meta","type":"bytes"},{"components":[{"name":"token","type":"address"},{"name":"amount","type":"uint128"}],"name":"messagePayment","type":"tuple"},{"components":[{"name":"token","type":"address"},{"name":"amount","type":"uint128"}],"name":"highlightMessagePayment","type":"tuple"},{"name":"messageReputation","type":"int64"}],"name":"info","type":"tuple"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "acceptMessage",
+			"inputs": [
+				{"components":[{"name":"user","type":"address"},{"components":[{"name":"token","type":"address"},{"name":"amount","type":"uint128"}],"name":"payment","type":"tuple"},{"name":"userData","type":"optional(cell)"},{"components":[{"name":"values","type":"bool[]"}],"name":"permissions","type":"optional(tuple)"}],"name":"data","type":"tuple"},
+				{"name":"messageHash","type":"uint256"},
+				{"components":[{"name":"user","type":"address"},{"name":"value","type":"uint128"}],"name":"tags","type":"tuple[]"},
+				{"name":"properties","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "forceChangePermissions",
+			"inputs": [
+				{"name":"serverID","type":"uint64"},
+				{"name":"usersList","type":"address[]"},
+				{"components":[{"name":"values","type":"bool[]"}],"name":"permissionsList","type":"optional(tuple)[]"},
+				{"components":[{"name":"values","type":"bool[]"}],"name":"defaultPermissions","type":"tuple"},
+				{"name":"callbackTo","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setBan",
+			"inputs": [
+				{"components":[{"name":"user","type":"address"},{"components":[{"name":"token","type":"address"},{"name":"amount","type":"uint128"}],"name":"payment","type":"tuple"},{"name":"userData","type":"optional(cell)"},{"components":[{"name":"values","type":"bool[]"}],"name":"permissions","type":"optional(tuple)"}],"name":"data","type":"tuple"},
+				{"name":"user","type":"address"},
+				{"name":"isBan","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "withdraw",
+			"inputs": [
+				{"components":[{"name":"user","type":"address"},{"components":[{"name":"token","type":"address"},{"name":"amount","type":"uint128"}],"name":"payment","type":"tuple"},{"name":"userData","type":"optional(cell)"},{"components":[{"name":"values","type":"bool[]"}],"name":"permissions","type":"optional(tuple)"}],"name":"data","type":"tuple"},
+				{"name":"token","type":"address"},
+				{"name":"recipient","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setPermissions",
+			"inputs": [
+				{"components":[{"name":"user","type":"address"},{"components":[{"name":"token","type":"address"},{"name":"amount","type":"uint128"}],"name":"payment","type":"tuple"},{"name":"userData","type":"optional(cell)"},{"components":[{"name":"values","type":"bool[]"}],"name":"permissions","type":"optional(tuple)"}],"name":"data","type":"tuple"},
+				{"name":"user","type":"address"},
+				{"components":[{"name":"values","type":"bool[]"}],"name":"permissions","type":"optional(tuple)"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setDefaultPermissions",
+			"inputs": [
+				{"components":[{"name":"user","type":"address"},{"components":[{"name":"token","type":"address"},{"name":"amount","type":"uint128"}],"name":"payment","type":"tuple"},{"name":"userData","type":"optional(cell)"},{"components":[{"name":"values","type":"bool[]"}],"name":"permissions","type":"optional(tuple)"}],"name":"data","type":"tuple"},
+				{"components":[{"name":"values","type":"bool[]"}],"name":"permissions","type":"tuple"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "onWalletDeployed",
+			"inputs": [
+				{"name":"wallet","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getToken",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"token","type":"address"}
+			]
+		},
+		{
+			"name": "getWallet",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"wallet","type":"address"}
+			]
+		},
+		{
+			"name": "getBalance",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"balance","type":"uint128"}
+			]
+		},
+		{
+			"name": "onAcceptTokensTransfer",
+			"inputs": [
+				{"name":"value0","type":"address"},
+				{"name":"amount","type":"uint128"},
+				{"name":"sender","type":"address"},
+				{"name":"value3","type":"address"},
+				{"name":"value4","type":"address"},
+				{"name":"payload","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "onSync",
+			"inputs": [
+				{"name":"balance","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+		{
+			"name": "MessageAccepted",
+			"inputs": [
+				{"name":"messageID","type":"uint64"},
+				{"name":"messageHash","type":"uint256"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "SetBan",
+			"inputs": [
+				{"name":"user","type":"address"},
+				{"name":"isBan","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "VaultSync",
+			"inputs": [
+				{"name":"balance","type":"uint128"}
+			],
+			"outputs": [
+			]
+		}
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"_token","type":"address"},
+		{"name":"_wallet","type":"address"},
+		{"name":"_balance","type":"uint128"},
+		{"name":"_root","type":"address"},
+		{"name":"_platformCode","type":"cell"},
+		{"components":[{"name":"values","type":"bool[]"}],"name":"_defaultPermissions","type":"tuple"},
+		{"name":"_serverID","type":"uint64"},
+		{"name":"_roomID","type":"uint64"},
+		{"name":"_messagesCount","type":"uint64"},
+		{"components":[{"name":"meta","type":"bytes"},{"components":[{"name":"token","type":"address"},{"name":"amount","type":"uint128"}],"name":"messagePayment","type":"tuple"},{"components":[{"name":"token","type":"address"},{"name":"amount","type":"uint128"}],"name":"highlightMessagePayment","type":"tuple"},{"name":"messageReputation","type":"int64"}],"name":"_info","type":"tuple"},
+		{"name":"_messageCode","type":"cell"}
+	]
+}

@@ -1,0 +1,91 @@
+{
+	"ABI version": 2,
+	"version": "2.3",
+	"header": ["time"],
+	"functions": [
+		{
+			"name": "getIDs",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"serverID","type":"uint64"},
+				{"name":"roomID","type":"uint64"},
+				{"name":"messageID","type":"uint64"}
+			]
+		},
+		{
+			"name": "getDetails",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"messageHash","type":"uint256"},
+				{"name":"owner","type":"address"}
+			]
+		},
+		{
+			"name": "getReactions",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"reactions","type":"map(uint32,uint64)"}
+			]
+		},
+		{
+			"name": "getReactionCount",
+			"inputs": [
+				{"name":"answerId","type":"uint32"},
+				{"name":"reaction","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"count","type":"uint64"}
+			]
+		},
+		{
+			"name": "react",
+			"inputs": [
+				{"name":"user","type":"address"},
+				{"name":"reaction","type":"uint32"},
+				{"name":"undo","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "changeReputation",
+			"inputs": [
+				{"name":"user","type":"address"},
+				{"name":"to","type":"optional(int8)"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"_root","type":"address"},
+		{"name":"_platformCode","type":"cell"},
+		{"name":"_serverID","type":"uint64"},
+		{"name":"_roomID","type":"uint64"},
+		{"name":"_messageID","type":"uint64"},
+		{"name":"_messageHash","type":"uint256"},
+		{"name":"_owner","type":"address"},
+		{"name":"_reactions","type":"map(uint32,uint64)"},
+		{"name":"_reputations","type":"map(address,int8)"}
+	]
+}

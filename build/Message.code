@@ -1,0 +1,1343 @@
+.version sol 0.66.0
+
+.macro constructor
+DROP
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+GETGLOB 6
+THROWIF 51
+ENDS
+ACCEPT
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.internal-alias onCodeUpgrade_147dcf22_internal, 1726107500
+.internal onCodeUpgrade_147dcf22_internal
+.loc ../contracts/entities/forum/Message.tsol, 31
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+SETGLOB 10
+PUSHREF {
+}
+SETGLOB 11
+PUSHINT 0
+SETGLOB 12
+PUSHINT 0
+SETGLOB 13
+PUSHINT 0
+SETGLOB 14
+PUSHINT 0
+SETGLOB 15
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+SETGLOB 16
+NEWDICT
+SETGLOB 17
+NEWDICT
+SETGLOB 18
+.loc ../contracts/entities/forum/Message.tsol, 32
+CALLREF {
+	CALL $_reserveTarget_2497aaf2_internal_macro$
+}
+.loc ../contracts/entities/forum/Message.tsol, 33
+SWAP2
+CALLREF {
+	CALL $_initPlatform_fb5e9b31_internal_macro$
+}
+.loc ../contracts/entities/forum/Message.tsol, 34
+SWAP
+CTOS
+LDU 64
+LDU 64
+LDU 64
+ENDS
+XCHG S2
+SETGLOB 12
+SETGLOB 13
+SETGLOB 14
+.loc ../contracts/entities/forum/Message.tsol, 35
+CTOS
+LDU 256
+LDMSGADDR
+ENDS
+SWAP
+SETGLOB 15
+DUP
+SETGLOB 16
+.loc ../contracts/entities/forum/Message.tsol, 36
+CALLREF {
+	CALL $_profileAddress_b1b718c8_internal_macro$
+}
+.loc ../contracts/entities/forum/Message.tsol, 37
+TRUE
+GETGLOB 15
+GETGLOB 14
+GETGLOB 13
+GETGLOB 12
+ROLL 5
+FALSE
+NEWC
+STSLICECONST x6_
+STI 1
+STSLICECONST x1_
+STSLICE
+PUSHINT 1
+STUR 111
+ROLLREV 5
+NEWC
+STSLICECONST x6605d8ad
+STU 64
+STU 64
+STU 64
+STU 256
+STI 1
+STBREFR
+ENDC
+PUSHPOW2 7
+SENDRAWMSG
+.loc ../contracts/entities/forum/Message.tsol, 0
+CALLREF {
+	CALL $c7_to_c4$
+}
+COMMIT
+THROW 0
+
+.macro getIDs
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/entities/forum/Message.tsol, 45
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+ENDS
+.loc ../contracts/entities/forum/Message.tsol, 0
+CALLREF {
+	CALL $getIDs_d55d113d_internal_macro$
+}
+PUSH S3
+PUSHCONT {
+	PUSH S5
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 98
+	STZEROES
+	REVERSE 3, 1
+	STSLICECONST xc5463cca
+	STU 64
+	STU 64
+	STU 64
+	ENDC
+	PUSHINT 0
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	OVER
+	THIRD
+	GETGLOB 9
+	ROLL 3
+	SECOND
+	NEWC
+	STSLICECONST x2_
+	STI 1
+	STSLICECONST x1_
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 1
+	STUR 106
+	REVERSE 4, 0
+	NEWC
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	STU 64
+	STU 64
+	STU 64
+	STBREFR
+	ENDC
+	GETGLOB 4
+	INDEX 4
+}
+IFELSE
+SENDRAWMSG
+IFREF {
+	CALL $upd_only_time_in_c4$
+}
+THROW 0
+
+.globl	getIDs_d55d113d_internal
+.type	getIDs_d55d113d_internal, @function
+CALL $getIDs_d55d113d_internal_macro$
+
+.macro getIDs_d55d113d_internal_macro
+.loc ../contracts/entities/forum/Message.tsol, 46
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+PUSHINT 1
+SETINDEXQ 4
+FALSE
+SETINDEXQ 1
+SETGLOB 4
+GETGLOB 12
+GETGLOB 13
+GETGLOB 14
+.loc ../contracts/entities/forum/Message.tsol, 0
+
+.macro getDetails
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/entities/forum/Message.tsol, 49
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+ENDS
+.loc ../contracts/entities/forum/Message.tsol, 0
+CALLREF {
+	CALL $getDetails_fbbf93a0_internal_macro$
+}
+PUSH S2
+PUSHCONT {
+	PUSH S4
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 1
+	STUR 98
+	XCHG S2
+	NEWC
+	STSLICECONST x9673441e
+	STU 256
+	STSLICE
+	STBREFR
+	ENDC
+	PUSHINT 0
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	OVER
+	THIRD
+	GETGLOB 9
+	ROLL 3
+	SECOND
+	NEWC
+	STSLICECONST x2_
+	STI 1
+	STSLICECONST x1_
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 1
+	STUR 106
+	XCHG S2
+	NEWC
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	STU 256
+	STSLICE
+	STBREFR
+	ENDC
+	GETGLOB 4
+	INDEX 4
+}
+IFELSE
+SENDRAWMSG
+IFREF {
+	CALL $upd_only_time_in_c4$
+}
+THROW 0
+
+.globl	getDetails_fbbf93a0_internal
+.type	getDetails_fbbf93a0_internal, @function
+CALL $getDetails_fbbf93a0_internal_macro$
+
+.macro getDetails_fbbf93a0_internal_macro
+.loc ../contracts/entities/forum/Message.tsol, 50
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+PUSHINT 1
+SETINDEXQ 4
+FALSE
+SETINDEXQ 1
+SETGLOB 4
+GETGLOB 15
+GETGLOB 16
+.loc ../contracts/entities/forum/Message.tsol, 0
+
+.macro getReactions
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/entities/forum/Message.tsol, 53
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+ENDS
+.loc ../contracts/entities/forum/Message.tsol, 0
+CALLREF {
+	CALL $getReactions_0472f418_internal_macro$
+}
+OVER
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 4103622213
+	STUR 130
+	STDICT
+	ENDC
+	PUSHINT 0
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	OVER
+	THIRD
+	GETGLOB 9
+	ROLL 3
+	SECOND
+	NEWC
+	STSLICECONST x2_
+	STI 1
+	STSLICECONST x1_
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 106
+	STZEROES
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	STDICT
+	ENDC
+	GETGLOB 4
+	INDEX 4
+}
+IFELSE
+SENDRAWMSG
+IFREF {
+	CALL $upd_only_time_in_c4$
+}
+THROW 0
+
+.globl	getReactions_0472f418_internal
+.type	getReactions_0472f418_internal, @function
+CALL $getReactions_0472f418_internal_macro$
+
+.macro getReactions_0472f418_internal_macro
+.loc ../contracts/entities/forum/Message.tsol, 54
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+PUSHINT 64
+SETINDEXQ 4
+FALSE
+SETINDEXQ 1
+SETGLOB 4
+GETGLOB 17
+.loc ../contracts/entities/forum/Message.tsol, 0
+
+.macro getReactionCount
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/entities/forum/Message.tsol, 57
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+LDU 32
+ENDS
+.loc ../contracts/entities/forum/Message.tsol, 0
+CALLREF {
+	CALL $getReactionCount_49c6cb9f_internal_macro$
+}
+OVER
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 2874548559
+	STUR 130
+	STU 64
+	ENDC
+	PUSHINT 0
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	OVER
+	THIRD
+	GETGLOB 9
+	ROLL 3
+	SECOND
+	NEWC
+	STSLICECONST x2_
+	STI 1
+	STSLICECONST x1_
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 106
+	STZEROES
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	STU 64
+	ENDC
+	GETGLOB 4
+	INDEX 4
+}
+IFELSE
+SENDRAWMSG
+IFREF {
+	CALL $upd_only_time_in_c4$
+}
+THROW 0
+
+.globl	getReactionCount_49c6cb9f_internal
+.type	getReactionCount_49c6cb9f_internal, @function
+CALL $getReactionCount_49c6cb9f_internal_macro$
+
+.macro getReactionCount_49c6cb9f_internal_macro
+.loc ../contracts/entities/forum/Message.tsol, 58
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+PUSHINT 64
+SETINDEXQ 4
+FALSE
+SETINDEXQ 1
+SETGLOB 4
+GETGLOB 17
+PUSHINT 32
+DICTUGET
+ZEROSWAPIFNOT
+PUSHCONT {
+	PLDU 64
+}
+IF
+.loc ../contracts/entities/forum/Message.tsol, 0
+
+.macro react
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/entities/forum/Message.tsol, 61
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+LDU 32
+LDI 1
+ENDS
+.loc ../contracts/entities/forum/Message.tsol, 0
+CALLREF {
+	CALL $react_b75c08a0_internal_macro$
+}
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.globl	react_b75c08a0_internal
+.type	react_b75c08a0_internal, @function
+CALL $react_b75c08a0_internal_macro$
+
+.macro react_b75c08a0_internal_macro
+.loc ../contracts/entities/forum/Message.tsol, 61
+PUSH S2
+.loc ../contracts/entities/forum/Message.tsol, 25
+CALLREF {
+	CALL $_profileAddress_b1b718c8_internal_macro$
+}
+.loc ../contracts/entities/forum/Message.tsol, 26
+GETGLOB 9
+SDEQ
+THROWIFNOT 1002
+.loc ../contracts/entities/forum/Message.tsol, 62
+CALLREF {
+	CALL $_reserveTarget_2497aaf2_internal_macro$
+}
+.loc ../contracts/entities/forum/Message.tsol, 63
+DUP
+PUSHCONT {
+	OVER
+	GETGLOB 17
+	DUP2
+	PUSHINT 32
+	DICTUGET
+	ZEROSWAPIFNOT
+	PUSHCONT {
+		PLDU 64
+	}
+	IF
+	DUP
+	DEC
+	SWAP
+	ROLLREV 3
+	UFITS 64
+	NEWC
+	STU 64
+	ROTREV
+	PUSHINT 32
+	DICTUSETB
+	SETGLOB 17
+}
+PUSHCONT {
+	OVER
+	GETGLOB 17
+	DUP2
+	PUSHINT 32
+	DICTUGET
+	ZEROSWAPIFNOT
+	PUSHCONT {
+		PLDU 64
+	}
+	IF
+	DUP
+	INC
+	SWAP
+	ROLLREV 3
+	UFITS 64
+	NEWC
+	STU 64
+	ROTREV
+	PUSHINT 32
+	DICTUSETB
+	SETGLOB 17
+}
+IFELSE
+DROP
+.loc ../contracts/entities/forum/Message.tsol, 64
+XCHG S2
+FALSE
+NEWC
+STSLICECONST x6_
+STI 1
+STSLICECONST x1_
+STSLICE
+PUSHINT 1832797345
+STUR 143
+STU 32
+STI 1
+ENDC
+PUSHPOW2 7
+SENDRAWMSG
+.loc ../contracts/entities/forum/Message.tsol, 0
+
+.macro changeReputation
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/entities/forum/Message.tsol, 67
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+	LDI 1
+	SWAP
+	NULLROTRIFNOT
+	PUSHCONT {
+		LDI 8
+	}
+	IF
+}
+PUSHCONT {
+	LDMSGADDR
+	LDI 1
+	SWAP
+	NULLROTRIFNOT
+	PUSHCONT {
+		LDI 8
+	}
+	IF
+}
+IFELSE
+ENDS
+.loc ../contracts/entities/forum/Message.tsol, 0
+CALLREF {
+	CALL $changeReputation_9e71ef7a_internal_macro$
+}
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.globl	changeReputation_9e71ef7a_internal
+.type	changeReputation_9e71ef7a_internal, @function
+CALL $changeReputation_9e71ef7a_internal_macro$
+
+.macro changeReputation_9e71ef7a_internal_macro
+.loc ../contracts/entities/forum/Message.tsol, 67
+PUSH2 S1, S1
+.loc ../contracts/entities/forum/Message.tsol, 25
+CALLREF {
+	CALL $_profileAddress_b1b718c8_internal_macro$
+}
+.loc ../contracts/entities/forum/Message.tsol, 26
+GETGLOB 9
+OVER
+SDEQ
+THROWIFNOT 1002
+.loc ../contracts/entities/forum/Message.tsol, 27
+SWAP2
+PUSHCONT {
+	.loc ../contracts/entities/forum/Message.tsol, 68
+	CALLREF {
+		CALL $_reserveTarget_2497aaf2_internal_macro$
+	}
+	.loc ../contracts/entities/forum/Message.tsol, 69
+	PUSHINT 0
+	.loc ../contracts/entities/forum/Message.tsol, 70
+	PUSH S2
+	GETGLOB 18
+	PUSHINT 267
+	DICTGET
+	NULLSWAPIFNOT
+	PUSHCONT {
+		PLDI 8
+	}
+	IF
+	.loc ../contracts/entities/forum/Message.tsol, 71
+	FALSE ; decl return flag
+	OVER
+	ISNULL
+	PUSH S4
+	ISNULL
+	NOT
+	AND
+	PUSHCONT {
+		.loc ../contracts/entities/forum/Message.tsol, 73
+		PUSH2 S3, S3
+		ISNULL
+		THROWIF 63
+		PUSH S5
+		GETGLOB 18
+		ROT
+		NEWC
+		STI 8
+		ROTREV
+		PUSHINT 267
+		DICTSETB
+		SETGLOB 18
+		.loc ../contracts/entities/forum/Message.tsol, 74
+		PUSH2 S3, S3
+		ISNULL
+		THROWIF 63
+		POP S3
+		.loc ../contracts/entities/forum/Message.tsol, 0
+	}
+	PUSHCONT {
+		FALSE ; decl return flag
+		PUSH S2
+		ISNULL
+		NOT
+		PUSH S5
+		ISNULL
+		AND
+		PUSHCONT {
+			.loc ../contracts/entities/forum/Message.tsol, 77
+			PUSH S5
+			GETGLOB 18
+			PUSHINT 267
+			DICTDEL
+			DROP
+			SETGLOB 18
+			.loc ../contracts/entities/forum/Message.tsol, 78
+			PUSH2 S2, S2
+			ISNULL
+			THROWIF 63
+			NEGATE
+			POP S4
+			.loc ../contracts/entities/forum/Message.tsol, 0
+		}
+		PUSHCONT {
+			FALSE ; decl return flag
+			PUSH S3
+			ISNULL
+			NOT
+			PUSH S6
+			ISNULL
+			NOT
+			AND
+			DUP
+			PUSHCONT {
+				DROP
+				PUSH2 S3, S3
+				ISNULL
+				THROWIF 63
+				PUSH2 S6, S6
+				ISNULL
+				THROWIF 63
+				NEQ
+			}
+			IF
+			PUSHCONT {
+				.loc ../contracts/entities/forum/Message.tsol, 81
+				PUSH2 S5, S5
+				ISNULL
+				THROWIF 63
+				PUSH S7
+				GETGLOB 18
+				ROT
+				NEWC
+				STI 8
+				ROTREV
+				PUSHINT 267
+				DICTSETB
+				SETGLOB 18
+				.loc ../contracts/entities/forum/Message.tsol, 82
+				PUSHINT 2
+				PUSH2 S6, S6
+				ISNULL
+				THROWIF 63
+				MUL
+				FITS 8
+				POP S5
+			}
+			PUSHCONT {
+				.loc ../contracts/entities/forum/Message.tsol, 85
+				ROLL 6
+				NEWC
+				STSLICECONST x42_
+				STSLICE
+				PUSHINT 111
+				STZEROES
+				ENDC
+				PUSHPOW2 7
+				SENDRAWMSG
+				.loc ../contracts/entities/forum/Message.tsol, 86
+				BLKDROP 6
+				PUSHINT 4
+			}
+			IFELSE
+			.loc ../contracts/entities/forum/Message.tsol, 0
+			DUP
+			IFRET
+			DROP
+		}
+		IFELSE
+		DUP
+		IFRET
+		DROP
+	}
+	IFELSE
+	IFRET
+	.loc ../contracts/entities/forum/Message.tsol, 89
+	DROP
+	PUSH S2
+	CALLREF {
+		CALL $_profileAddress_b1b718c8_internal_macro$
+	}
+	.loc ../contracts/entities/forum/Message.tsol, 90
+	SWAP
+	ROLL 3
+	GETGLOB 14
+	GETGLOB 13
+	GETGLOB 12
+	ROLL 5
+	FALSE
+	NEWC
+	STSLICECONST x6_
+	STI 1
+	STSLICECONST x1_
+	STSLICE
+	PUSHINT 1
+	STUR 111
+	ROLLREV 5
+	NEWC
+	STSLICECONST x4e355758
+	STU 64
+	STU 64
+	STU 64
+	STSLICE
+	STI 8
+	STBREFR
+	ENDC
+	PUSHPOW2 7
+	SENDRAWMSG
+	.loc ../contracts/entities/forum/Message.tsol, 0
+	DROP
+	.loc ../contracts/entities/forum/Message.tsol, 67
+}
+CALLX
+.loc ../contracts/entities/forum/Message.tsol, 0
+DROP2
+
+.globl	_reserveTarget_2497aaf2_internal
+.type	_reserveTarget_2497aaf2_internal, @function
+CALL $_reserveTarget_2497aaf2_internal_macro$
+
+.macro _reserveTarget_2497aaf2_internal_macro
+.loc ../contracts/entities/forum/Message.tsol, 98
+PUSHINT 500000000
+PUSHINT 0
+RAWRESERVE
+.loc ../contracts/entities/forum/Message.tsol, 0
+
+.globl	_initPlatform_fb5e9b31_internal
+.type	_initPlatform_fb5e9b31_internal, @function
+CALL $_initPlatform_fb5e9b31_internal_macro$
+
+.macro _initPlatform_fb5e9b31_internal_macro
+.loc ../contracts/platform/PlatformUtils.tsol, 32
+SWAP
+SETGLOB 10
+.loc ../contracts/platform/PlatformUtils.tsol, 33
+SETGLOB 11
+.loc ../contracts/platform/PlatformUtils.tsol, 0
+
+.globl	_profileAddress_b1b718c8_internal
+.type	_profileAddress_b1b718c8_internal, @function
+CALL $_profileAddress_b1b718c8_internal_macro$
+
+.macro _profileAddress_b1b718c8_internal_macro
+.loc ../contracts/platform/PlatformUtils.tsol, 37
+CALLREF {
+	CALL $_buildProfileStateInit_3e8fb577_internal_macro$
+}
+.loc ../contracts/platform/PlatformUtils.tsol, 93
+HASHCU
+NEWC
+STSLICECONST x801_
+STU 256
+ENDC
+CTOS
+.loc ../contracts/platform/PlatformUtils.tsol, 0
+
+.globl	_serverAddress_3d5a0003_internal
+.type	_serverAddress_3d5a0003_internal, @function
+CALL $_serverAddress_3d5a0003_internal_macro$
+
+.macro _serverAddress_3d5a0003_internal_macro
+.loc ../contracts/platform/PlatformUtils.tsol, 42
+CALLREF {
+	CALL $_buildServerStateInit_06942aa6_internal_macro$
+}
+.loc ../contracts/platform/PlatformUtils.tsol, 93
+HASHCU
+NEWC
+STSLICECONST x801_
+STU 256
+ENDC
+CTOS
+.loc ../contracts/platform/PlatformUtils.tsol, 0
+
+.globl	_roomAddress_d30853dd_internal
+.type	_roomAddress_d30853dd_internal, @function
+CALL $_roomAddress_d30853dd_internal_macro$
+
+.macro _roomAddress_d30853dd_internal_macro
+.loc ../contracts/platform/PlatformUtils.tsol, 47
+CALLREF {
+	CALL $_buildRoomStateInit_36a2c305_internal_macro$
+}
+.loc ../contracts/platform/PlatformUtils.tsol, 93
+HASHCU
+NEWC
+STSLICECONST x801_
+STU 256
+ENDC
+CTOS
+.loc ../contracts/platform/PlatformUtils.tsol, 0
+
+.globl	_messageAddress_d017174b_internal
+.type	_messageAddress_d017174b_internal, @function
+CALL $_messageAddress_d017174b_internal_macro$
+
+.macro _messageAddress_d017174b_internal_macro
+.loc ../contracts/platform/PlatformUtils.tsol, 52
+CALLREF {
+	CALL $_buildMessageStateInit_f0172399_internal_macro$
+}
+.loc ../contracts/platform/PlatformUtils.tsol, 93
+HASHCU
+NEWC
+STSLICECONST x801_
+STU 256
+ENDC
+CTOS
+.loc ../contracts/platform/PlatformUtils.tsol, 0
+
+.globl	_buildProfileStateInit_3e8fb577_internal
+.type	_buildProfileStateInit_3e8fb577_internal, @function
+CALL $_buildProfileStateInit_3e8fb577_internal_macro$
+
+.macro _buildProfileStateInit_3e8fb577_internal_macro
+.loc ../contracts/platform/PlatformUtils.tsol, 57
+NEWC
+STSLICE
+ENDC
+.loc ../contracts/platform/PlatformUtils.tsol, 58
+GETGLOB 10
+PUSHINT 0
+ROT
+CALLREF {
+	CALL $_buildPlatformStateInit_5ab1ad56_internal_macro$
+}
+.loc ../contracts/platform/PlatformUtils.tsol, 0
+
+.globl	_buildServerStateInit_06942aa6_internal
+.type	_buildServerStateInit_06942aa6_internal, @function
+CALL $_buildServerStateInit_06942aa6_internal_macro$
+
+.macro _buildServerStateInit_06942aa6_internal_macro
+.loc ../contracts/platform/PlatformUtils.tsol, 62
+NEWC
+STU 64
+ENDC
+.loc ../contracts/platform/PlatformUtils.tsol, 63
+GETGLOB 10
+PUSHINT 1
+ROT
+CALLREF {
+	CALL $_buildPlatformStateInit_5ab1ad56_internal_macro$
+}
+.loc ../contracts/platform/PlatformUtils.tsol, 0
+
+.globl	_buildRoomStateInit_36a2c305_internal
+.type	_buildRoomStateInit_36a2c305_internal, @function
+CALL $_buildRoomStateInit_36a2c305_internal_macro$
+
+.macro _buildRoomStateInit_36a2c305_internal_macro
+.loc ../contracts/platform/PlatformUtils.tsol, 67
+OVER
+CALLREF {
+	CALL $_serverAddress_3d5a0003_internal_macro$
+}
+.loc ../contracts/platform/PlatformUtils.tsol, 68
+XCHG S2
+NEWC
+STU 64
+STU 64
+ENDC
+.loc ../contracts/platform/PlatformUtils.tsol, 69
+PUSHINT 2
+SWAP
+CALLREF {
+	CALL $_buildPlatformStateInit_5ab1ad56_internal_macro$
+}
+.loc ../contracts/platform/PlatformUtils.tsol, 0
+
+.globl	_buildMessageStateInit_f0172399_internal
+.type	_buildMessageStateInit_f0172399_internal, @function
+CALL $_buildMessageStateInit_f0172399_internal_macro$
+
+.macro _buildMessageStateInit_f0172399_internal_macro
+.loc ../contracts/platform/PlatformUtils.tsol, 73
+BLKPUSH 2, 2
+CALLREF {
+	CALL $_roomAddress_d30853dd_internal_macro$
+}
+.loc ../contracts/platform/PlatformUtils.tsol, 74
+REVERSE 4, 0
+NEWC
+STU 64
+STU 64
+STU 64
+ENDC
+.loc ../contracts/platform/PlatformUtils.tsol, 75
+PUSHINT 3
+SWAP
+CALLREF {
+	CALL $_buildPlatformStateInit_5ab1ad56_internal_macro$
+}
+.loc ../contracts/platform/PlatformUtils.tsol, 0
+
+.globl	_buildPlatformStateInit_5ab1ad56_internal
+.type	_buildPlatformStateInit_5ab1ad56_internal, @function
+CALL $_buildPlatformStateInit_5ab1ad56_internal_macro$
+
+.macro _buildPlatformStateInit_5ab1ad56_internal_macro
+.loc ../contracts/platform/PlatformUtils.tsol, 79
+PUSHINT 0
+NEWC
+STU 256
+PUSHINT 0
+NEWDICT
+PUSHINT 64
+DICTUSETB
+GETGLOB 10
+PUSHINT 1
+ROT
+PUSHINT 64
+DICTUSET
+ROLL 3
+PUSHINT 2
+ROT
+PUSHINT 64
+DICTUSET
+ROT
+NEWC
+STU 8
+PUSHINT 3
+ROT
+PUSHINT 64
+DICTUSETB
+PUSHINT 4
+SWAP
+PUSHINT 64
+DICTUSETREF
+NEWC
+STDICT
+ENDC
+GETGLOB 11
+NEWC
+STSLICECONST x2_
+STOPTREF
+STOPTREF
+STZERO
+ENDC
+.loc ../contracts/platform/PlatformUtils.tsol, 0
+
+.macro c4_to_c7
+PUSHROOT
+CTOS
+LDU 256 ; pubkey c4
+LDU 64 ; pubkey timestamp c4
+LDU 1 ; ctor flag
+NIP
+LDMSGADDR
+LDREF
+LDU 64
+LDREF
+ENDS
+CTOS
+LDU 64
+LDU 64
+LDU 256
+LDMSGADDR
+LDDICT
+LDDICT
+ENDS
+SETGLOB 18
+SETGLOB 17
+SETGLOB 16
+SETGLOB 15
+SETGLOB 14
+SETGLOB 13
+SETGLOB 12
+SETGLOB 11
+SETGLOB 10
+SETGLOB 3
+SETGLOB 2
+
+.macro c4_to_c7_with_init_storage
+PUSHROOT
+CTOS
+SBITS
+GTINT 1
+PUSHCONT {
+	PUSHINT 0
+	PUSHROOT
+	CTOS
+	PLDDICT ; D
+	PUSHREFSLICE {
+		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+	}
+	PUSHREF {
+	}
+	PUSHINT 0
+	BLKPUSH 3, 0
+	PUSHREFSLICE {
+		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+	}
+	NEWDICT
+	DUP
+	SETGLOB 18
+	SETGLOB 17
+	SETGLOB 16
+	SETGLOB 15
+	SETGLOB 14
+	SETGLOB 13
+	SETGLOB 12
+	SETGLOB 11
+	SETGLOB 10
+	PUSHINT 64
+	DICTUGET
+	THROWIFNOT 61
+	PLDU 256
+	SETGLOB 2
+	PUSHINT 0 ; timestamp
+	SETGLOB 3
+}
+IFREFELSE {
+	CALL $c4_to_c7$
+}
+
+.macro c7_to_c4
+GETGLOB 18
+GETGLOB 17
+GETGLOB 16
+GETGLOB 15
+GETGLOB 14
+GETGLOB 13
+GETGLOB 12
+GETGLOB 11
+GETGLOB 10
+GETGLOB 3
+GETGLOB 2
+NEWC
+STU 256
+STU 64
+STONE
+STSLICE
+STREF
+STU 64
+ROLLREV 6
+NEWC
+STU 64
+STU 64
+STU 256
+STSLICE
+STDICT
+STDICT
+STBREFR
+ENDC
+POPROOT
+
+.macro upd_only_time_in_c4
+PUSHROOT
+CTOS
+LDU 256
+LDU 64
+NIP
+GETGLOB 3
+ROT
+NEWC
+STU 256
+STU 64
+STSLICE
+ENDC
+POPROOT
+
+.internal-alias :main_internal, 0
+.internal :main_internal
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
+PUSH S2
+CTOS
+LDU 4 ; bounced tail
+LDMSGADDR ; bounced src tail
+DROP
+SETGLOB 9
+MODPOW2 1
+GETGLOB 4
+TRUE
+SETINDEXQ 1
+PUSHINT 10000000
+SETINDEXQ 2
+NULL
+SETINDEXQ 3
+PUSHINT 0
+SETINDEXQ 4
+SETGLOB 4
+IFRET
+OVER
+SEMPTY ; isEmpty
+IFJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
+OVER
+LDUQ 32  ; [funcId] body' ok
+THROWIFNOT 60
+OVER
+IFNOTJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
+SWAP
+CALLREF {
+	CALL $public_function_selector$
+}
+THROW 60
+
+.internal-alias :main_external, -1
+.internal :main_external
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+SETGLOB 9
+OVER
+CALLREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+LDU 1 ; haveSign msgSlice
+SWAP
+PUSHCONT {
+	PUSHPOW2 9
+	LDSLICEX
+	DUP
+	MYADDR
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	HASHCU
+	ROT
+	GETGLOB 2
+	CHKSIGNU
+	THROWIFNOT 40
+}
+IF
+LDU 64 ; timestamp msgSlice
+SWAP
+CALL $replay_protection_macro$
+LDU 32 ; funcId body
+SWAP
+CALLREF {
+	CALL $public_function_selector$
+}
+THROW 60
+
+.macro public_function_selector
+DUP
+PUSHINT 951178456
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 247534778
+	EQUAL
+	IFJMPREF {
+		CALL $react$
+	}
+	DUP
+	PUSHINT 376652830
+	EQUAL
+	IFJMPREF {
+		CALL $getDetails$
+	}
+	DUP
+	PUSHINT 727064911
+	EQUAL
+	IFJMPREF {
+		CALL $getReactionCount$
+	}
+	DUP
+	PUSHINT 951178456
+	EQUAL
+	IFJMPREF {
+		CALL $changeReputation$
+	}
+}
+DUP
+PUSHINT 1956138565
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 1162230986
+	EQUAL
+	IFJMPREF {
+		CALL $getIDs$
+	}
+	DUP
+	PUSHINT 1756716863
+	EQUAL
+	IFJMPREF {
+		CALL $constructor$
+	}
+	DUP
+	PUSHINT 1956138565
+	EQUAL
+	IFJMPREF {
+		CALL $getReactions$
+	}
+}
+
