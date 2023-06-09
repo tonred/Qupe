@@ -18,7 +18,7 @@ contract Message is PlatformUtils {
     uint _messageHash;
     address _owner;
     mapping(uint32 /*reaction*/ => uint64 /*count*/) _reactions;
-    mapping(address /*user*/ => int8 /*up/down*/) _reputations;
+    int64 _reputation;
 
 
     modifier onlyProfile(address user) {
@@ -58,34 +58,20 @@ contract Message is PlatformUtils {
         return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _reactions[reaction];
     }
 
+    function getReputation() public view responsible returns (int64 reputation) {
+        return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _reputation;
+    }
+
+
     function react(address user, uint32 reaction, bool undo) public onlyProfile(user) {
         _reserveTarget();
         undo ? _reactions[reaction]-- : _reactions[reaction]++;
         IForumUser(user).onReact{value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false}(reaction, undo);
     }
 
-    function changeReputation(address user, optional(int8) to) public onlyProfile(user) {
+    function changeReputation(address user, int8 change) public onlyProfile(user) {
         _reserveTarget();
-        int8 change = 0;
-        optional(int8) from = _reputations.fetch(user);
-        if (!from.hasValue() && to.hasValue()) {
-            // null -> up/down
-            _reputations[user] = to.get();
-            change = to.get();
-        } else if (from.hasValue() && !to.hasValue()) {
-            // up/down -> null
-            delete _reputations[user];
-            change = -from.get();
-        } else if (from.hasValue() && to.hasValue() && from.get() != to.get()) {
-            // up/down -> down/up
-            _reputations[user] = to.get();
-            change = 2 * to.get();
-        } else {
-            // unchanged
-            user.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false});
-            return;
-        }
-
+        _reputation += change;
         address profile = _profileAddress(user);
         IForumProfile(profile).onReputationChanged{
             value: 0,

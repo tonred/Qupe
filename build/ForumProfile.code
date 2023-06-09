@@ -25,7 +25,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/ForumProfile.tsol, 24
+.loc ../contracts/entities/forum/ForumProfile.tsol, 27
 LDU 32
 GETGLOB 4
 ROT
@@ -106,11 +106,11 @@ THROW 0
 CALL $getUserData_8a7b10b7_internal_macro$
 
 .macro getUserData_8a7b10b7_internal_macro
-.loc ../contracts/entities/forum/ForumProfile.tsol, 25
+.loc ../contracts/entities/forum/ForumProfile.tsol, 28
 CALLREF {
 	CALL $_serverAddress_3d5a0003_internal_macro$
 }
-.loc ../contracts/entities/forum/ForumProfile.tsol, 26
+.loc ../contracts/entities/forum/ForumProfile.tsol, 29
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -133,7 +133,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/ForumProfile.tsol, 29
+.loc ../contracts/entities/forum/ForumProfile.tsol, 32
 LDU 32
 GETGLOB 4
 ROT
@@ -218,7 +218,7 @@ THROW 0
 CALL $getReactions_1b9f5050_internal_macro$
 
 .macro getReactions_1b9f5050_internal_macro
-.loc ../contracts/entities/forum/ForumProfile.tsol, 30
+.loc ../contracts/entities/forum/ForumProfile.tsol, 33
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -313,7 +313,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/ForumProfile.tsol, 34
+.loc ../contracts/entities/forum/ForumProfile.tsol, 37
 OVER
 PUSHCONT {
 	LDREF
@@ -420,7 +420,7 @@ PUSHCONT {
 	IFNOTJMP
 	.loc ../contracts/entities/abstract/Profile.tsol, 65
 	DROP2
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 40
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 43
 	OVER
 	SECOND
 	PUSH S2
@@ -429,7 +429,7 @@ PUSHCONT {
 		CALL $PaymentLibrary_no_obj_isJointVault_a48a4b63_macro$
 	}
 	THROWIFNOT 1501
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 41
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 44
 	XCHG S2
 	NEWC
 	STSLICE
@@ -455,12 +455,12 @@ PUSHCONT {
 	STBREFR
 	STBREFR
 	ENDC
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 42
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 45
 	SWAP
 	CALLREF {
 		CALL $_createRoom_9be559d9_internal_macro$
 	}
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 34
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 37
 }
 CALLX
 .loc ../contracts/entities/forum/ForumProfile.tsol, 0
@@ -474,7 +474,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/ForumProfile.tsol, 45
+.loc ../contracts/entities/forum/ForumProfile.tsol, 48
 OVER
 PUSHCONT {
 	LDU 8
@@ -554,7 +554,7 @@ THROW 0
 CALL $sendMessage_9cb23993_internal_macro$
 
 .macro sendMessage_9cb23993_internal_macro
-.loc ../contracts/entities/forum/ForumProfile.tsol, 45
+.loc ../contracts/entities/forum/ForumProfile.tsol, 48
 DEPTH
 ADDCONST -5
 PICK
@@ -607,15 +607,15 @@ PUSHCONT {
 	IFNOTJMP
 	.loc ../contracts/entities/abstract/Profile.tsol, 65
 	DROP2
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 56
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 59
 	ROLL 8
 	EQINT 1
 	THROWIFNOT 1100
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 57
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 60
 	ROT
 	ISNULL
 	PUSHCONT {
-		.loc ../contracts/entities/forum/ForumProfile.tsol, 59
+		.loc ../contracts/entities/forum/ForumProfile.tsol, 62
 		PUSH S4
 		PUSHPOW2DEC 32
 		CDATASIZE
@@ -630,14 +630,14 @@ PUSHCONT {
 		.loc ../contracts/entities/forum/ForumProfile.tsol, 0
 	}
 	IFNOT
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 61
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 64
 	ACCEPT
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 62
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 65
 	SWAP
 	NEWC
 	STI 1
 	ENDC
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 63
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 66
 	SWAP2
 	REVERSE 4, 1
 	BLKSWAP 5, 2
@@ -646,7 +646,7 @@ PUSHCONT {
 	}
 	.loc ../contracts/entities/forum/ForumProfile.tsol, 0
 	DROP2
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 45
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 48
 }
 CALLX
 .loc ../contracts/entities/forum/ForumProfile.tsol, 0
@@ -660,7 +660,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/ForumProfile.tsol, 66
+.loc ../contracts/entities/forum/ForumProfile.tsol, 69
 OVER
 PUSHCONT {
 	LDREF
@@ -688,7 +688,7 @@ THROW 0
 CALL $react_7cc8c865_internal_macro$
 
 .macro react_7cc8c865_internal_macro
-.loc ../contracts/entities/forum/ForumProfile.tsol, 66
+.loc ../contracts/entities/forum/ForumProfile.tsol, 69
 PUSHINT 1000000000
 .loc ../contracts/utils/TransferUtils.tsol, 10
 DEPTH
@@ -751,11 +751,11 @@ PUSHCONT {
 	.loc ../contracts/entities/abstract/Profile.tsol, 65
 	DROP2
 	ROLLREV 5
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 73
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 76
 	CALLREF {
 		CALL $_reserve_413ab4a8_internal_macro$
 	}
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 74
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 77
 	PUSH3 S1, S2, S3
 	PUSH S7
 	GETGLOB 26
@@ -793,11 +793,11 @@ PUSHCONT {
 		PLDI 1
 	}
 	IF
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 75
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 78
 	OVER
 	EQUAL
 	THROWIFNOT 1103
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 77
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 80
 	PUSH3 S0, S1, S2
 	PUSH2 S6, S7
 	PUSHSLICE xc00000000000000000000000006e011136
@@ -811,12 +811,12 @@ PUSHCONT {
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 78
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 81
 	BLKPUSH 3, 4
 	CALLREF {
 		CALL $_messageAddress_d017174b_internal_macro$
 	}
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 79
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 82
 	PUSH2 S1, S2
 	GETGLOB 16
 	ROLL 3
@@ -838,9 +838,9 @@ PUSHCONT {
 	ENDC
 	PUSHPOW2 7
 	SENDRAWMSG
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 84
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 87
 	PUSHCONT {
-		.loc ../contracts/entities/forum/ForumProfile.tsol, 85
+		.loc ../contracts/entities/forum/ForumProfile.tsol, 88
 		PUSH S3
 		GETGLOB 26
 		DUP2
@@ -881,7 +881,7 @@ PUSHCONT {
 		DROP
 	}
 	PUSHCONT {
-		.loc ../contracts/entities/forum/ForumProfile.tsol, 87
+		.loc ../contracts/entities/forum/ForumProfile.tsol, 90
 		PUSH S3
 		GETGLOB 26
 		DUP2
@@ -942,7 +942,7 @@ PUSHCONT {
 	SETGLOB 26
 	.loc ../contracts/entities/forum/ForumProfile.tsol, 0
 	BLKDROP 4
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 66
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 69
 }
 CALLX
 .loc ../contracts/entities/abstract/Profile.tsol, 0
@@ -958,7 +958,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/ForumProfile.tsol, 91
+.loc ../contracts/entities/forum/ForumProfile.tsol, 94
 OVER
 PUSHCONT {
 	LDREF
@@ -993,7 +993,7 @@ ENDS
 CALLREF {
 	CALL $changeReputation_e8ae45aa_internal_macro$
 }
-IFREF {
+CALLREF {
 	CALL $c7_to_c4$
 }
 THROW 0
@@ -1003,7 +1003,7 @@ THROW 0
 CALL $changeReputation_e8ae45aa_internal_macro$
 
 .macro changeReputation_e8ae45aa_internal_macro
-.loc ../contracts/entities/forum/ForumProfile.tsol, 91
+.loc ../contracts/entities/forum/ForumProfile.tsol, 94
 PUSHINT 1000000000
 .loc ../contracts/utils/TransferUtils.tsol, 10
 DEPTH
@@ -1066,7 +1066,7 @@ PUSHCONT {
 	.loc ../contracts/entities/abstract/Profile.tsol, 65
 	DROP2
 	ROLLREV 4
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 97
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 100
 	DUP
 	ISNULL
 	DUP
@@ -1081,40 +1081,252 @@ PUSHCONT {
 	}
 	IFNOT
 	THROWIFNOT 1104
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 98
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 101
 	CALLREF {
 		CALL $_reserve_413ab4a8_internal_macro$
 	}
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 99
-	PUSH3 S0, S1, S2
-	PUSH S6
-	PUSHSLICE xc000000000000000000000000042f6c9a3
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 102
+	PUSHINT 0
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 103
+	PUSH3 S2, S3, S4
+	GETGLOB 27
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PLDDICT
+	}
+	PUSHCONT {
+		NEWDICT
+	}
+	IFELSE
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PLDDICT
+	}
+	PUSHCONT {
+		NEWDICT
+	}
+	IFELSE
+	PUSHINT 64
+	DICTUGET
+	NULLSWAPIFNOT
+	PUSHCONT {
+		PLDI 8
+	}
+	IF
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 104
+	DUP
+	ISNULL
+	PUSH S3
+	ISNULL
+	NOT
+	AND
+	PUSHCONT {
+		.loc ../contracts/entities/forum/ForumProfile.tsol, 106
+		PUSH2 S2, S2
+		ISNULL
+		THROWIF 63
+		.loc ../contracts/entities/forum/ForumProfile.tsol, 107
+		PUSH2 S0, S6
+		GETGLOB 27
+		DUP2
+		PUSHINT 64
+		DICTUGET
+		PUSHCONT {
+			PLDDICT
+		}
+		PUSHCONT {
+			NEWDICT
+		}
+		IFELSE
+		PUXC S9, S-1
+		DUP2
+		PUSHINT 64
+		DICTUGET
+		PUSHCONT {
+			PLDDICT
+		}
+		PUSHCONT {
+			NEWDICT
+		}
+		IFELSE
+		PUXC S10, S-1
+		ROLL 6
+		NEWC
+		STI 8
+		ROTREV
+		PUSHINT 64
+		DICTUSETB
+		NEWC
+		STDICT
+		ROTREV
+		PUSHINT 64
+		DICTUSETB
+		NEWC
+		STDICT
+		ROTREV
+		PUSHINT 64
+		DICTUSETB
+		SETGLOB 27
+		.loc ../contracts/entities/forum/ForumProfile.tsol, 108
+		POP S2
+	}
+	PUSHCONT {
+		DUP
+		ISNULL
+		NOT
+		PUSH S3
+		ISNULL
+		AND
+		PUSHCONT {
+			.loc ../contracts/entities/forum/ForumProfile.tsol, 111
+			PUSH S5
+			GETGLOB 27
+			DUP2
+			PUSHINT 64
+			DICTUGET
+			PUSHCONT {
+				PLDDICT
+			}
+			PUSHCONT {
+				NEWDICT
+			}
+			IFELSE
+			PUXC S7, S-1
+			DUP2
+			PUSHINT 64
+			DICTUGET
+			PUSHCONT {
+				PLDDICT
+			}
+			PUSHCONT {
+				NEWDICT
+			}
+			IFELSE
+			PUXC S8, S-1
+			PUSHINT 64
+			DICTUDEL
+			DROP
+			NEWC
+			STDICT
+			ROTREV
+			PUSHINT 64
+			DICTUSETB
+			NEWC
+			STDICT
+			ROTREV
+			PUSHINT 64
+			DICTUSETB
+			SETGLOB 27
+			.loc ../contracts/entities/forum/ForumProfile.tsol, 112
+			BLKPUSH 2, 0
+			ISNULL
+			THROWIF 63
+			NEGATE
+			POP S2
+		}
+		PUSHCONT {
+			DUP
+			ISNULL
+			NOT
+			PUSH S3
+			ISNULL
+			NOT
+			AND
+			DUP
+			PUSHCONT {
+				DROP
+				BLKPUSH 2, 0
+				ISNULL
+				THROWIF 63
+				PUSH2 S3, S3
+				ISNULL
+				THROWIF 63
+				NEQ
+			}
+			IF
+			PUSHCONT {
+				.loc ../contracts/entities/forum/ForumProfile.tsol, 115
+				PUSH2 S2, S2
+				ISNULL
+				THROWIF 63
+				.loc ../contracts/entities/forum/ForumProfile.tsol, 116
+				PUSH2 S0, S6
+				GETGLOB 27
+				DUP2
+				PUSHINT 64
+				DICTUGET
+				PUSHCONT {
+					PLDDICT
+				}
+				PUSHCONT {
+					NEWDICT
+				}
+				IFELSE
+				PUXC S9, S-1
+				DUP2
+				PUSHINT 64
+				DICTUGET
+				PUSHCONT {
+					PLDDICT
+				}
+				PUSHCONT {
+					NEWDICT
+				}
+				IFELSE
+				PUXC S10, S-1
+				ROLL 6
+				NEWC
+				STI 8
+				ROTREV
+				PUSHINT 64
+				DICTUSETB
+				NEWC
+				STDICT
+				ROTREV
+				PUSHINT 64
+				DICTUSETB
+				NEWC
+				STDICT
+				ROTREV
+				PUSHINT 64
+				DICTUSETB
+				SETGLOB 27
+				.loc ../contracts/entities/forum/ForumProfile.tsol, 117
+				MULCONST 2
+				FITS 8
+				POP S2
+			}
+			PUSHCONT {
+				.loc ../contracts/entities/forum/ForumProfile.tsol, 120
+				THROW 1104
+			}
+			IFELSE
+		}
+		IFELSE
+	}
+	IFELSE
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 122
+	DROP
+	PUSH3 S0, S2, S3
+	PUSH S7
+	PUSHSLICE xc000000000000000000000000012eb705d
 	NEWC
 	STSLICE
 	STU 64
 	STU 64
 	STU 64
-	XCPU S1, S0
-	ISNULL
-	PUSHCONT {
-		DROP
-		STSLICECONST 0
-	}
-	PUSHCONT {
-		SWAP
-		STSLICECONST 1
-		STI 8
-	}
-	IFELSE
+	STI 8
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 100
-	ROLLREV 3
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 123
+	BLKSWAP 3, 2
 	CALLREF {
 		CALL $_messageAddress_d017174b_internal_macro$
 	}
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 101
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 124
 	GETGLOB 16
 	SWAP
 	TRUE
@@ -1127,25 +1339,16 @@ PUSHCONT {
 	STUR 111
 	ROTREV
 	NEWC
-	STSLICECONST x38b1d4d8
+	STSLICECONST x5ea74760
 	STSLICE
-	XCPU S1, S0
-	ISNULL
-	PUSHCONT {
-		DROP
-		STSLICECONST 0
-	}
-	PUSHCONT {
-		SWAP
-		STSLICECONST 1
-		STI 8
-	}
-	IFELSE
+	STI 8
 	STBREFR
 	ENDC
 	PUSHPOW2 7
 	SENDRAWMSG
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 91
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 0
+	DROP
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 94
 }
 CALLX
 .loc ../contracts/entities/abstract/Profile.tsol, 0
@@ -1161,7 +1364,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/ForumProfile.tsol, 108
+.loc ../contracts/entities/forum/ForumProfile.tsol, 131
 OVER
 PUSHCONT {
 	LDREF
@@ -1189,7 +1392,7 @@ THROW 0
 CALL $onReputationChanged_1f085b9e_internal_macro$
 
 .macro onReputationChanged_1f085b9e_internal_macro
-.loc ../contracts/entities/forum/ForumProfile.tsol, 108
+.loc ../contracts/entities/forum/ForumProfile.tsol, 131
 BLKPUSH 3, 4
 .loc ../contracts/platform/PlatformUtils.tsol, 25
 BLKPUSH 3, 2
@@ -1247,21 +1450,21 @@ PUSHCONT {
 	.loc ../contracts/entities/abstract/Profile.tsol, 65
 	DROP2
 	BLKSWAP 5, 4
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 115
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 138
 	CALLREF {
 		CALL $_reserve_413ab4a8_internal_macro$
 	}
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 116
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 139
 	PUSH S4
 	CALLREF {
 		CALL $_serverAddress_3d5a0003_internal_macro$
 	}
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 117
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 140
 	DUP
 	CALLREF {
 		CALL $_getUserData_4a3c06a1_internal_macro$
 	}
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 118
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 141
 	PUXC S2, S-1
 	DUP
 	FIRST
@@ -1269,7 +1472,7 @@ PUSHCONT {
 	ADD
 	FITS 64
 	SETINDEX 0
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 119
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 142
 	NEWC
 	OVER
 	UNSINGLE
@@ -1281,9 +1484,9 @@ PUSHCONT {
 	PUSHINT 267
 	DICTSETREF
 	SETGLOB 22
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 120
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 143
 	FIRST
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 121
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 144
 	PUSH3 S0, S1, S2
 	BLKSWAP 2, 6
 	XCPU S1, S8
@@ -1299,7 +1502,7 @@ PUSHCONT {
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 122
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 145
 	SWAP
 	SWAP2
 	FALSE
@@ -1316,7 +1519,7 @@ PUSHCONT {
 	ENDC
 	PUSHPOW2 7
 	SENDRAWMSG
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 108
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 131
 }
 CALLX
 .loc ../contracts/entities/forum/ForumProfile.tsol, 0
@@ -1331,7 +1534,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/ForumProfile.tsol, 129
+.loc ../contracts/entities/forum/ForumProfile.tsol, 152
 OVER
 PUSHCONT {
 	LDREF
@@ -1365,7 +1568,7 @@ THROW 0
 CALL $changeServerInfo_439dd6c3_internal_macro$
 
 .macro changeServerInfo_439dd6c3_internal_macro
-.loc ../contracts/entities/forum/ForumProfile.tsol, 129
+.loc ../contracts/entities/forum/ForumProfile.tsol, 152
 PUSHINT 1000000000
 .loc ../contracts/utils/TransferUtils.tsol, 10
 DEPTH
@@ -1428,11 +1631,11 @@ PUSHCONT {
 	.loc ../contracts/entities/abstract/Profile.tsol, 65
 	DROP2
 	ROTREV
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 133
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 156
 	CALLREF {
 		CALL $_reserve_413ab4a8_internal_macro$
 	}
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 134
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 157
 	OVER
 	PUSHSLICE xc00000000000000000000000005cefd79e
 	NEWC
@@ -1441,18 +1644,18 @@ PUSHCONT {
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 135
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 158
 	SWAP
 	CALLREF {
 		CALL $_serverAddress_3d5a0003_internal_macro$
 	}
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 136
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 159
 	DUP
 	NULL
 	CALLREF {
 		CALL $_buildCallData_9738f09f_internal_macro$
 	}
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 137
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 160
 	SWAP
 	TRUE
 	NEWC
@@ -1523,7 +1726,7 @@ PUSHCONT {
 	ENDC
 	PUSHPOW2 7
 	SENDRAWMSG
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 129
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 152
 }
 CALLX
 .loc ../contracts/entities/abstract/Profile.tsol, 0
@@ -1539,7 +1742,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/ForumProfile.tsol, 144
+.loc ../contracts/entities/forum/ForumProfile.tsol, 167
 OVER
 PUSHCONT {
 	LDREF
@@ -1582,7 +1785,7 @@ THROW 0
 CALL $changeRoomInfo_9a13671e_internal_macro$
 
 .macro changeRoomInfo_9a13671e_internal_macro
-.loc ../contracts/entities/forum/ForumProfile.tsol, 144
+.loc ../contracts/entities/forum/ForumProfile.tsol, 167
 PUSHINT 1000000000
 .loc ../contracts/utils/TransferUtils.tsol, 10
 DEPTH
@@ -1645,11 +1848,11 @@ PUSHCONT {
 	.loc ../contracts/entities/abstract/Profile.tsol, 65
 	DROP2
 	ROLLREV 3
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 149
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 172
 	CALLREF {
 		CALL $_reserve_413ab4a8_internal_macro$
 	}
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 150
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 173
 	PUSH2 S1, S2
 	PUSHSLICE xc000000000000000000000000048622292
 	NEWC
@@ -1659,18 +1862,18 @@ PUSHCONT {
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 151
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 174
 	ROTREV
 	CALLREF {
 		CALL $_roomAddress_d30853dd_internal_macro$
 	}
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 152
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 175
 	DUP
 	NULL
 	CALLREF {
 		CALL $_buildCallData_9738f09f_internal_macro$
 	}
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 153
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 176
 	SWAP
 	TRUE
 	NEWC
@@ -1749,7 +1952,7 @@ PUSHCONT {
 	ENDC
 	PUSHPOW2 7
 	SENDRAWMSG
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 144
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 167
 }
 CALLX
 .loc ../contracts/entities/abstract/Profile.tsol, 0
@@ -1761,7 +1964,7 @@ DROP
 CALL $_getUserData_4a3c06a1_internal_macro$
 
 .macro _getUserData_4a3c06a1_internal_macro
-.loc ../contracts/entities/forum/ForumProfile.tsol, 162
+.loc ../contracts/entities/forum/ForumProfile.tsol, 185
 DUP
 GETGLOB 22
 PUSHINT 267
@@ -1769,7 +1972,7 @@ DICTGET
 NULLSWAPIFNOT
 NIP
 PUSHCONT {
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 165
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 188
 	GETGLOB 22
 	PUSHINT 267
 	DICTGETREF
@@ -1787,7 +1990,7 @@ PUSHCONT {
 	.loc ../contracts/entities/forum/ForumProfile.tsol, 0
 }
 PUSHCONT {
-	.loc ../contracts/entities/forum/ForumProfile.tsol, 163
+	.loc ../contracts/entities/forum/ForumProfile.tsol, 186
 	CALLREF {
 		CALL $_defaultUserData_35aaaecf_internal_macro$
 	}
@@ -1802,7 +2005,7 @@ IFELSE
 CALL $_defaultUserData_35aaaecf_internal_macro$
 
 .macro _defaultUserData_35aaaecf_internal_macro
-.loc ../contracts/entities/forum/ForumProfile.tsol, 170
+.loc ../contracts/entities/forum/ForumProfile.tsol, 193
 PUSHINT 0
 SINGLE
 .loc ../contracts/entities/forum/ForumProfile.tsol, 0
@@ -1850,6 +2053,8 @@ PUSHINT 0
 SETGLOB 25
 NEWDICT
 SETGLOB 26
+NEWDICT
+SETGLOB 27
 .loc ../contracts/entities/abstract/Profile.tsol, 71
 SWAP2
 CALLREF {
@@ -6620,6 +6825,7 @@ LDDICT
 LDU 256
 LDU 64
 LDDICT
+LDDICT
 ENDS
 PUSHINT 0
 GETGLOBVAR
@@ -6632,10 +6838,10 @@ GETGLOB 6
 GETGLOB 7
 GETGLOB 8
 GETGLOB 9
-PUSHINT 17
+PUSHINT 18
 PUSHINT 10
 BLKSWX
-PUSHINT 27
+PUSHINT 28
 TUPLEVAR
 POP C7
 SETGLOB 2
@@ -6680,7 +6886,8 @@ PUSHCONT {
 	PUSHINT 0
 	DUP
 	NEWDICT
-	PUSHINT 27
+	DUP
+	PUSHINT 28
 	TUPLEVAR
 	POP C7
 	PUSHINT 64
@@ -6698,12 +6905,12 @@ IFREFELSE {
 .macro c7_to_c4
 PUSH C7
 FALSE
-PUSHINT 27
-SETINDEXVARQ
 PUSHINT 28
+SETINDEXVARQ
+PUSHINT 29
 UNTUPLEVAR
 DROP
-PUSHINT 27
+PUSHINT 28
 PUSHINT 0
 REVX
 BLKDROP 10
@@ -6714,12 +6921,12 @@ STONE
 STDICT
 STDICT
 STDICT
-ROLLREV 14
+ROLLREV 15
 NEWC
 STDICT
 STSLICE
 STREF
-ROLLREV 11
+ROLLREV 12
 NEWC
 STSLICE
 STREF
@@ -6727,12 +6934,13 @@ STU 128
 STU 128
 STDICT
 STDICT
-ROLLREV 5
+ROLLREV 6
 NEWC
 STDICT
 STDICT
 STU 256
 STU 64
+STDICT
 STDICT
 STBREFR
 STBREFR
@@ -6937,7 +7145,7 @@ CALL $PermissionsLibrary_no_obj_none_a877db9f_macro$
 .loc ../contracts/permissions/PermissionsLibrary.tsol, 13
 PUSHINT 5
 PUSHREF
-.compute $inline_array_line_12_column_27_ast_id_6035$
+.compute $inline_array_line_12_column_27_ast_id_6070$
 PAIR
 SINGLE
 .loc ../contracts/permissions/PermissionsLibrary.tsol, 0
@@ -6950,7 +7158,7 @@ CALL $PermissionsLibrary_no_obj_full_b86f58fe_macro$
 .loc ../contracts/permissions/PermissionsLibrary.tsol, 17
 PUSHINT 5
 PUSHREF
-.compute $inline_array_line_16_column_27_ast_id_6050$
+.compute $inline_array_line_16_column_27_ast_id_6085$
 PAIR
 SINGLE
 .loc ../contracts/permissions/PermissionsLibrary.tsol, 0
@@ -7507,7 +7715,7 @@ IFELSE
 BLKDROP2 2, 1
 .loc ../contracts/payment/PaymentLibrary.tsol, 0
 
-.macro inline_array_line_12_column_27_ast_id_6035
+.macro inline_array_line_12_column_27_ast_id_6070
 FALSE
 BLKPUSH 5, 0
 NEWDICT
@@ -7526,7 +7734,7 @@ PUSHCONT {
 REPEAT
 NIP
 
-.macro inline_array_line_16_column_27_ast_id_6050
+.macro inline_array_line_16_column_27_ast_id_6085
 TRUE
 BLKPUSH 4, 0
 PUSHINT 0

@@ -411,7 +411,7 @@
 				{"name":"serverID","type":"uint64"},
 				{"name":"roomID","type":"uint64"},
 				{"name":"messageID","type":"uint64"},
-				{"name":"to","type":"optional(int8)"}
+				{"name":"change","type":"int8"}
 			],
 			"outputs": [
 			]
@@ -612,6 +612,7 @@
 		{"components":[{"name":"values","type":"bool[]"}],"name":"_permissions","type":"map(address,tuple)"},
 		{"name":"_currentMessageHash","type":"uint256"},
 		{"name":"_timestamp","type":"uint64"},
-		{"name":"_reactions","type":"map(uint64,map(uint64,map(uint64,map(uint32,bool))))"}
+		{"name":"_reactions","type":"map(uint64,map(uint64,map(uint64,map(uint32,bool))))"},
+		{"name":"_votes","type":"map(uint64,map(uint64,map(uint64,int8)))"}
 	]
 }

@@ -14,11 +14,14 @@ import "./Topic.tsol";
 
 contract ForumProfile is Profile, IForumProfile {
     event React(uint64 serverID, uint64 roomID, uint64 messageID, uint32 reaction, bool undo);
-    event ChangeReputation(uint64 serverID, uint64 roomID, uint64 messageID, optional(int8) to);
+    event ChangeReputation(uint64 serverID, uint64 roomID, uint64 messageID, int8 change);
     event ReputationChanged(uint64 serverID, uint64 roomID, uint64 messageID, address user, int8 change, int64 current);
 
     // serverID => roomID => messageID => reaction => bool
     mapping(uint64 => mapping(uint64 => mapping(uint64 => mapping(uint32 => bool)))) _reactions;
+
+    // serverID => roomID => messageID => vote (upvote/downvote)
+    mapping(uint64 => mapping(uint64 => mapping(uint64 => int8))) _votes;
 
 
     function getUserData(uint64 serverID) public view responsible returns (ForumUserData userData) {
@@ -93,16 +96,36 @@ contract ForumProfile is Profile, IForumProfile {
         uint64 roomID,
         uint64 messageID,
         optional(int8) to
-    ) public view minValue(Gas.CHANGE_REPUTATION_VALUE) onlyOwner onlyJoined(serverID, address(0)) {
+    ) public minValue(Gas.CHANGE_REPUTATION_VALUE) onlyOwner onlyJoined(serverID, address(0)) {
         require(!to.hasValue() || math.abs(to.get()) == 1, ErrorCodes.INVALID_REPUTATION_VALUE);
         _reserve();
-        emit ChangeReputation(serverID, roomID, messageID, to);
+        int8 change = 0;
+        optional(int8) from = _votes[serverID][roomID].fetch(messageID);
+        if (!from.hasValue() && to.hasValue()) {
+            // null -> up/down
+            int8 value = to.get();
+            _votes[serverID][roomID][messageID] = value;
+            change = value;
+        } else if (from.hasValue() && !to.hasValue()) {
+            // up/down -> null
+            delete _votes[serverID][roomID][messageID];
+            change = -from.get();
+        } else if (from.hasValue() && to.hasValue() && from.get() != to.get()) {
+            // up/down -> down/up
+            int8 value = to.get();
+            _votes[serverID][roomID][messageID] = value;
+            change = 2 * value;
+        } else {
+            // unchanged
+            revert(ErrorCodes.INVALID_REPUTATION_VALUE);
+        }
+        emit ChangeReputation(serverID, roomID, messageID, change);
         address message = _messageAddress(serverID, roomID, messageID);
         Message(message).changeReputation{
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: true
-        }(_owner, to);
+        }(_owner, change);
     }
 
     function onReputationChanged(

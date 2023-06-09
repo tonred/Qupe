@@ -40,7 +40,7 @@ PUSHREFSLICE {
 SETGLOB 16
 NEWDICT
 SETGLOB 17
-NEWDICT
+PUSHINT 0
 SETGLOB 18
 .loc ../contracts/entities/forum/Message.tsol, 32
 CALLREF {
@@ -490,7 +490,7 @@ PUSHCONT {
 IF
 .loc ../contracts/entities/forum/Message.tsol, 0
 
-.macro react
+.macro getReputation
 DROP
 GETGLOB 6
 THROWIFNOT 76
@@ -500,6 +500,94 @@ IFREF {
 	CALL $c4_to_c7$
 }
 .loc ../contracts/entities/forum/Message.tsol, 61
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+ENDS
+.loc ../contracts/entities/forum/Message.tsol, 0
+CALLREF {
+	CALL $getReputation_ffe6a18e_internal_macro$
+}
+OVER
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 2159655653
+	STUR 130
+	STI 64
+	ENDC
+	PUSHINT 0
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	OVER
+	THIRD
+	GETGLOB 9
+	ROLL 3
+	SECOND
+	NEWC
+	STSLICECONST x2_
+	STI 1
+	STSLICECONST x1_
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 106
+	STZEROES
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	STI 64
+	ENDC
+	GETGLOB 4
+	INDEX 4
+}
+IFELSE
+SENDRAWMSG
+IFREF {
+	CALL $upd_only_time_in_c4$
+}
+THROW 0
+
+.globl	getReputation_ffe6a18e_internal
+.type	getReputation_ffe6a18e_internal, @function
+CALL $getReputation_ffe6a18e_internal_macro$
+
+.macro getReputation_ffe6a18e_internal_macro
+.loc ../contracts/entities/forum/Message.tsol, 62
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+PUSHINT 64
+SETINDEXQ 4
+FALSE
+SETINDEXQ 1
+SETGLOB 4
+GETGLOB 18
+.loc ../contracts/entities/forum/Message.tsol, 0
+
+.macro react
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/entities/forum/Message.tsol, 66
 OVER
 PUSHCONT {
 	LDREF
@@ -525,7 +613,7 @@ THROW 0
 CALL $react_b75c08a0_internal_macro$
 
 .macro react_b75c08a0_internal_macro
-.loc ../contracts/entities/forum/Message.tsol, 61
+.loc ../contracts/entities/forum/Message.tsol, 66
 PUSH S2
 .loc ../contracts/entities/forum/Message.tsol, 25
 CALLREF {
@@ -535,11 +623,11 @@ CALLREF {
 GETGLOB 9
 SDEQ
 THROWIFNOT 1002
-.loc ../contracts/entities/forum/Message.tsol, 62
+.loc ../contracts/entities/forum/Message.tsol, 67
 CALLREF {
 	CALL $_reserveTarget_2497aaf2_internal_macro$
 }
-.loc ../contracts/entities/forum/Message.tsol, 63
+.loc ../contracts/entities/forum/Message.tsol, 68
 DUP
 PUSHCONT {
 	OVER
@@ -589,7 +677,7 @@ PUSHCONT {
 }
 IFELSE
 DROP
-.loc ../contracts/entities/forum/Message.tsol, 64
+.loc ../contracts/entities/forum/Message.tsol, 69
 XCHG S2
 FALSE
 NEWC
@@ -615,249 +703,90 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/Message.tsol, 67
+.loc ../contracts/entities/forum/Message.tsol, 72
 OVER
 PUSHCONT {
 	LDREF
 	ENDS
 	CTOS
-	LDMSGADDR
-	LDI 1
-	SWAP
-	NULLROTRIFNOT
-	PUSHCONT {
-		LDI 8
-	}
-	IF
 }
-PUSHCONT {
-	LDMSGADDR
-	LDI 1
-	SWAP
-	NULLROTRIFNOT
-	PUSHCONT {
-		LDI 8
-	}
-	IF
-}
-IFELSE
+IF
+LDMSGADDR
+LDI 8
 ENDS
 .loc ../contracts/entities/forum/Message.tsol, 0
 CALLREF {
-	CALL $changeReputation_9e71ef7a_internal_macro$
+	CALL $changeReputation_bb413564_internal_macro$
 }
 CALLREF {
 	CALL $c7_to_c4$
 }
 THROW 0
 
-.globl	changeReputation_9e71ef7a_internal
-.type	changeReputation_9e71ef7a_internal, @function
-CALL $changeReputation_9e71ef7a_internal_macro$
+.globl	changeReputation_bb413564_internal
+.type	changeReputation_bb413564_internal, @function
+CALL $changeReputation_bb413564_internal_macro$
 
-.macro changeReputation_9e71ef7a_internal_macro
-.loc ../contracts/entities/forum/Message.tsol, 67
-PUSH2 S1, S1
+.macro changeReputation_bb413564_internal_macro
+.loc ../contracts/entities/forum/Message.tsol, 72
+OVER
 .loc ../contracts/entities/forum/Message.tsol, 25
 CALLREF {
 	CALL $_profileAddress_b1b718c8_internal_macro$
 }
 .loc ../contracts/entities/forum/Message.tsol, 26
 GETGLOB 9
-OVER
 SDEQ
 THROWIFNOT 1002
-.loc ../contracts/entities/forum/Message.tsol, 27
-SWAP2
-PUSHCONT {
-	.loc ../contracts/entities/forum/Message.tsol, 68
-	CALLREF {
-		CALL $_reserveTarget_2497aaf2_internal_macro$
-	}
-	.loc ../contracts/entities/forum/Message.tsol, 69
-	PUSHINT 0
-	.loc ../contracts/entities/forum/Message.tsol, 70
-	PUSH S2
-	GETGLOB 18
-	PUSHINT 267
-	DICTGET
-	NULLSWAPIFNOT
-	PUSHCONT {
-		PLDI 8
-	}
-	IF
-	.loc ../contracts/entities/forum/Message.tsol, 71
-	FALSE ; decl return flag
-	OVER
-	ISNULL
-	PUSH S4
-	ISNULL
-	NOT
-	AND
-	PUSHCONT {
-		.loc ../contracts/entities/forum/Message.tsol, 73
-		PUSH2 S3, S3
-		ISNULL
-		THROWIF 63
-		PUSH S5
-		GETGLOB 18
-		ROT
-		NEWC
-		STI 8
-		ROTREV
-		PUSHINT 267
-		DICTSETB
-		SETGLOB 18
-		.loc ../contracts/entities/forum/Message.tsol, 74
-		PUSH2 S3, S3
-		ISNULL
-		THROWIF 63
-		POP S3
-		.loc ../contracts/entities/forum/Message.tsol, 0
-	}
-	PUSHCONT {
-		FALSE ; decl return flag
-		PUSH S2
-		ISNULL
-		NOT
-		PUSH S5
-		ISNULL
-		AND
-		PUSHCONT {
-			.loc ../contracts/entities/forum/Message.tsol, 77
-			PUSH S5
-			GETGLOB 18
-			PUSHINT 267
-			DICTDEL
-			DROP
-			SETGLOB 18
-			.loc ../contracts/entities/forum/Message.tsol, 78
-			PUSH2 S2, S2
-			ISNULL
-			THROWIF 63
-			NEGATE
-			POP S4
-			.loc ../contracts/entities/forum/Message.tsol, 0
-		}
-		PUSHCONT {
-			FALSE ; decl return flag
-			PUSH S3
-			ISNULL
-			NOT
-			PUSH S6
-			ISNULL
-			NOT
-			AND
-			DUP
-			PUSHCONT {
-				DROP
-				PUSH2 S3, S3
-				ISNULL
-				THROWIF 63
-				PUSH2 S6, S6
-				ISNULL
-				THROWIF 63
-				NEQ
-			}
-			IF
-			PUSHCONT {
-				.loc ../contracts/entities/forum/Message.tsol, 81
-				PUSH2 S5, S5
-				ISNULL
-				THROWIF 63
-				PUSH S7
-				GETGLOB 18
-				ROT
-				NEWC
-				STI 8
-				ROTREV
-				PUSHINT 267
-				DICTSETB
-				SETGLOB 18
-				.loc ../contracts/entities/forum/Message.tsol, 82
-				PUSHINT 2
-				PUSH2 S6, S6
-				ISNULL
-				THROWIF 63
-				MUL
-				FITS 8
-				POP S5
-			}
-			PUSHCONT {
-				.loc ../contracts/entities/forum/Message.tsol, 85
-				ROLL 6
-				NEWC
-				STSLICECONST x42_
-				STSLICE
-				PUSHINT 111
-				STZEROES
-				ENDC
-				PUSHPOW2 7
-				SENDRAWMSG
-				.loc ../contracts/entities/forum/Message.tsol, 86
-				BLKDROP 6
-				PUSHINT 4
-			}
-			IFELSE
-			.loc ../contracts/entities/forum/Message.tsol, 0
-			DUP
-			IFRET
-			DROP
-		}
-		IFELSE
-		DUP
-		IFRET
-		DROP
-	}
-	IFELSE
-	IFRET
-	.loc ../contracts/entities/forum/Message.tsol, 89
-	DROP
-	PUSH S2
-	CALLREF {
-		CALL $_profileAddress_b1b718c8_internal_macro$
-	}
-	.loc ../contracts/entities/forum/Message.tsol, 90
-	SWAP
-	ROLL 3
-	GETGLOB 14
-	GETGLOB 13
-	GETGLOB 12
-	ROLL 5
-	FALSE
-	NEWC
-	STSLICECONST x6_
-	STI 1
-	STSLICECONST x1_
-	STSLICE
-	PUSHINT 1
-	STUR 111
-	ROLLREV 5
-	NEWC
-	STSLICECONST x4e355758
-	STU 64
-	STU 64
-	STU 64
-	STSLICE
-	STI 8
-	STBREFR
-	ENDC
-	PUSHPOW2 7
-	SENDRAWMSG
-	.loc ../contracts/entities/forum/Message.tsol, 0
-	DROP
-	.loc ../contracts/entities/forum/Message.tsol, 67
+.loc ../contracts/entities/forum/Message.tsol, 73
+CALLREF {
+	CALL $_reserveTarget_2497aaf2_internal_macro$
 }
-CALLX
+.loc ../contracts/entities/forum/Message.tsol, 74
+GETGLOB 18
+OVER
+ADD
+FITS 64
+SETGLOB 18
+.loc ../contracts/entities/forum/Message.tsol, 75
+OVER
+CALLREF {
+	CALL $_profileAddress_b1b718c8_internal_macro$
+}
+.loc ../contracts/entities/forum/Message.tsol, 76
+XCHG S2
+GETGLOB 14
+GETGLOB 13
+GETGLOB 12
+ROLL 5
+FALSE
+NEWC
+STSLICECONST x6_
+STI 1
+STSLICECONST x1_
+STSLICE
+PUSHINT 1
+STUR 111
+ROLLREV 5
+NEWC
+STSLICECONST x4e355758
+STU 64
+STU 64
+STU 64
+STSLICE
+STI 8
+STBREFR
+ENDC
+PUSHPOW2 7
+SENDRAWMSG
 .loc ../contracts/entities/forum/Message.tsol, 0
-DROP2
 
 .globl	_reserveTarget_2497aaf2_internal
 .type	_reserveTarget_2497aaf2_internal, @function
 CALL $_reserveTarget_2497aaf2_internal_macro$
 
 .macro _reserveTarget_2497aaf2_internal_macro
-.loc ../contracts/entities/forum/Message.tsol, 98
+.loc ../contracts/entities/forum/Message.tsol, 84
 PUSHINT 500000000
 PUSHINT 0
 RAWRESERVE
@@ -1096,7 +1025,10 @@ LDU 64
 LDU 256
 LDMSGADDR
 LDDICT
-LDDICT
+LDREF
+ENDS
+CTOS
+LDI 64
 ENDS
 SETGLOB 18
 SETGLOB 17
@@ -1131,7 +1063,7 @@ PUSHCONT {
 		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 	}
 	NEWDICT
-	DUP
+	PUSHINT 0
 	SETGLOB 18
 	SETGLOB 17
 	SETGLOB 16
@@ -1179,7 +1111,10 @@ STU 64
 STU 256
 STSLICE
 STDICT
-STDICT
+SWAP
+NEWC
+STI 64
+STBREFR
 STBREFR
 ENDC
 POPROOT
@@ -1289,9 +1224,15 @@ THROW 60
 
 .macro public_function_selector
 DUP
-PUSHINT 951178456
+PUSHINT 727064911
 LEQ
 IFJMPREF {
+	DUP
+	PUSHINT 12172005
+	EQUAL
+	IFJMPREF {
+		CALL $getReputation$
+	}
 	DUP
 	PUSHINT 247534778
 	EQUAL
@@ -1310,12 +1251,6 @@ IFJMPREF {
 	IFJMPREF {
 		CALL $getReactionCount$
 	}
-	DUP
-	PUSHINT 951178456
-	EQUAL
-	IFJMPREF {
-		CALL $changeReputation$
-	}
 }
 DUP
 PUSHINT 1956138565
@@ -1326,6 +1261,12 @@ IFJMPREF {
 	EQUAL
 	IFJMPREF {
 		CALL $getIDs$
+	}
+	DUP
+	PUSHINT 1588021088
+	EQUAL
+	IFJMPREF {
+		CALL $changeReputation$
 	}
 	DUP
 	PUSHINT 1756716863

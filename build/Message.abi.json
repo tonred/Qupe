@@ -44,6 +44,15 @@
 			]
 		},
 		{
+			"name": "getReputation",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"reputation","type":"int64"}
+			]
+		},
+		{
 			"name": "react",
 			"inputs": [
 				{"name":"user","type":"address"},
@@ -57,7 +66,7 @@
 			"name": "changeReputation",
 			"inputs": [
 				{"name":"user","type":"address"},
-				{"name":"to","type":"optional(int8)"}
+				{"name":"change","type":"int8"}
 			],
 			"outputs": [
 			]
@@ -86,6 +95,6 @@
 		{"name":"_messageHash","type":"uint256"},
 		{"name":"_owner","type":"address"},
 		{"name":"_reactions","type":"map(uint32,uint64)"},
-		{"name":"_reputations","type":"map(address,int8)"}
+		{"name":"_reputation","type":"int64"}
 	]
 }
