@@ -12,9 +12,32 @@ Demo: [https://demo](https://demo)
 
 [//]: # (todo menu)
 
+
 ## Key features:
 
-[//]: # (todo key features)
+* Qupe Protocol with support for multiple implementations
+* Fully functional MVP consisting of the smart contract (Protocol and three implementations), web3 application, and demo
+* Fast and cheap messages delivery solution that eliminates the need to deploy new smart contracts for each message
+* Customizable permission controls for servers and rooms
+* Rich set of features including tags, reactions, reputations, and more
+* Distributed and decentralized architecture optimized for the VENOM blockchain, avoiding the usage of large mappings
+
+
+## Navigation
+
+* [Qupe Protocol](#qupe-protocol)
+    - [Abstract](#abstract)
+    - [Entities](#entities)
+    - [Messages](#messages)
+    - [Permissions](#permissions)
+    - [Workflow](#workflow)
+* [Implementations](#implementations)
+    - [Chat](#chat)
+    - [Forum](#forum)
+    - [Blog](#blog)
+* [Deployment](#deployment)
+    - [Requirements](#requirements)
+    - [Scripts](#scripts)
 
 ## Qupe Protocol
 
@@ -91,7 +114,7 @@ They should also deposit some VENOM and/or TIP3 tokens to pay fees.
 3) Depending on the previous step, the user can create a new room on the server or use an existing one.
 4) Finally, user can send messages in the room.
 
-<details>
+<details open>
 <summary>Diagram of workflow with creating new Server and Room</summary>
 
 ```mermaid
@@ -139,7 +162,8 @@ Default permissions:
 |         | Default                   | Creator |
 |---------|---------------------------|---------|
 | Chat    | `none`                    | `full`  |
-| Channel | `none` or `SEND_MESSAGE`* | `full`  |
+| Channel | `none` or* `SEND_MESSAGE` | `full`  |
+
 _*depends on room configuration_
 
 Message arguments:
@@ -190,3 +214,30 @@ Message arguments:
 2) Reply to message hash
 3) Forward message hash
 4) Tags (default feature)
+
+
+## Deployment
+
+### Requirements
+
+Before proceeding with the deployment, make sure you have the following requirements installed:
+
+* nodejs
+* [locklift](https://npmjs.com/package/locklift) `^2.5.5`
+
+### Scripts
+
+```shell
+# 1) Setup
+npm run setup
+```
+
+```shell
+# 2) Build
+npm run build
+```
+
+```shell
+# 3) Deploy
+npm run deploy
+```
