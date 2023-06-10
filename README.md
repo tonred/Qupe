@@ -219,6 +219,8 @@ Message arguments:
 4) Is message highlighted
 5) Tags (default feature)
 
+![chat demo](docs/chat-demo.gif)
+
 ### 🗣️ Forum
 
 The room in this implementation is called Topic.
@@ -240,8 +242,6 @@ Message arguments:
 3) Forward message hash
 4) Is message highlighted
 5) Tags (default feature)
-
-![chat demo](docs/chat-demo.gif)
 
 ### 📝 Blog
 
