@@ -101,7 +101,7 @@ describe("Test Quashers Chat contracts", async function () {
         answerId: 0
       }).send({
         from: owner,
-        amount: toNano(4),
+        amount: toNano(1),
       }));
       await tx.traceTree?.beautyPrint();
       log('Gas used: ', fromNano(tx.traceTree.totalGasUsed()))
@@ -131,14 +131,14 @@ describe("Test Quashers Chat contracts", async function () {
           info: {
             meta: encodeData({
               title: 'Test chat Server #1',
-              description: 'Test chat Server #1 description with free messages',
+              description: `# Server description example`,
             }),
             createRoomPayment: emptyPayment,
           },
           answerId: 0
         }).send({
           from: owner,
-          amount: toNano(3),
+          amount: toNano(2),
         }));
         await tx.traceTree?.beautyPrint();
 
@@ -181,7 +181,7 @@ describe("Test Quashers Chat contracts", async function () {
           },
           owner,
           payment: emptyPayment
-        }).send({from: owner, amount: toNano(2)}));
+        }).send({from: owner, amount: toNano(1.5)}));
         await tx.traceTree?.beautyPrint();
         log('Gas used: ', fromNano(tx.traceTree.totalGasUsed()))
         await logDiff(tx)

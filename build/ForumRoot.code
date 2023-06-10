@@ -407,8 +407,8 @@ STU 256
 ENDC
 CTOS
 ROLLREV 3
-PUSHINT 1000000000
 PUSHINT 500000000
+DUP
 ADD
 UFITS 128
 PUSH S4
@@ -485,8 +485,8 @@ STU 256
 ENDC
 CTOS
 ROLLREV 3
+PUSHINT 500000000
 PUSHINT 1000000000
-DUP
 UFITS 128
 ADD
 UFITS 128
@@ -536,7 +536,7 @@ CALL $_reserveTarget_2497aaf2_internal_macro$
 
 .macro _reserveTarget_2497aaf2_internal_macro
 .loc ../contracts/entities/abstract/Root.tsol, 65
-PUSHINT 1000000000
+PUSHINT 500000000
 PUSHINT 0
 RAWRESERVE
 .loc ../contracts/entities/abstract/Root.tsol, 0

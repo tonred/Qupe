@@ -689,7 +689,7 @@ CALL $react_7cc8c865_internal_macro$
 
 .macro react_7cc8c865_internal_macro
 .loc ../contracts/entities/forum/ForumProfile.tsol, 69
-PUSHINT 1000000000
+PUSHINT 500000000
 .loc ../contracts/utils/TransferUtils.tsol, 10
 DEPTH
 ADDCONST -2
@@ -1004,7 +1004,7 @@ CALL $changeReputation_e8ae45aa_internal_macro$
 
 .macro changeReputation_e8ae45aa_internal_macro
 .loc ../contracts/entities/forum/ForumProfile.tsol, 94
-PUSHINT 1000000000
+PUSHINT 500000000
 .loc ../contracts/utils/TransferUtils.tsol, 10
 DEPTH
 ADDCONST -2
@@ -2465,7 +2465,7 @@ CALL $join_bd69deac_internal_macro$
 DEPTH
 ADDCONST -2
 PICK
-PUSHINT 1000000000
+PUSHINT 500000000
 GEQ
 THROWIFNOT 500
 .loc ../contracts/entities/abstract/Profile.tsol, 49
@@ -3586,7 +3586,7 @@ CALL $deposit_d0e30db0_internal_macro$
 DEPTH
 ADDCONST -2
 PICK
-PUSHINT 1000000000
+PUSHINT 100000000
 GEQ
 THROWIFNOT 500
 .loc ../contracts/entities/abstract/Profile.tsol, 214
@@ -4896,8 +4896,8 @@ CALL $_createRoom_9be559d9_internal_macro$
 
 .macro _createRoom_9be559d9_internal_macro
 .loc ../contracts/entities/abstract/Profile.tsol, 347
-PUSHINT 1000000000
 PUSHINT 500000000
+DUP
 ADD
 UFITS 128
 PUSHINT 500000000
@@ -5002,8 +5002,8 @@ PUSHCONT {
 	.loc ../contracts/entities/abstract/Profile.tsol, 357
 	OVER2
 	ROT
-	PUSHINT 1000000000
 	PUSHINT 500000000
+	DUP
 	ADD
 	UFITS 128
 	PUSHINT 500000000
@@ -5250,8 +5250,8 @@ CALL $_createRoomPayEver_7340f3cb_internal_macro$
 .macro _createRoomPayEver_7340f3cb_internal_macro
 .loc ../contracts/entities/abstract/Profile.tsol, 394
 OVER
-PUSHINT 1000000000
 PUSHINT 500000000
+DUP
 ADD
 UFITS 128
 PUSHINT 500000000
@@ -5572,7 +5572,7 @@ CALL $_reserveTarget_2497aaf2_internal_macro$
 
 .macro _reserveTarget_2497aaf2_internal_macro
 .loc ../contracts/entities/abstract/Profile.tsol, 437
-PUSHINT 1000000000
+PUSHINT 500000000
 PUSHINT 0
 RAWRESERVE
 .loc ../contracts/entities/abstract/Profile.tsol, 0
