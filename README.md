@@ -12,7 +12,7 @@ Qupe – protocol for building public web3 social media platforms on top of TVM 
 
 </h3>
 
-[![license](https://img.shields.io/github/license/tonred/Qupe)](https://github.com/tonred/Qupe/LICENSE)
+[![license](https://img.shields.io/github/license/tonred/Qupe)](https://github.com/tonred/Qupe/blob/main/LICENSE)
 
 [![Threaded Solidity](https://img.shields.io/badge/T--Sol-%5E0.66.0-blue)](https://github.com/tonlabs/TON-Solidity-Compiler/releases/tag/0.66.0)
 [![TVM linker](https://img.shields.io/badge/TVM--linker-0.20.2-blue)](https://github.com/tonlabs/TVM-linker/releases/tag/0.20.2)
