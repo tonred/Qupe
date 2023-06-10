@@ -1,5 +1,5 @@
 {
-    "name": "ever-solidity-project-templated",
+    "name": "qupe",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
@@ -9,7 +9,7 @@
         "test": "npx locklift test --network local --disable-build"
     },
     "author": "TONRED",
-    "license": "ISC",
+    "license": "MIT",
     "dependencies": {
         "@types/node": "^18.16.9",
         "@types/mocha": "^10.0.1",
