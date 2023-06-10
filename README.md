@@ -2,7 +2,7 @@
 
 Qupe - protocol for building public web3 social/media platforms on top of TVM (Venom/Everscale) blockchains
 
-[//]: # (todo naming)
+[//]: # (todo)
 
 Project Github: [https://github.com/tonred/Quashers](https://github.com/tonred/Quashers)
 
@@ -10,10 +10,8 @@ Website: [https://chat.qu.pe/main/c/0/0](https://chat.qu.pe/main/c/0/0)
 
 Demo: [https://demo](https://demo)
 
-[//]: # (todo menu)
 
-
-## Key features:
+## 🚀 Key Features:
 
 * Qupe Protocol with support for multiple implementations
 * Fully functional MVP consisting of the smart contract (Protocol and three implementations), web3 application, and demo
@@ -23,27 +21,29 @@ Demo: [https://demo](https://demo)
 * Distributed and decentralized architecture optimized for the VENOM blockchain, avoiding the usage of large mappings
 
 
-## Navigation
+## 🧭 Navigation
 
-* [Qupe Protocol](#qupe-protocol)
+* [🚀 Key Features](#-key-features)
+* [🧭 Navigation](#-navigation)
+* [📖 Qupe Protocol](#-qupe-protocol)
     - [Abstract](#abstract)
     - [Entities](#entities)
     - [Messages](#messages)
     - [Permissions](#permissions)
     - [Workflow](#workflow)
-* [Implementations](#implementations)
+* [🧰 Implementations](#-implementations)
     - [Chat](#chat)
     - [Forum](#forum)
     - [Blog](#blog)
-* [Deployment](#deployment)
+* [🛠 Deployment](#-deployment)
     - [Requirements](#requirements)
     - [Scripts](#scripts)
 
-## Qupe Protocol
+## 📖 Qupe Protocol
 
 ### Abstract
 
-The core of this project is the Qupe Protocol - a public web3 communication protocol.
+The core of this project is the **Qupe Protocol** - a public web3 communication protocol.
 It defines four main entities: Roots, Servers, Rooms, and Profiles, along with their interactions.
 The source code for the smart contracts can be found in the [abstract folder](contracts/entities/abstract).
 
@@ -57,19 +57,32 @@ It is responsible for deploying new servers and profiles.
 It's important to note that rooms are deployed by servers, not by the root itself.
 
 #### Server
-A Server is an independent entity that can have several rooms.
-It acts as a unifying unit for multiple rooms.
-The server has customizable permission controls, which are explained further in the [Permissions](#permissions) section.
+A Server is an independent entity that can host multiple rooms, acting as a unifying unit.
+Users with the `CREATE_ROOM` permission can create new rooms within the server.
+The server administrators have the ability to configure the price in VENOM or TIP3 tokens for creating new rooms.
+Additionally, servers have customizable permission controls, which are further explained in the [Permissions](#permissions) section.
 
 #### Room
-A Room is a place where users can communicate with each other.
+A Room is a space where users can interact and communicate with each other within the Qupe Protocol.
+Users with the SEND_MESSAGE permission can send messages in the room.
 It accepts messages from users and manages them.
-Like servers, rooms also have customizable permission controls.
+The room's administrators can configure the price in VENOM or TIP3 tokens for sending messages.
+Similar to servers, rooms also have customizable permission controls.
+Furthermore, rooms can have moderators who possess the `BAN_UNBAN` permission, granting them the ability to ban or unban users within the room.
 
 #### Profile
 A Profile represents a user account.
 It holds the user's balance of VENOM and TIP3 tokens, which are used to pay fees for publishing messages.
 The profile stores user information, a list of connected servers, permissions, and other relevant data that may vary across different implementations.
+
+#### Vaults
+Servers and Rooms within the Qupe Protocol have their dedicated vaults for storing VENOM and TIP3 tokens.
+Users with the `ADMIN` permission have the ability to withdraw tokens from these vaults.
+Similarly, Profiles also possess their own vaults for storing VENOM and TIP3 tokens, which are utilized for fee payments.
+These vaults are designed to support multiple tokens and are referred to as MultiVaults.
+Users can easily deposit and withdraw tokens from their vaults.
+
+The source code for the vaults can be found in the [contracts/vault](contracts/vault) directory.
 
 
 ### Messages
@@ -147,7 +160,7 @@ Some implementations may offer additional features such as reactions and changin
 [See this demo](https://demo)
 
 
-## Implementations
+## 🧰 Implementations
 
 [//]: # (todo abstract info)
 
@@ -216,13 +229,13 @@ Message arguments:
 4) Tags (default feature)
 
 
-## Deployment
+## 🛠 Deployment
 
 ### Requirements
 
 Before proceeding with the deployment, make sure you have the following requirements installed:
 
-* nodejs
+* [nodejs](https://nodejs.org) `>=16.16.0`
 * [locklift](https://npmjs.com/package/locklift) `^2.5.5`
 
 ### Scripts
