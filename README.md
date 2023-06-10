@@ -69,7 +69,9 @@ The source code for the smart contracts can be found in the [abstract folder](co
 
 <details>
 <summary>Diagram of smart-contracts interactions</summary>
+    
 ![diagram](docs/abstract.png)
+
 </details>
 
 ### Entities
