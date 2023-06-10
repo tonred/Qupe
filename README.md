@@ -67,7 +67,7 @@ The core of this project is the **Qupe Protocol** - a public web3 communication 
 It defines four main entities: Roots, Servers, Rooms, and Profiles, along with their interactions.
 The source code for the smart contracts can be found in the [abstract folder](contracts/entities/abstract).
 
-[//]: # (todo diagram)
+![diagram](docs/abstract.png)
 
 ### Entities
 
@@ -133,12 +133,16 @@ Both servers and rooms have customizable permission controls that enable fine-gr
 These permissions are set upon deployment and can be changed by the `ADMIN` later.
 Additionally, the `ADMIN` has the ability to set or delete custom permissions for any user.
 
-The following permissions are available:
+The following actions are configurable:
 * `ADMIN` - allow user to edit permissions, withdraw tokens
 * `CONFIG` - allow user to change server configuration
 * `BAN_UNBAN` - allow user to ban/unban other users
 * `CREATE_ROOM` - allow user to create new rooms on server
 * `SEND_MESSAGE` - allow user to send messages in rooms
+
+There are two special named permissions that are widely used in the smart contracts and documentation:
+* `none` - disallow any actions
+* `full` - allow all actions
 
 These permissions can be combined in any way to achieve the desired access control.
 The source code for managing permissions can be found in the [permissions folder](contracts/permissions),
@@ -187,8 +191,6 @@ Some implementations may offer additional features such as reactions and changin
 
 
 ## 🧰 Implementations
-
-[//]: # (todo abstract info)
 
 ### 💬 Chat
 
@@ -258,14 +260,15 @@ Message arguments:
 The versatile architecture allows a very large number of different platforms to be implemented. 
 We have a lot of ideas for what could be done, but only the Qupe Chat for this hackathon has been fully implemented.
 
-For example, we wanted to implement the ability to create and view small HTML/Markdown pages, similar to Telegraph, where the server is a bucket, room is a deployment, and messages is artifacts(any content, bytes, html, css, js).
+For example, we wanted to implement the ability to create and view small HTML/Markdown pages, similar to Telegraph, where the server is a bucket, room is a deployment, and messages is artifacts (any content, bytes, html, css, js).
 A mapping can be saved in the room metadata, where the key is a path and the value is a message hash with content, like `index.html => 0xabcd....1234`.
 And write a small browser, which inside the iframe will render the content, through the service worker will listen to requests, get the content from the blockchain by path and give it back in its usual form.
 
-What else is possible build with this protocol:
+**What else is possible build with this protocol:**
  - Blogging platform like Medium, Hashnode, etc
  - Comments systems like Disqus, Cusdis
  - Content sharing platforms such as YouTube, TikTok, Instagram with external data storage like IPFS, DriveChain or any other  
+
 
 ## 🪛 Integration
 [qupe-lib](https://github.com/tonred/qupe-lib) – a TypeScript library for easy interaction with the Qupe protocol, it can easily be expanded by adding new implementations.
@@ -289,7 +292,7 @@ npm run build
 ```
 
 ```shell
-# 2) test
+# 2) Test
 npm run test
 ```
 
