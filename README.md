@@ -12,7 +12,7 @@ Qupe – protocol for building public web3 social media platforms on top of TVM 
 
 </h3>
 
-[![license](https://img.shields.io/github/license/tonred/Qupe)](https://github.com/tonred/Qupe/blob/main/LICENSE)
+[![license](https://img.shields.io/github/license/tonred/Qupe?cacheSeconds=9999999)](https://github.com/tonred/Qupe/blob/main/LICENSE)
 
 [![Threaded Solidity](https://img.shields.io/badge/T--Sol-%5E0.66.0-blue)](https://github.com/tonlabs/TON-Solidity-Compiler/releases/tag/0.66.0)
 [![TVM linker](https://img.shields.io/badge/TVM--linker-0.20.2-blue)](https://github.com/tonlabs/TVM-linker/releases/tag/0.20.2)
@@ -67,7 +67,10 @@ The core of this project is the **Qupe Protocol** - a public web3 communication 
 It defines four main entities: Roots, Servers, Rooms, and Profiles, along with their interactions.
 The source code for the smart contracts can be found in the [abstract folder](contracts/entities/abstract).
 
+<details>
+<summary>Diagram of smart-contracts interactions</summary>
 ![diagram](docs/abstract.png)
+</details>
 
 ### Entities
 
@@ -157,7 +160,7 @@ They should also deposit some VENOM and/or TIP3 tokens to pay fees.
 3) Depending on the previous step, the user can create a new room on the server or use an existing one.
 4) Finally, user can send messages in the room.
 
-<details open>
+<details>
 <summary>Diagram of workflow with creating new Server and Room</summary>
 
 ```mermaid
