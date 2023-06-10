@@ -40,7 +40,16 @@ Contracts are designed and optimised to maximise the user's response time, it fe
 
 With the acceleration of block finality planned in the near future, user interactions with web3 platforms created with Qupe protocol will be much faster, even with many shards, the response time will be less than a second.
 
-![chat demo](docs/dialog-demo.gif)
+![chat demo](https://raw.githubusercontent.com/tonred/qupe-demo-gifs/main/dialog-demo.gif)
+
+
+<details>
+<summary>Full demo</summary>
+    
+![chat demo](https://raw.githubusercontent.com/tonred/qupe-demo-gifs/main/common.gif)
+
+
+</details>
 
 ## 🧭 Navigation
 
@@ -220,7 +229,7 @@ Message arguments:
 4) Is message highlighted
 5) Tags (default feature)
 
-![chat demo](docs/chat-demo.gif)
+![chat demo](https://raw.githubusercontent.com/tonred/qupe-demo-gifs/main/chat-demo.gif)
 
 ### 🗣️ Forum
 
