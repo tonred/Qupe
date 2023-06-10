@@ -8,7 +8,7 @@ Qupe – protocol for building public web3 social media platforms on top of TVM 
 
 <h3>
 
-[Qupe Protocol](https://github.com/tonred/Qupe) | [Qupe Chat](https://chat.qu.pe) | [qupe-lib](https://github.com/tonred/qupe-lib) | [Demo](https://demo)
+[Qupe Protocol](https://github.com/tonred/Qupe) | [Qupe Chat](https://chat.qu.pe) | [qupe-lib](https://github.com/tonred/qupe-lib)
 
 </h3>
 
@@ -194,8 +194,6 @@ sequenceDiagram
 
 Depending on the permissions, the user can also edit permissions, ban/unban other users, and perform other actions.
 Some implementations may offer additional features such as reactions and changing reputations.
-
-[See this demo](https://demo)
 
 
 ## 🧰 Implementations
