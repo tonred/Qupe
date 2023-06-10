@@ -163,7 +163,7 @@ They should also deposit some VENOM and/or TIP3 tokens to pay fees.
 4) Finally, user can send messages in the room.
 
 <details>
-<summary>Diagram of workflow with creating new Server and Room</summary>
+<summary>Diagram of workflow with creating a new Server and Room</summary>
 
 ```mermaid
 sequenceDiagram
@@ -176,8 +176,8 @@ sequenceDiagram
 ```
 </details>
 
-<details>
-<summary>Diagram of workflow using existing new Server and Room</summary>
+<details open>
+<summary>Diagram of workflow using an existing Server and Room</summary>
 
 ```mermaid
 sequenceDiagram
@@ -240,6 +240,8 @@ Message arguments:
 3) Forward message hash
 4) Is message highlighted
 5) Tags (default feature)
+
+![chat demo](docs/chat-demo.gif)
 
 ### 📝 Blog
 
