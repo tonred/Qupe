@@ -117,7 +117,7 @@ The source code for the vaults can be found in the [contracts/vault](contracts/v
 By default, the Qupe Protocol does not utilize a separate smart contract for storing messages.
 Instead, messages are stored as hashes of [external incoming message in blockchain](https://testnet.venomscan.com/messages).
 This approach ensures fast and cheap message delivery, as users do not need to deploy new smart contracts for each message or maintain large mappings for storage.
-However, some implementations of the protocol may include a Message smart contract, such as the [Forum](#forum) implementation.
+However, some implementations of the protocol may include a Message smart contract, such as the [Forum](#-forum) implementation.
 
 A message can have different metadata depending on the implementation.
 For example, it can have text, a hash of a message it is replying to, a hash of a forwarded message, etc.
