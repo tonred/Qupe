@@ -33,11 +33,14 @@ Qupe – protocol for building public web3 social media platforms on top of TVM 
 
 
 ## 🌐 Real web3
-Fully inherits the security, anonymity and speed of the Venom blockchain. Permissionless, requires no backends, custom indexers or third-party services, designed to maximise use of [RPC](https://github.com/broxus/everscale-jrpc]/GQL)/[GQL](https://github.com/tonlabs/evernode-ds), can be used with public endpoints or with own running node, without compromising user privacy.
+Fully inherits the security, anonymity and speed of the Venom blockchain.
+Permissionless, requires no backends, custom indexers or third-party services, designed to maximise use of [RPC](https://github.com/broxus/everscale-jrpc]/GQL)/[GQL](https://github.com/tonlabs/evernode-ds), can be used with public endpoints or with own running node, without compromising user privacy.
 
 Contracts are designed and optimised to maximise the user's response time, it feels like working with a real-time system so that the user does not feel like they are using a blockchain, fees are minimised, so that it is not expensive for users to use such platforms.
 
 With the acceleration of block finality planned in the near future, user interactions with web3 platforms created with Qupe protocol will be much faster, even with many shards, the response time will be less than a second.
+
+![chat demo](docs/dialog-demo.gif)
 
 ## 🧭 Navigation
 
