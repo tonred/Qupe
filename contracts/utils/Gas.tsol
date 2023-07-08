@@ -33,4 +33,6 @@ library Gas {
     uint128 constant DEPLOY_WALLET_VALUE = 0.1 ever;
     uint128 constant SYNC_WALLET_VALUE = 0.2 ever;
 
+    uint128 constant UPGRADE_VALUE = 1.5 ever;
+
 }

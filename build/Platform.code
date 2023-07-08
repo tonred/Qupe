@@ -36,11 +36,18 @@ CTOS
 BLESS
 POP C3
 .loc ../contracts/platform/Platform.tsol, 19
-GETGLOB 10
-MYCODE
 GETGLOB 13
-ROLL 3
-PUSHINT $onCodeUpgrade_147dcf22_internal$
+MYCODE
+GETGLOB 10
+NEWC
+STSLICE
+STREF
+STREF
+STREF
+ENDC
+.loc ../contracts/platform/Platform.tsol, 20
+FALSE
+PUSHINT $onCodeUpgrade_809f3980_internal$
 PUSH C3
 EXECUTE
 .loc ../contracts/platform/Platform.tsol, 0
@@ -49,9 +56,9 @@ CALLREF {
 }
 THROW 0
 
-.internal-alias onCodeUpgrade_147dcf22_internal, 1726107500
-.internal onCodeUpgrade_147dcf22_internal
-BLKDROP 4
+.internal-alias onCodeUpgrade_809f3980_internal, 306813275
+.internal onCodeUpgrade_809f3980_internal
+DROP2
 .loc ../contracts/platform/Platform.tsol, 0
 CALLREF {
 	CALL $c7_to_c4$

@@ -14,21 +14,29 @@ abstract contract Server is Base {
     uint64 _usersCount;
 
 
-    function onCodeUpgrade(address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) internal {
-        tvm.resetStorage();
-        _initPlatform(root, platformCode);
-        _serverID = abi.decode(initialData, uint64);
-        _usersCount = 1;  // creator
-        (address owner, address token, optional(Permissions) ownerPermissions) = _init(initialParams);
-        _initVault(token);
+    function onCodeUpgrade(TvmCell input, bool upgrade) internal override {
+        if (!upgrade) {
+            tvm.resetStorage();
+            (address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) =
+                abi.decode(input, (address, TvmCell, TvmCell, TvmCell));
 
-        _reserveTarget();
-        address profile = _profileAddress(owner);
-        IProfile(profile).onServerCreated{
-            value: 0,
-            flag: MsgFlag.ALL_NOT_RESERVED,
-            bounce: false
-        }(_serverID, ownerPermissions);
+            _initPlatform(root, platformCode);
+            _serverID = abi.decode(initialData, uint64);
+            _usersCount = 1;  // creator
+            (address owner, address token, optional(Permissions) ownerPermissions) = _init(initialParams);
+            _initVault(token);
+            _initVersion(Constants.SERVER_SID, Version(1, 1));
+
+            _reserveTarget();
+            address profile = _profileAddress(owner);
+            IProfile(profile).onServerCreated{
+                value: 0,
+                flag: MsgFlag.ALL_NOT_RESERVED,
+                bounce: false
+            }(_serverID, ownerPermissions);
+        } else {
+            revert(VersionableErrorCodes.INVALID_OLD_VERSION);
+        }
     }
 
     function _init(TvmCell params) internal virtual returns (

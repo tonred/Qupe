@@ -193,4 +193,12 @@ contract ForumProfile is Profile, IForumProfile {
         return ForumUserData({reputation: 0});
     }
 
+    function _encodeContractData() internal override returns (TvmCell) {
+        return abi.encode(
+            _owner, _meta, _sendMessageValue, _minTagValue, _pubkeys,
+            _servers, _userDatas, _permissions, _currentMessageHash, _timestamp,
+            _reactions, _votes
+        );
+    }
+
 }

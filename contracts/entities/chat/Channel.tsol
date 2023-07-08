@@ -34,4 +34,16 @@ contract Channel is Room {
         return data.payment.moreThan(price);
     }
 
+
+    function _encodeContractData() internal override returns (TvmCell) {
+        return abi.encode(
+            _token, _wallet, _balance,              // Vault
+            _root, _platformCode,                   // PlatformUtils
+            _sid, _version,                         // BaseSlave
+            _defaultPermissions,                    // Base
+            _serverID, _roomID, _messagesCount,     // Room
+            _info
+        );
+    }
+
 }

@@ -6,17 +6,20 @@ import "../abstract/Root.tsol";
 contract BlogRoot is Root {
 
     constructor(
+        address admin,
+        TvmCell profileCode,
         TvmCell serverCode,
         TvmCell roomCode,
-        TvmCell profileCode,
         TvmCell platformCode,
         uint128 sendMessageValue
-    ) public Root(serverCode, roomCode, profileCode, platformCode, sendMessageValue) {}
+    ) public Root(admin, profileCode, serverCode, roomCode, platformCode, sendMessageValue) {}
 
     function createServer(address owner, BlogInfo info) public responsible returns (address) {
         _reserveTarget();
-        TvmCell params = abi.encode(owner, info, _roomCode);
-        return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} _createServer(_serverCode, params);
+        TvmCell serverCode = _getLatestCode(Constants.SERVER_SID);
+        TvmCell roomCode = _getLatestCode(Constants.ROOM_SID);
+        TvmCell params = abi.encode(owner, info, roomCode);
+        return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} _createServer(serverCode, params);
     }
 
 }

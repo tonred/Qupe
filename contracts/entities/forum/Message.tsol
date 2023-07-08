@@ -21,12 +21,6 @@ contract Message is PlatformUtils {
     int64 _reputation;
 
 
-    modifier onlyProfile(address user) {
-        address profile = _profileAddress(user);
-        require(msg.sender == profile, ErrorCodes.SENDER_IS_NOT_PROFILE);
-        _;
-    }
-
     function onCodeUpgrade(address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) internal {
         tvm.resetStorage();
         _reserveTarget();

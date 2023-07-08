@@ -1,0 +1,21 @@
+pragma ever-solidity ^0.66.0;
+
+import "../../../structures/CallData.tsol";
+
+import {Version} from "versionable/contracts/utils/Structs.tsol";
+
+
+interface IRoot {
+
+    function upgradeToLatest(CallData data, address destination, uint16 sid) external view;
+
+    function upgradeToSpecific(
+        CallData data,
+        address destination,
+        uint16 sid,
+        Version version,
+        TvmCell code,
+        TvmCell params
+    ) external view;
+
+}

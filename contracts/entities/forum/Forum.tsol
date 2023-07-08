@@ -43,4 +43,16 @@ contract Forum is Server {
         return abi.encode(owner, info, _messageCode);
     }
 
+
+    function _encodeContractData() internal override returns (TvmCell) {
+        return abi.encode(
+            _token, _wallet, _balance,                          // Vault
+            _root, _platformCode,                               // PlatformUtils
+            _sid, _version,                                     // BaseSlave
+            _defaultPermissions,                                // Base
+            _serverID, _roomCode, _roomsCount, _usersCount,     // Server
+            _info, _messageCode
+        );
+    }
+
 }

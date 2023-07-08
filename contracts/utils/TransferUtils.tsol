@@ -4,10 +4,10 @@ import "@broxus/contracts/contracts/libraries/MsgFlag.tsol";
 
 
 abstract contract TransferUtils {
-    uint16 constant _LOW_MSG_VALUE = 500;
+    uint16 constant _LOW_MSG_VALUE_ERROR = 500;
 
     modifier minValue(uint128 value) {
-        require(msg.value >= value, _LOW_MSG_VALUE);
+        require(msg.value >= value, _LOW_MSG_VALUE_ERROR);
         _;
     }
 

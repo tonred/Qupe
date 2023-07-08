@@ -9,6 +9,17 @@ abstract contract PlatformUtils {
     address _root;
     TvmCell _platformCode;
 
+    modifier onlyRoot() {
+        require(msg.sender == _root && msg.sender.value != 0, ErrorCodes.SENDER_IS_NOT_ROOT);
+        _;
+    }
+
+    modifier onlyProfile(address user) {
+        address profile = _profileAddress(user);
+        require(msg.sender == profile, ErrorCodes.SENDER_IS_NOT_PROFILE);
+        _;
+    }
+
     modifier onlyServer(uint64 serverID) {
         address server = _serverAddress(serverID);
         require(msg.sender == server, ErrorCodes.SENDER_IS_NOT_SERVER);

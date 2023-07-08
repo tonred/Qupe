@@ -72,6 +72,37 @@
 			]
 		},
 		{
+			"name": "acceptUpgrade",
+			"inputs": [
+				{"name":"sid","type":"uint16"},
+				{"components":[{"name":"major","type":"uint32"},{"name":"minor","type":"uint32"}],"name":"version","type":"tuple"},
+				{"name":"code","type":"cell"},
+				{"name":"params","type":"cell"},
+				{"name":"caller","type":"address"},
+				{"name":"meta","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getSID",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"sid","type":"uint16"}
+			]
+		},
+		{
+			"name": "getVersion",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"components":[{"name":"major","type":"uint32"},{"name":"minor","type":"uint32"}],"name":"version","type":"tuple"}
+			]
+		},
+		{
 			"name": "onWalletDeployed",
 			"inputs": [
 				{"name":"wallet","type":"address"}
@@ -133,6 +164,22 @@
 			],
 			"outputs": [
 			]
+		},
+		{
+			"name": "_sid",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_sid","type":"uint16"}
+			]
+		},
+		{
+			"name": "_version",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"major","type":"uint32"},{"name":"minor","type":"uint32"}],"name":"_version","type":"tuple"}
+			]
 		}
 	],
 	"data": [
@@ -157,6 +204,15 @@
 			]
 		},
 		{
+			"name": "CodeUpgraded",
+			"inputs": [
+				{"components":[{"name":"major","type":"uint32"},{"name":"minor","type":"uint32"}],"name":"oldVersion","type":"tuple"},
+				{"components":[{"name":"major","type":"uint32"},{"name":"minor","type":"uint32"}],"name":"newVersion","type":"tuple"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "VaultSync",
 			"inputs": [
 				{"name":"balance","type":"uint128"}
@@ -174,6 +230,8 @@
 		{"name":"_balance","type":"uint128"},
 		{"name":"_root","type":"address"},
 		{"name":"_platformCode","type":"cell"},
+		{"name":"_sid","type":"uint16"},
+		{"components":[{"name":"major","type":"uint32"},{"name":"minor","type":"uint32"}],"name":"_version","type":"tuple"},
 		{"components":[{"name":"values","type":"bool[]"}],"name":"_defaultPermissions","type":"tuple"},
 		{"name":"_serverID","type":"uint64"},
 		{"name":"_roomCode","type":"cell"},

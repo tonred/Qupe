@@ -7,8 +7,10 @@ import "../../utils/TransferUtils.tsol";
 import "../../vault/Vault.tsol";
 import "./interfaces/IUser.tsol";
 
+import {BaseSlave, Version, ErrorCodes as VersionableErrorCodes} from "versionable/contracts/BaseSlave.tsol";
 
-abstract contract Base is Vault, PlatformUtils, TransferUtils {
+
+abstract contract Base is Vault, PlatformUtils, TransferUtils, BaseSlave {
     using PermissionsLibrary for Permissions;
 
     Permissions _defaultPermissions;
@@ -70,5 +72,23 @@ abstract contract Base is Vault, PlatformUtils, TransferUtils {
     function _setPermissions(address user, optional(Permissions) permissions, address callbackTo) internal virtual;
 
     function _reserveTarget() internal view inline virtual;
+
+
+    function acceptUpgrade(
+        uint16 sid, Version version, TvmCell code, TvmCell params, address caller, TvmCell meta
+    ) public override onlyRoot {
+        (CallData data, bool force) = abi.decode(meta, (CallData, bool));
+        bool correct_sender = _checkSender(caller, data.user);
+        bool has_permission = _checkPermissions(data, Action.CONFIG);
+        require(correct_sender && has_permission && !force, ErrorCodes.NO_PERMISSION_FOR_ACTION);
+        _acceptUpgrade(sid, version, code, params, caller, meta);
+    }
+
+    function _onCodeUpgrade(TvmCell data, Version oldVersion, TvmCell params, address caller, TvmCell meta) internal override {
+        TvmCell input = abi.encode(data, oldVersion, params, caller, meta);
+        onCodeUpgrade(input, true);
+    }
+
+    function onCodeUpgrade(TvmCell input, bool upgrade) internal virtual;
 
 }

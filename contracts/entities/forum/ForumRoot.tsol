@@ -5,23 +5,25 @@ import "../abstract/Root.tsol";
 
 contract ForumRoot is Root {
 
-    TvmCell _messageCode;
-
     constructor(
+        address admin,
+        TvmCell profileCode,
         TvmCell serverCode,
         TvmCell roomCode,
-        TvmCell profileCode,
         TvmCell messageCode,
         TvmCell platformCode,
         uint128 sendMessageValue
-    ) public Root(serverCode, roomCode, profileCode, platformCode, sendMessageValue) {
-        _messageCode = messageCode;
+    ) public Root(admin, profileCode, serverCode, roomCode, platformCode, sendMessageValue) {
+        _initVersion(Constants.MESSAGE_SID, messageCode);
     }
 
     function createServer(address owner, ForumInfo info) public responsible returns (address) {
         _reserveTarget();
-        TvmCell params = abi.encode(owner, info, _roomCode, _messageCode);
-        return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} _createServer(_serverCode, params);
+        TvmCell serverCode = _getLatestCode(Constants.SERVER_SID);
+        TvmCell roomCode = _getLatestCode(Constants.ROOM_SID);
+        TvmCell messageCode = _getLatestCode(Constants.MESSAGE_SID);
+        TvmCell params = abi.encode(owner, info, roomCode, messageCode);
+        return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} _createServer(serverCode, params);
     }
 
 }

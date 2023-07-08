@@ -1,11 +1,11 @@
 pragma ever-solidity ^0.66.0;
 
-import "../../utils/Constants.tsol";
 import "../../vault/MultiVault.tsol";
+import "./interfaces/IRoot.tsol";
 import "./Server.tsol";
 
 
-abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils {
+abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils, BaseSlave {
     using PaymentLibrary for Payment;
     using PermissionsLibrary for Permissions;
     using PermissionsLibrary for optional(Permissions);
@@ -66,13 +66,21 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
     }
 
 
-    function onCodeUpgrade(address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) internal {
-        tvm.resetStorage();
-        _initPlatform(root, platformCode);
-        _owner = abi.decode(initialData, address);
-        uint[] pubkeys;
-        (_meta, _sendMessageValue, _minTagValue, pubkeys) = abi.decode(initialParams, (bytes, uint128, uint128, uint[]));
-        _setPubkeys(pubkeys);
+    function onCodeUpgrade(TvmCell input, bool upgrade) internal {
+        if (!upgrade) {
+            tvm.resetStorage();
+            (address root, TvmCell platformCode, TvmCell initialData, TvmCell initialParams) =
+                abi.decode(input, (address, TvmCell, TvmCell, TvmCell));
+
+            _initPlatform(root, platformCode);
+            _owner = abi.decode(initialData, address);
+            uint[] pubkeys;
+            (_meta, _sendMessageValue, _minTagValue, pubkeys) = abi.decode(initialParams, (bytes, uint128, uint128, uint[]));
+            _setPubkeys(pubkeys);
+            _initVersion(Constants.PROFILE_SID, Version(1, 1));
+        } else {
+            revert(VersionableErrorCodes.INVALID_OLD_VERSION);
+        }
     }
 
     function afterSignatureCheck(TvmSlice body, TvmCell message) private inline returns (TvmSlice) {
@@ -445,6 +453,48 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils 
             uint64 serverID = body.decode(uint64);
             delete _servers[serverID];
         }
+    }
+
+
+    function requestUpgradeToLatest(address destination, uint16 sid) public view cashBack onlyOwner {
+        CallData data = _buildCallData(destination, null);
+        IRoot(_root).upgradeToLatest{
+            value: Gas.UPGRADE_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES,
+            bounce: false
+        }(data, destination, sid);
+    }
+
+    function requestUpgradeToSpecific(address destination, uint16 sid) public view cashBack onlyOwner {
+        CallData data = _buildCallData(destination, null);
+        IRoot(_root).upgradeToLatest{
+            value: Gas.UPGRADE_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES,
+            bounce: false
+        }(data, destination, sid);
+    }
+
+    function acceptUpgrade(
+        uint16 sid, Version version, TvmCell code, TvmCell params, address caller, TvmCell meta
+    ) public override onlyRoot {
+        (CallData data, bool force) = abi.decode(meta, (CallData, bool));
+        require(data.user == _owner && !force, ErrorCodes.IS_NOT_OWNER);
+        _acceptUpgrade(sid, version, code, params, caller, meta);
+    }
+
+    function _onCodeUpgrade(TvmCell data, Version oldVersion, TvmCell params, address caller, TvmCell meta) internal override {
+        TvmCell input = abi.encode(data, oldVersion, params, caller, meta);
+        onCodeUpgrade(input, true);
+    }
+
+    function _encodeContractData() internal virtual override returns (TvmCell) {
+        return abi.encode(
+            _pendingWallets, _wallets, _balances, _pendingSyncs,                // MultiVault
+            _root, _platformCode,                                               // PlatformUtils
+            _sid, _version,                                                     // BaseSlave
+            _owner, _meta, _sendMessageValue, _minTagValue, _pubkeys,
+            _servers, _userDatas, _permissions, _currentMessageHash, _timestamp
+        );
     }
 
 }

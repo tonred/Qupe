@@ -2,5 +2,13 @@ pragma ever-solidity ^0.66.0;
 
 
 library Constants {
+
     uint16 constant MESSAGE_VERSION = 1;
+
+    // Versionable
+    uint16 constant PROFILE_SID = 1;
+    uint16 constant SERVER_SID = 2;
+    uint16 constant ROOM_SID = 3;
+    uint16 constant MESSAGE_SID = 4;
+
 }

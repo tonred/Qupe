@@ -95,9 +95,10 @@ describe("Test Quashers Chat contracts", async function () {
           _randomNonce: locklift.utils.getRandomNonce(),
         },
         constructorParams: {
+          admin: new Address('0:fa94171cb0565789224814561cc558e59315971ee9d03085de3dcb5f8b94d95e'),
+          profileCode: locklift.factory.getContractArtifacts('ChatProfile').code,
           serverCode: locklift.factory.getContractArtifacts('Chat').code,
           roomCode: locklift.factory.getContractArtifacts('Channel').code,
-          profileCode: locklift.factory.getContractArtifacts('ChatProfile').code,
           platformCode: locklift.factory.getContractArtifacts('Platform').code,
           sendMessageValue: toNano(0.1),
         },

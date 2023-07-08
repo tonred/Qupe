@@ -11,11 +11,12 @@ async function main() {
       // _randomNonce: locklift.utils.getRandomNonce(),
     },
     constructorParams: {
-      platformCode: locklift.factory.getContractArtifacts('Platform').code,
+      admin: new Address('0:fa94171cb0565789224814561cc558e59315971ee9d03085de3dcb5f8b94d95e'),
       profileCode: locklift.factory.getContractArtifacts('ChatProfile').code,
-      roomCode: locklift.factory.getContractArtifacts('Channel').code,
-      sendMessageValue: toNano(0.1),
       serverCode: locklift.factory.getContractArtifacts('Chat').code,
+      roomCode: locklift.factory.getContractArtifacts('Channel').code,
+      platformCode: locklift.factory.getContractArtifacts('Platform').code,
+      sendMessageValue: toNano(0.1),
     },
     value: locklift.utils.toNano(2),
   });

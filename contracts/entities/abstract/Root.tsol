@@ -2,35 +2,51 @@ pragma ever-solidity ^0.66.0;
 
 import "../../platform/PlatformUtils.tsol";
 import "../../structures/Infos.tsol";
+import "../../utils/Constants.tsol";
 import "../../utils/Gas.tsol";
 import "../../utils/TransferUtils.tsol";
+import "./interfaces/IRoot.tsol";
 
 import "@broxus/contracts/contracts/libraries/MsgFlag.tsol";
 import "@broxus/contracts/contracts/utils/RandomNonce.tsol";
+import {BaseMaster, SlaveData} from "versionable/contracts/BaseMaster.tsol";
 
 
-abstract contract Root is PlatformUtils, RandomNonce {
+abstract contract Root is IRoot, PlatformUtils, TransferUtils, BaseMaster, RandomNonce {
+    event CodeUpgraded();
 
-    TvmCell _serverCode;
-    TvmCell _roomCode;
-    TvmCell _profileCode;
+    address _admin;
     uint128 _sendMessageValue;
     uint64 _serversCount;
 
+    modifier onlyAdmin {
+        require(msg.sender == _admin && msg.sender.value != 0, ErrorCodes.IS_NOT_OWNER);
+        _;
+    }
+
+    modifier onlyProfileOrAdmin(address user) {
+        address profile = _profileAddress(user);
+        require(msg.sender.value != 0 && (msg.sender == profile || msg.sender == _admin), ErrorCodes.SENDER_IS_NOT_PROFILE);
+        _;
+    }
+
 
     constructor(
+        address admin,
+        TvmCell profileCode,
         TvmCell serverCode,
         TvmCell roomCode,
-        TvmCell profileCode,
         TvmCell platformCode,
         uint128 sendMessageValue
     ) public {
         tvm.accept();
-        _serverCode = serverCode;
-        _roomCode = roomCode;
-        _profileCode = profileCode;
+        _admin = admin;
         _sendMessageValue = sendMessageValue;
         _initPlatform(address(this), platformCode);
+        _initVersions(
+            [Constants.PROFILE_SID, Constants.SERVER_SID, Constants.ROOM_SID],
+            [profileCode, serverCode, roomCode]
+        );
     }
 
     function getServersCount() public view responsible returns (uint64 count) {
@@ -40,13 +56,14 @@ abstract contract Root is PlatformUtils, RandomNonce {
     function createProfile(bytes meta, uint128 minTagValue, uint[] pubkeys) public view responsible returns (address profile) {
         _reserveTarget();
         TvmCell stateInit = _buildProfileStateInit(msg.sender);
+        TvmCell code = _getLatestCode(Constants.PROFILE_SID);
         TvmCell params = abi.encode(meta, _sendMessageValue, minTagValue, pubkeys);
         profile = new Platform{
             stateInit: stateInit,
             value: Gas.DEPLOY_PROFILE_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES,
             bounce: false
-        }(_profileCode, params);
+        }(code, params);
         return {value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false} profile;
     }
 
@@ -63,6 +80,77 @@ abstract contract Root is PlatformUtils, RandomNonce {
 
     function _reserveTarget() internal pure {
         tvm.rawReserve(Gas.ROOT_TARGET_VALUE, 0);
+    }
+
+
+    function upgradeToLatest(CallData data, address destination, uint16 sid) public view override onlyProfileOrAdmin(data.user) {
+        bool force = msg.sender == _admin;
+        _upgradeToLatest({
+            destination: destination,
+            sid: sid,
+            caller: msg.sender,
+            meta: abi.encode(data, force),
+            value: 0,
+            flag: MsgFlag.REMAINING_GAS
+        });
+    }
+
+    function upgradeToSpecific(
+        CallData data,
+        address destination,
+        uint16 sid,
+        Version version,
+        TvmCell code,
+        TvmCell params
+    ) public view override onlyProfileOrAdmin(data.user) {
+        bool force = msg.sender == _admin;
+        _upgradeToSpecific({
+            destination: destination,
+            sid: sid,
+            version: version,
+            code: code,
+            params: params,
+            caller: msg.sender,
+            meta: abi.encode(data, force),
+            value: 0,
+            flag: MsgFlag.REMAINING_GAS
+        });
+    }
+
+    function setVersionActivation(uint16 sid, Version version, bool active) public onlyAdmin {
+        _setVersionActivation(sid, version, active);
+    }
+
+    function createNewVersion(uint16 sid, bool minor, TvmCell code, TvmCell params) public onlyAdmin {
+        _createNewVersion(sid, minor, code, params);
+    }
+
+    function upgrade(TvmCell code) public virtual minValue(Gas.UPGRADE_VALUE) onlyAdmin {
+        emit CodeUpgraded();
+        TvmCell data = abi.encode(
+            _root, _platformCode,   // PlatformUtils
+            _slaves,                // BaseMaster
+            _randomNonce,           // RandomNonce
+            _admin, _sendMessageValue, _serversCount
+        );
+        tvm.setcode(code);
+        tvm.setCurrentCode(code);
+        onCodeUpgrade(data);
+    }
+
+    function onCodeUpgrade(TvmCell input) private {
+        tvm.resetStorage();
+        (
+            _root, _platformCode,   // PlatformUtils
+            _slaves,                // BaseMaster
+            _randomNonce,           // RandomNonce
+            _admin, _sendMessageValue, _serversCount
+        ) = abi.decode(input, (
+            address, TvmCell,               // PlatformUtils
+            mapping(uint16 => SlaveData),   // BaseMaster
+            uint,                           // RandomNonce
+            address, uint128, uint64
+        ));
     }
 
 }

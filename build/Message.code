@@ -18,7 +18,7 @@ THROW 0
 
 .internal-alias onCodeUpgrade_147dcf22_internal, 1726107500
 .internal onCodeUpgrade_147dcf22_internal
-.loc ../contracts/entities/forum/Message.tsol, 31
+.loc ../contracts/entities/forum/Message.tsol, 25
 PUSHREFSLICE {
 	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 }
@@ -42,16 +42,16 @@ NEWDICT
 SETGLOB 17
 PUSHINT 0
 SETGLOB 18
-.loc ../contracts/entities/forum/Message.tsol, 32
+.loc ../contracts/entities/forum/Message.tsol, 26
 CALLREF {
 	CALL $_reserveTarget_2497aaf2_internal_macro$
 }
-.loc ../contracts/entities/forum/Message.tsol, 33
+.loc ../contracts/entities/forum/Message.tsol, 27
 SWAP2
 CALLREF {
 	CALL $_initPlatform_fb5e9b31_internal_macro$
 }
-.loc ../contracts/entities/forum/Message.tsol, 34
+.loc ../contracts/entities/forum/Message.tsol, 28
 SWAP
 CTOS
 LDU 64
@@ -62,7 +62,7 @@ XCHG S2
 SETGLOB 12
 SETGLOB 13
 SETGLOB 14
-.loc ../contracts/entities/forum/Message.tsol, 35
+.loc ../contracts/entities/forum/Message.tsol, 29
 CTOS
 LDU 256
 LDMSGADDR
@@ -71,11 +71,11 @@ SWAP
 SETGLOB 15
 DUP
 SETGLOB 16
-.loc ../contracts/entities/forum/Message.tsol, 36
+.loc ../contracts/entities/forum/Message.tsol, 30
 CALLREF {
 	CALL $_profileAddress_b1b718c8_internal_macro$
 }
-.loc ../contracts/entities/forum/Message.tsol, 37
+.loc ../contracts/entities/forum/Message.tsol, 31
 TRUE
 GETGLOB 15
 GETGLOB 14
@@ -118,7 +118,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/Message.tsol, 45
+.loc ../contracts/entities/forum/Message.tsol, 39
 LDU 32
 GETGLOB 4
 ROT
@@ -194,7 +194,7 @@ THROW 0
 CALL $getIDs_d55d113d_internal_macro$
 
 .macro getIDs_d55d113d_internal_macro
-.loc ../contracts/entities/forum/Message.tsol, 46
+.loc ../contracts/entities/forum/Message.tsol, 40
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -217,7 +217,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/Message.tsol, 49
+.loc ../contracts/entities/forum/Message.tsol, 43
 LDU 32
 GETGLOB 4
 ROT
@@ -293,7 +293,7 @@ THROW 0
 CALL $getDetails_fbbf93a0_internal_macro$
 
 .macro getDetails_fbbf93a0_internal_macro
-.loc ../contracts/entities/forum/Message.tsol, 50
+.loc ../contracts/entities/forum/Message.tsol, 44
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -315,7 +315,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/Message.tsol, 53
+.loc ../contracts/entities/forum/Message.tsol, 47
 LDU 32
 GETGLOB 4
 ROT
@@ -382,7 +382,7 @@ THROW 0
 CALL $getReactions_0472f418_internal_macro$
 
 .macro getReactions_0472f418_internal_macro
-.loc ../contracts/entities/forum/Message.tsol, 54
+.loc ../contracts/entities/forum/Message.tsol, 48
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -403,7 +403,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/Message.tsol, 57
+.loc ../contracts/entities/forum/Message.tsol, 51
 LDU 32
 GETGLOB 4
 ROT
@@ -471,7 +471,7 @@ THROW 0
 CALL $getReactionCount_49c6cb9f_internal_macro$
 
 .macro getReactionCount_49c6cb9f_internal_macro
-.loc ../contracts/entities/forum/Message.tsol, 58
+.loc ../contracts/entities/forum/Message.tsol, 52
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -499,7 +499,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/Message.tsol, 61
+.loc ../contracts/entities/forum/Message.tsol, 55
 LDU 32
 GETGLOB 4
 ROT
@@ -566,7 +566,7 @@ THROW 0
 CALL $getReputation_ffe6a18e_internal_macro$
 
 .macro getReputation_ffe6a18e_internal_macro
-.loc ../contracts/entities/forum/Message.tsol, 62
+.loc ../contracts/entities/forum/Message.tsol, 56
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -587,7 +587,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/Message.tsol, 66
+.loc ../contracts/entities/forum/Message.tsol, 60
 OVER
 PUSHCONT {
 	LDREF
@@ -613,21 +613,21 @@ THROW 0
 CALL $react_b75c08a0_internal_macro$
 
 .macro react_b75c08a0_internal_macro
-.loc ../contracts/entities/forum/Message.tsol, 66
+.loc ../contracts/entities/forum/Message.tsol, 60
 PUSH S2
-.loc ../contracts/entities/forum/Message.tsol, 25
+.loc ../contracts/platform/PlatformUtils.tsol, 18
 CALLREF {
 	CALL $_profileAddress_b1b718c8_internal_macro$
 }
-.loc ../contracts/entities/forum/Message.tsol, 26
+.loc ../contracts/platform/PlatformUtils.tsol, 19
 GETGLOB 9
 SDEQ
 THROWIFNOT 1002
-.loc ../contracts/entities/forum/Message.tsol, 67
+.loc ../contracts/entities/forum/Message.tsol, 61
 CALLREF {
 	CALL $_reserveTarget_2497aaf2_internal_macro$
 }
-.loc ../contracts/entities/forum/Message.tsol, 68
+.loc ../contracts/entities/forum/Message.tsol, 62
 DUP
 PUSHCONT {
 	OVER
@@ -677,7 +677,7 @@ PUSHCONT {
 }
 IFELSE
 DROP
-.loc ../contracts/entities/forum/Message.tsol, 69
+.loc ../contracts/entities/forum/Message.tsol, 63
 XCHG S2
 FALSE
 NEWC
@@ -703,7 +703,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/forum/Message.tsol, 72
+.loc ../contracts/entities/forum/Message.tsol, 66
 OVER
 PUSHCONT {
 	LDREF
@@ -728,32 +728,32 @@ THROW 0
 CALL $changeReputation_bb413564_internal_macro$
 
 .macro changeReputation_bb413564_internal_macro
-.loc ../contracts/entities/forum/Message.tsol, 72
+.loc ../contracts/entities/forum/Message.tsol, 66
 OVER
-.loc ../contracts/entities/forum/Message.tsol, 25
+.loc ../contracts/platform/PlatformUtils.tsol, 18
 CALLREF {
 	CALL $_profileAddress_b1b718c8_internal_macro$
 }
-.loc ../contracts/entities/forum/Message.tsol, 26
+.loc ../contracts/platform/PlatformUtils.tsol, 19
 GETGLOB 9
 SDEQ
 THROWIFNOT 1002
-.loc ../contracts/entities/forum/Message.tsol, 73
+.loc ../contracts/entities/forum/Message.tsol, 67
 CALLREF {
 	CALL $_reserveTarget_2497aaf2_internal_macro$
 }
-.loc ../contracts/entities/forum/Message.tsol, 74
+.loc ../contracts/entities/forum/Message.tsol, 68
 GETGLOB 18
 OVER
 ADD
 FITS 64
 SETGLOB 18
-.loc ../contracts/entities/forum/Message.tsol, 75
+.loc ../contracts/entities/forum/Message.tsol, 69
 OVER
 CALLREF {
 	CALL $_profileAddress_b1b718c8_internal_macro$
 }
-.loc ../contracts/entities/forum/Message.tsol, 76
+.loc ../contracts/entities/forum/Message.tsol, 70
 XCHG S2
 GETGLOB 14
 GETGLOB 13
@@ -786,7 +786,7 @@ SENDRAWMSG
 CALL $_reserveTarget_2497aaf2_internal_macro$
 
 .macro _reserveTarget_2497aaf2_internal_macro
-.loc ../contracts/entities/forum/Message.tsol, 84
+.loc ../contracts/entities/forum/Message.tsol, 78
 PUSHINT 100000000
 PUSHINT 0
 RAWRESERVE
@@ -797,10 +797,10 @@ RAWRESERVE
 CALL $_initPlatform_fb5e9b31_internal_macro$
 
 .macro _initPlatform_fb5e9b31_internal_macro
-.loc ../contracts/platform/PlatformUtils.tsol, 32
+.loc ../contracts/platform/PlatformUtils.tsol, 43
 SWAP
 SETGLOB 10
-.loc ../contracts/platform/PlatformUtils.tsol, 33
+.loc ../contracts/platform/PlatformUtils.tsol, 44
 SETGLOB 11
 .loc ../contracts/platform/PlatformUtils.tsol, 0
 
@@ -809,11 +809,11 @@ SETGLOB 11
 CALL $_profileAddress_b1b718c8_internal_macro$
 
 .macro _profileAddress_b1b718c8_internal_macro
-.loc ../contracts/platform/PlatformUtils.tsol, 37
+.loc ../contracts/platform/PlatformUtils.tsol, 48
 CALLREF {
 	CALL $_buildProfileStateInit_3e8fb577_internal_macro$
 }
-.loc ../contracts/platform/PlatformUtils.tsol, 93
+.loc ../contracts/platform/PlatformUtils.tsol, 104
 HASHCU
 NEWC
 STSLICECONST x801_
@@ -827,11 +827,11 @@ CTOS
 CALL $_serverAddress_3d5a0003_internal_macro$
 
 .macro _serverAddress_3d5a0003_internal_macro
-.loc ../contracts/platform/PlatformUtils.tsol, 42
+.loc ../contracts/platform/PlatformUtils.tsol, 53
 CALLREF {
 	CALL $_buildServerStateInit_06942aa6_internal_macro$
 }
-.loc ../contracts/platform/PlatformUtils.tsol, 93
+.loc ../contracts/platform/PlatformUtils.tsol, 104
 HASHCU
 NEWC
 STSLICECONST x801_
@@ -845,11 +845,11 @@ CTOS
 CALL $_roomAddress_d30853dd_internal_macro$
 
 .macro _roomAddress_d30853dd_internal_macro
-.loc ../contracts/platform/PlatformUtils.tsol, 47
+.loc ../contracts/platform/PlatformUtils.tsol, 58
 CALLREF {
 	CALL $_buildRoomStateInit_36a2c305_internal_macro$
 }
-.loc ../contracts/platform/PlatformUtils.tsol, 93
+.loc ../contracts/platform/PlatformUtils.tsol, 104
 HASHCU
 NEWC
 STSLICECONST x801_
@@ -863,11 +863,11 @@ CTOS
 CALL $_messageAddress_d017174b_internal_macro$
 
 .macro _messageAddress_d017174b_internal_macro
-.loc ../contracts/platform/PlatformUtils.tsol, 52
+.loc ../contracts/platform/PlatformUtils.tsol, 63
 CALLREF {
 	CALL $_buildMessageStateInit_f0172399_internal_macro$
 }
-.loc ../contracts/platform/PlatformUtils.tsol, 93
+.loc ../contracts/platform/PlatformUtils.tsol, 104
 HASHCU
 NEWC
 STSLICECONST x801_
@@ -881,11 +881,11 @@ CTOS
 CALL $_buildProfileStateInit_3e8fb577_internal_macro$
 
 .macro _buildProfileStateInit_3e8fb577_internal_macro
-.loc ../contracts/platform/PlatformUtils.tsol, 57
+.loc ../contracts/platform/PlatformUtils.tsol, 68
 NEWC
 STSLICE
 ENDC
-.loc ../contracts/platform/PlatformUtils.tsol, 58
+.loc ../contracts/platform/PlatformUtils.tsol, 69
 GETGLOB 10
 PUSHINT 0
 ROT
@@ -899,11 +899,11 @@ CALLREF {
 CALL $_buildServerStateInit_06942aa6_internal_macro$
 
 .macro _buildServerStateInit_06942aa6_internal_macro
-.loc ../contracts/platform/PlatformUtils.tsol, 62
+.loc ../contracts/platform/PlatformUtils.tsol, 73
 NEWC
 STU 64
 ENDC
-.loc ../contracts/platform/PlatformUtils.tsol, 63
+.loc ../contracts/platform/PlatformUtils.tsol, 74
 GETGLOB 10
 PUSHINT 1
 ROT
@@ -917,18 +917,18 @@ CALLREF {
 CALL $_buildRoomStateInit_36a2c305_internal_macro$
 
 .macro _buildRoomStateInit_36a2c305_internal_macro
-.loc ../contracts/platform/PlatformUtils.tsol, 67
+.loc ../contracts/platform/PlatformUtils.tsol, 78
 OVER
 CALLREF {
 	CALL $_serverAddress_3d5a0003_internal_macro$
 }
-.loc ../contracts/platform/PlatformUtils.tsol, 68
+.loc ../contracts/platform/PlatformUtils.tsol, 79
 XCHG S2
 NEWC
 STU 64
 STU 64
 ENDC
-.loc ../contracts/platform/PlatformUtils.tsol, 69
+.loc ../contracts/platform/PlatformUtils.tsol, 80
 PUSHINT 2
 SWAP
 CALLREF {
@@ -941,19 +941,19 @@ CALLREF {
 CALL $_buildMessageStateInit_f0172399_internal_macro$
 
 .macro _buildMessageStateInit_f0172399_internal_macro
-.loc ../contracts/platform/PlatformUtils.tsol, 73
+.loc ../contracts/platform/PlatformUtils.tsol, 84
 BLKPUSH 2, 2
 CALLREF {
 	CALL $_roomAddress_d30853dd_internal_macro$
 }
-.loc ../contracts/platform/PlatformUtils.tsol, 74
+.loc ../contracts/platform/PlatformUtils.tsol, 85
 REVERSE 4, 0
 NEWC
 STU 64
 STU 64
 STU 64
 ENDC
-.loc ../contracts/platform/PlatformUtils.tsol, 75
+.loc ../contracts/platform/PlatformUtils.tsol, 86
 PUSHINT 3
 SWAP
 CALLREF {
@@ -966,7 +966,7 @@ CALLREF {
 CALL $_buildPlatformStateInit_5ab1ad56_internal_macro$
 
 .macro _buildPlatformStateInit_5ab1ad56_internal_macro
-.loc ../contracts/platform/PlatformUtils.tsol, 79
+.loc ../contracts/platform/PlatformUtils.tsol, 90
 PUSHINT 0
 NEWC
 STU 256
