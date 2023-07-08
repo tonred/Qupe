@@ -267,7 +267,10 @@
 			"name": "requestUpgradeToSpecific",
 			"inputs": [
 				{"name":"destination","type":"address"},
-				{"name":"sid","type":"uint16"}
+				{"name":"sid","type":"uint16"},
+				{"components":[{"name":"major","type":"uint32"},{"name":"minor","type":"uint32"}],"name":"version","type":"tuple"},
+				{"name":"code","type":"cell"},
+				{"name":"params","type":"cell"}
 			],
 			"outputs": [
 			]

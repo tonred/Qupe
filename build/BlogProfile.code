@@ -4267,21 +4267,28 @@ PUSHCONT {
 IF
 LDMSGADDR
 LDU 16
+LDU 32
+LDU 32
+ROTREV
+PAIR
+SWAP
+LDREF
+LDREF
 ENDS
 .loc ../contracts/entities/abstract/Profile.tsol, 0
 CALLREF {
-	CALL $requestUpgradeToSpecific_e926db31_internal_macro$
+	CALL $requestUpgradeToSpecific_83b45ddc_internal_macro$
 }
 IFREF {
 	CALL $c7_to_c4$
 }
 THROW 0
 
-.globl	requestUpgradeToSpecific_e926db31_internal
-.type	requestUpgradeToSpecific_e926db31_internal, @function
-CALL $requestUpgradeToSpecific_e926db31_internal_macro$
+.globl	requestUpgradeToSpecific_83b45ddc_internal
+.type	requestUpgradeToSpecific_83b45ddc_internal, @function
+CALL $requestUpgradeToSpecific_83b45ddc_internal_macro$
 
-.macro requestUpgradeToSpecific_e926db31_internal_macro
+.macro requestUpgradeToSpecific_83b45ddc_internal_macro
 .loc ../contracts/utils/TransferUtils.tsol, 15
 CALLREF {
 	CALL $_reserve_413ab4a8_internal_macro$
@@ -4291,14 +4298,14 @@ GETGLOB 9
 GETGLOB 18
 SDEQ
 THROWIFNOT 1007
-.loc ../contracts/entities/abstract/Profile.tsol, 469
-OVER
+.loc ../contracts/entities/abstract/Profile.tsol, 475
+PUSH S4
 NULL
 CALLREF {
 	CALL $_buildCallData_9738f09f_internal_macro$
 }
-.loc ../contracts/entities/abstract/Profile.tsol, 470
-XCHG S1, S2
+.loc ../contracts/entities/abstract/Profile.tsol, 476
+REVERSE 5, 1
 GETGLOB 14
 FALSE
 NEWC
@@ -4308,9 +4315,9 @@ STSLICECONST x1_
 STSLICE
 PUSHINT 3030982065060147937779331799513237188247553
 STUR 143
-ROLLREV 3
+ROLLREV 6
 NEWC
-STSLICECONST x5a1cbaea
+STSLICECONST x370cfeb5
 SWAP
 UNTUPLE 4
 REVERSE 5, 0
@@ -4318,7 +4325,7 @@ STSLICE
 SWAP
 UNPAIR
 XCHG S2
-ROLLREV 6
+ROLLREV 9
 NEWC
 STSLICE
 STU 128
@@ -4351,10 +4358,17 @@ PUSHCONT {
 	STDICT
 }
 IFELSE
-ROTREV
+ROLLREV 5
 NEWC
 STSLICE
 STU 16
+SWAP
+UNPAIR
+XCHG S2
+STU 32
+STU 32
+STREF
+STREF
 STBREFR
 STBREFR
 STBREFR
@@ -4382,7 +4396,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/abstract/Profile.tsol, 477
+.loc ../contracts/entities/abstract/Profile.tsol, 483
 OVER
 PUSHCONT {
 	LDU 16
@@ -4433,7 +4447,7 @@ PUSHCONT {
 }
 IF
 THROWIFNOT 1000
-.loc ../contracts/entities/abstract/Profile.tsol, 480
+.loc ../contracts/entities/abstract/Profile.tsol, 486
 DUP
 CTOS
 LDMSGADDR
@@ -4469,7 +4483,7 @@ TUPLE 4
 SWAP
 LDI 1
 ENDS
-.loc ../contracts/entities/abstract/Profile.tsol, 481
+.loc ../contracts/entities/abstract/Profile.tsol, 487
 SWAP
 FIRST
 GETGLOB 18
@@ -4478,7 +4492,7 @@ SWAP
 NOT
 AND
 THROWIFNOT 1007
-.loc ../contracts/entities/abstract/Profile.tsol, 482
+.loc ../contracts/entities/abstract/Profile.tsol, 488
 CALLREF {
 	CALL $_acceptUpgrade_96e81da6_internal_macro$
 }
@@ -4489,7 +4503,7 @@ CALLREF {
 CALL $_onCodeUpgrade_a4c8e220_internal_macro$
 
 .macro _onCodeUpgrade_a4c8e220_internal_macro
-.loc ../contracts/entities/abstract/Profile.tsol, 486
+.loc ../contracts/entities/abstract/Profile.tsol, 492
 REVERSE 5, 0
 NEWC
 STREF
@@ -4502,7 +4516,7 @@ STREF
 STSLICE
 STREF
 ENDC
-.loc ../contracts/entities/abstract/Profile.tsol, 487
+.loc ../contracts/entities/abstract/Profile.tsol, 493
 TRUE
 PUSHINT $onCodeUpgrade_809f3980_internal$
 PUSH C3
@@ -4514,7 +4528,7 @@ EXECUTE
 CALL $_encodeContractData_b4a8b135_internal_macro$
 
 .macro _encodeContractData_b4a8b135_internal_macro
-.loc ../contracts/entities/abstract/Profile.tsol, 491
+.loc ../contracts/entities/abstract/Profile.tsol, 497
 GETGLOB 27
 GETGLOB 26
 GETGLOB 25
@@ -6442,7 +6456,7 @@ CALL $PermissionsLibrary_no_obj_none_a877db9f_macro$
 .loc ../contracts/permissions/PermissionsLibrary.tsol, 13
 PUSHINT 5
 PUSHREF
-.compute $inline_array_line_12_column_27_ast_id_4965$
+.compute $inline_array_line_12_column_27_ast_id_4974$
 PAIR
 SINGLE
 .loc ../contracts/permissions/PermissionsLibrary.tsol, 0
@@ -6455,7 +6469,7 @@ CALL $PermissionsLibrary_no_obj_full_b86f58fe_macro$
 .loc ../contracts/permissions/PermissionsLibrary.tsol, 17
 PUSHINT 5
 PUSHREF
-.compute $inline_array_line_16_column_27_ast_id_4980$
+.compute $inline_array_line_16_column_27_ast_id_4989$
 PAIR
 SINGLE
 .loc ../contracts/permissions/PermissionsLibrary.tsol, 0
@@ -7116,7 +7130,7 @@ IFELSE
 BLKDROP2 2, 1
 .loc ../contracts/payment/PaymentLibrary.tsol, 0
 
-.macro inline_array_line_12_column_27_ast_id_4965
+.macro inline_array_line_12_column_27_ast_id_4974
 FALSE
 BLKPUSH 5, 0
 NEWDICT
@@ -7135,7 +7149,7 @@ PUSHCONT {
 REPEAT
 NIP
 
-.macro inline_array_line_16_column_27_ast_id_4980
+.macro inline_array_line_16_column_27_ast_id_4989
 TRUE
 BLKPUSH 4, 0
 PUSHINT 0
@@ -7311,7 +7325,7 @@ IFJMPREF {
 		}
 	}
 	DUP
-	PUSHINT 1507419179
+	PUSHINT 1444484055
 	LEQ
 	IFJMPREF {
 		DUP
@@ -7327,16 +7341,16 @@ IFJMPREF {
 			CALL $createWallet$
 		}
 		DUP
+		PUSHINT 1393532776
+		EQUAL
+		IFJMPREF {
+			CALL $requestUpgradeToSpecific$
+		}
+		DUP
 		PUSHINT 1444484055
 		EQUAL
 		IFJMPREF {
 			CALL $forceChangeRoomPermissions$
-		}
-		DUP
-		PUSHINT 1507419179
-		EQUAL
-		IFJMPREF {
-			CALL $requestUpgradeToSpecific$
 		}
 	}
 	DUP

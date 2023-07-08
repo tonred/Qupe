@@ -465,13 +465,19 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils,
         }(data, destination, sid);
     }
 
-    function requestUpgradeToSpecific(address destination, uint16 sid) public view cashBack onlyOwner {
+    function requestUpgradeToSpecific(
+        address destination,
+        uint16 sid,
+        Version version,
+        TvmCell code,
+        TvmCell params
+    ) public view cashBack onlyOwner {
         CallData data = _buildCallData(destination, null);
-        IRoot(_root).upgradeToLatest{
+        IRoot(_root).upgradeToSpecific{
             value: Gas.UPGRADE_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES,
             bounce: false
-        }(data, destination, sid);
+        }(data, destination, sid, version, code, params);
     }
 
     function acceptUpgrade(
