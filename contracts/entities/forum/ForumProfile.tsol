@@ -195,7 +195,11 @@ contract ForumProfile is Profile, IForumProfile {
 
     function _encodeContractData() internal override returns (TvmCell) {
         return abi.encode(
-            _owner, _meta, _sendMessageValue, _minTagValue, _pubkeys,
+            _pendingWallets, _wallets, _balances, _pendingSyncs,                // MultiVault
+            _meta,                                                              // Meta
+            _root, _platformCode,                                               // PlatformUtils
+            _sid, _version,                                                     // BaseSlave
+            _owner, _sendMessageValue, _minTagValue, _pubkeys,
             _servers, _userDatas, _permissions, _currentMessageHash, _timestamp,
             _reactions, _votes
         );
