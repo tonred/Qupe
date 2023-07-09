@@ -1,6 +1,7 @@
 pragma ever-solidity ^0.66.0;
 
 import "../../vault/MultiVault.tsol";
+import "../../utils/MetaLibrary.tsol";
 import "./interfaces/IRoot.tsol";
 import "./Server.tsol";
 
@@ -33,7 +34,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils,
 
     address _owner;
 
-    bytes _meta;
+    mapping(uint8 => TvmCell) _meta;
     uint128 _sendMessageValue;
     uint128 _minTagValue;
     mapping(uint => bool) _pubkeys;
@@ -75,7 +76,8 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils,
             _initPlatform(root, platformCode);
             _owner = abi.decode(initialData, address);
             uint[] pubkeys;
-            (_meta, _sendMessageValue, _minTagValue, pubkeys) = abi.decode(initialParams, (bytes, uint128, uint128, uint[]));
+            (_meta, _sendMessageValue, _minTagValue, pubkeys) =
+                abi.decode(initialParams, (mapping(uint8 => TvmCell), uint128, uint128, uint[]));
             _setPubkeys(pubkeys);
             _initVersion(Constants.PROFILE_SID, Version(1, 1));
         } else {
@@ -115,9 +117,6 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils,
         return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _permissions[entity];
     }
 
-    function updateMeta(bytes meta) public minValue(Gas.UPDATE_META_VALUE) cashBack onlyOwner {
-        _meta = meta;
-    }
 
     function join(uint64 serverID) public minValue(Gas.JOIN_VALUE) onlyOwner {
         require(!_servers.exists(serverID), ErrorCodes.IS_ALREADY_JOINED_TO_SERVER);
@@ -248,6 +247,21 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils,
     function setPubkeys(uint[] pubkeys) public cashBack onlyOwner {
         delete _pubkeys;
         _setPubkeys(pubkeys);
+    }
+
+    function setMeta(mapping(uint8 => TvmCell) meta) public minValue(Gas.SET_META_VALUE) cashBack onlyOwner {
+        require(MetaLibrary.checkMeta(meta), ErrorCodes.INVALID_META);
+        _meta = meta;
+    }
+
+    function updateMeta(uint8 key, optional(TvmCell) value) public minValue(Gas.UPDATE_META_VALUE) cashBack onlyOwner {
+        if (value.hasValue()) {
+            TvmCell unpacked = value.get();
+            require(MetaLibrary.checkMetaValue(key, unpacked), ErrorCodes.INVALID_META);
+            _meta[key] = unpacked;
+        } else {
+            delete _meta[key];
+        }
     }
 
 
@@ -424,6 +438,7 @@ abstract contract Profile is IProfile, MultiVault, PlatformUtils, TransferUtils,
             _pubkeys[pubkey] = true;
         }
     }
+
 
     function _setPermissions(address entity, optional(Permissions) permissions) private {
         bool removed = !permissions.hasValue();

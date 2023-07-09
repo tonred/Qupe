@@ -353,7 +353,7 @@ GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-LDREF
+LDDICT
 LDU 128
 LDU 32
 LDDICT
@@ -363,7 +363,7 @@ SWAP
 ENDS
 .loc ../contracts/entities/abstract/Root.tsol, 0
 CALLREF {
-	CALL $createProfile_9a9a5d01_internal_macro$
+	CALL $createProfile_a2a175cc_internal_macro$
 }
 OVER
 PUSHCONT {
@@ -380,7 +380,7 @@ PUSHCONT {
 	STUR 98
 	SWAP
 	NEWC
-	STSLICECONST xcf8dd605
+	STSLICECONST xcef90aa6
 	STSLICE
 	STBREFR
 	ENDC
@@ -423,32 +423,38 @@ IFREF {
 }
 THROW 0
 
-.globl	createProfile_9a9a5d01_internal
-.type	createProfile_9a9a5d01_internal, @function
-CALL $createProfile_9a9a5d01_internal_macro$
+.globl	createProfile_a2a175cc_internal
+.type	createProfile_a2a175cc_internal, @function
+CALL $createProfile_a2a175cc_internal_macro$
 
-.macro createProfile_9a9a5d01_internal_macro
-.loc ../contracts/entities/abstract/Root.tsol, 57
+.macro createProfile_a2a175cc_internal_macro
+.loc ../contracts/entities/abstract/Root.tsol, 61
 CALLREF {
 	CALL $_reserveTarget_2497aaf2_internal_macro$
 }
-.loc ../contracts/entities/abstract/Root.tsol, 58
+.loc ../contracts/entities/abstract/Root.tsol, 62
+PUSH S2
+CALLREF {
+	CALL $MetaLibrary_no_obj_checkMeta_eb84cc52_macro$
+}
+THROWIFNOT 1108
+.loc ../contracts/entities/abstract/Root.tsol, 63
 GETGLOB 9
 CALLREF {
 	CALL $_buildProfileStateInit_3e8fb577_internal_macro$
 }
-.loc ../contracts/entities/abstract/Root.tsol, 59
+.loc ../contracts/entities/abstract/Root.tsol, 64
 PUSHINT 1
 CALLREF {
 	CALL $_getLatestCode_3c0810e8_internal_macro$
 }
-.loc ../contracts/entities/abstract/Root.tsol, 60
+.loc ../contracts/entities/abstract/Root.tsol, 65
 SWAP2
 SWAP
 GETGLOB 15
 ROLL 5
 NEWC
-STREF
+STDICT
 STU 128
 STU 128
 SWAP
@@ -457,7 +463,7 @@ XCHG S2
 STU 32
 STDICT
 ENDC
-.loc ../contracts/entities/abstract/Root.tsol, 61
+.loc ../contracts/entities/abstract/Root.tsol, 66
 XCPU S2, S0
 HASHCU
 NEWC
@@ -508,7 +514,7 @@ STREF
 ENDC
 PUSHINT 1
 SENDRAWMSG
-.loc ../contracts/entities/abstract/Root.tsol, 67
+.loc ../contracts/entities/abstract/Root.tsol, 72
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -524,17 +530,17 @@ SETGLOB 4
 CALL $_createServer_23ee78a9_internal_macro$
 
 .macro _createServer_23ee78a9_internal_macro
-.loc ../contracts/entities/abstract/Root.tsol, 71
+.loc ../contracts/entities/abstract/Root.tsol, 76
 GETGLOB 16
 DUP
 INC
 UFITS 64
 SETGLOB 16
-.loc ../contracts/entities/abstract/Root.tsol, 72
+.loc ../contracts/entities/abstract/Root.tsol, 77
 CALLREF {
 	CALL $_buildServerStateInit_06942aa6_internal_macro$
 }
-.loc ../contracts/entities/abstract/Root.tsol, 73
+.loc ../contracts/entities/abstract/Root.tsol, 78
 XCHG S1, S2
 DUP
 HASHCU
@@ -594,7 +600,7 @@ SENDRAWMSG
 CALL $_reserveTarget_2497aaf2_internal_macro$
 
 .macro _reserveTarget_2497aaf2_internal_macro
-.loc ../contracts/entities/abstract/Root.tsol, 82
+.loc ../contracts/entities/abstract/Root.tsol, 87
 PUSHINT 500000000
 PUSHINT 0
 RAWRESERVE
@@ -609,7 +615,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/abstract/Root.tsol, 86
+.loc ../contracts/entities/abstract/Root.tsol, 91
 OVER
 PUSHCONT {
 	LDREF
@@ -697,7 +703,7 @@ THROW 0
 CALL $upgradeToLatest_f6559ea2_internal_macro$
 
 .macro upgradeToLatest_f6559ea2_internal_macro
-.loc ../contracts/entities/abstract/Root.tsol, 86
+.loc ../contracts/entities/abstract/Root.tsol, 91
 PUSH S2
 FIRST
 .loc ../contracts/entities/abstract/Root.tsol, 28
@@ -719,11 +725,11 @@ SDEQ
 OR
 AND
 THROWIFNOT 1002
-.loc ../contracts/entities/abstract/Root.tsol, 87
+.loc ../contracts/entities/abstract/Root.tsol, 92
 GETGLOB 9
 GETGLOB 14
 SDEQ
-.loc ../contracts/entities/abstract/Root.tsol, 88
+.loc ../contracts/entities/abstract/Root.tsol, 93
 ROTREV
 GETGLOB 9
 BLKSWAP 2, 3
@@ -787,7 +793,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/abstract/Root.tsol, 98
+.loc ../contracts/entities/abstract/Root.tsol, 103
 OVER
 PUSHCONT {
 	LDREF
@@ -882,7 +888,7 @@ THROW 0
 CALL $upgradeToSpecific_6face97d_internal_macro$
 
 .macro upgradeToSpecific_6face97d_internal_macro
-.loc ../contracts/entities/abstract/Root.tsol, 98
+.loc ../contracts/entities/abstract/Root.tsol, 103
 PUSH S5
 FIRST
 .loc ../contracts/entities/abstract/Root.tsol, 28
@@ -904,11 +910,11 @@ SDEQ
 OR
 AND
 THROWIFNOT 1002
-.loc ../contracts/entities/abstract/Root.tsol, 106
+.loc ../contracts/entities/abstract/Root.tsol, 111
 GETGLOB 9
 GETGLOB 14
 SDEQ
-.loc ../contracts/entities/abstract/Root.tsol, 107
+.loc ../contracts/entities/abstract/Root.tsol, 112
 ROLLREV 5
 GETGLOB 9
 BLKSWAP 2, 6
@@ -972,7 +978,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/abstract/Root.tsol, 120
+.loc ../contracts/entities/abstract/Root.tsol, 125
 LDU 16
 LDU 32
 LDU 32
@@ -1010,7 +1016,7 @@ PUSHCONT {
 }
 IF
 THROWIFNOT 1007
-.loc ../contracts/entities/abstract/Root.tsol, 121
+.loc ../contracts/entities/abstract/Root.tsol, 126
 CALLREF {
 	CALL $_setVersionActivation_8a23b366_internal_macro$
 }
@@ -1025,7 +1031,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/abstract/Root.tsol, 124
+.loc ../contracts/entities/abstract/Root.tsol, 129
 LDU 16
 LDI 1
 LDREF
@@ -1060,7 +1066,7 @@ PUSHCONT {
 }
 IF
 THROWIFNOT 1007
-.loc ../contracts/entities/abstract/Root.tsol, 125
+.loc ../contracts/entities/abstract/Root.tsol, 130
 CALLREF {
 	CALL $_createNewVersion_796c38b1_internal_macro$
 }
@@ -1075,7 +1081,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/entities/abstract/Root.tsol, 128
+.loc ../contracts/entities/abstract/Root.tsol, 133
 LDREF
 ENDS
 .loc ../contracts/entities/abstract/Root.tsol, 0
@@ -1114,13 +1120,13 @@ PUSHCONT {
 }
 IF
 THROWIFNOT 1007
-.loc ../contracts/entities/abstract/Root.tsol, 129
+.loc ../contracts/entities/abstract/Root.tsol, 134
 PUSHREF {
 	.blob xc000000000000000000000000024afe129
 }
 PUSHINT 0
 SENDRAWMSG
-.loc ../contracts/entities/abstract/Root.tsol, 130
+.loc ../contracts/entities/abstract/Root.tsol, 135
 GETGLOB 16
 GETGLOB 15
 GETGLOB 14
@@ -1140,10 +1146,10 @@ STU 128
 STU 64
 STBREFR
 ENDC
-.loc ../contracts/entities/abstract/Root.tsol, 136
+.loc ../contracts/entities/abstract/Root.tsol, 141
 OVER
 SETCODE
-.loc ../contracts/entities/abstract/Root.tsol, 137
+.loc ../contracts/entities/abstract/Root.tsol, 142
 SWAP
 CTOS
 DUP
@@ -1158,7 +1164,7 @@ PLDREF
 CTOS
 BLESS
 POP C3
-.loc ../contracts/entities/abstract/Root.tsol, 138
+.loc ../contracts/entities/abstract/Root.tsol, 143
 PUSHINT $onCodeUpgrade_0e89a1b9_internal$
 PUSH C3
 EXECUTE
@@ -1166,7 +1172,7 @@ EXECUTE
 
 .internal-alias onCodeUpgrade_0e89a1b9_internal, 2083461128
 .internal onCodeUpgrade_0e89a1b9_internal
-.loc ../contracts/entities/abstract/Root.tsol, 142
+.loc ../contracts/entities/abstract/Root.tsol, 147
 PUSHREFSLICE {
 	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 }
@@ -1186,7 +1192,7 @@ PUSHINT 0
 SETGLOB 15
 PUSHINT 0
 SETGLOB 16
-.loc ../contracts/entities/abstract/Root.tsol, 143
+.loc ../contracts/entities/abstract/Root.tsol, 148
 CTOS
 LDMSGADDR
 LDREF
@@ -3284,6 +3290,176 @@ PUSHCONT {
 IF
 THROW 0
 
+.globl	MetaLibrary_with_obj_checkMeta_eb84cc52
+.type	MetaLibrary_with_obj_checkMeta_eb84cc52, @function
+CALL $MetaLibrary_with_obj_checkMeta_eb84cc52_macro$
+
+.macro MetaLibrary_with_obj_checkMeta_eb84cc52_macro
+.loc ../contracts/utils/MetaLibrary.tsol, 10
+BLKPUSH 2, 0
+PUSHINT 8
+DICTUMINREF
+PUSHCONT {
+	DUP
+	ROT
+}
+PUSHCONT {
+	NULL
+	BLKPUSH 2, 0
+}
+IFELSE
+FALSE ; decl return flag
+PUSHCONT {
+	PUSH S3
+	ISNULL
+	NOT
+}
+PUSHCONT {
+	.loc ../contracts/utils/MetaLibrary.tsol, 11
+	BLKPUSH 2, 2
+	CALLREF {
+		CALL $MetaLibrary_no_obj_checkMetaValue_86410b84_macro$
+	}
+	PUSHCONT {
+		.loc ../contracts/utils/MetaLibrary.tsol, 12
+		BLKDROP 5
+		FALSE
+		PUSHINT 4
+		RETALT
+		.loc ../contracts/utils/MetaLibrary.tsol, 0
+	}
+	IFNOTJMP
+	.loc ../contracts/utils/MetaLibrary.tsol, 0
+	PUSH2 S3, S4
+	PUSHINT 8
+	DICTUGETNEXT
+	PUSHCONT {
+		DUP
+		ROT
+		PLDREF
+	}
+	PUSHCONT {
+		NULL
+		BLKPUSH 2, 0
+	}
+	IFELSE
+	POP S4
+	POP S4
+	POP S4
+}
+WHILEBRK
+IFRET
+BLKDROP 4
+.loc ../contracts/utils/MetaLibrary.tsol, 15
+TRUE
+.loc ../contracts/utils/MetaLibrary.tsol, 0
+
+.globl	MetaLibrary_no_obj_checkMeta_eb84cc52
+.type	MetaLibrary_no_obj_checkMeta_eb84cc52, @function
+CALL $MetaLibrary_no_obj_checkMeta_eb84cc52_macro$
+
+.macro MetaLibrary_no_obj_checkMeta_eb84cc52_macro
+.loc ../contracts/utils/MetaLibrary.tsol, 10
+DUP
+PUSHINT 8
+DICTUMINREF
+PUSHCONT {
+	DUP
+	ROT
+}
+PUSHCONT {
+	NULL
+	BLKPUSH 2, 0
+}
+IFELSE
+FALSE ; decl return flag
+PUSHCONT {
+	PUSH S3
+	ISNULL
+	NOT
+}
+PUSHCONT {
+	.loc ../contracts/utils/MetaLibrary.tsol, 11
+	BLKPUSH 2, 2
+	CALLREF {
+		CALL $MetaLibrary_no_obj_checkMetaValue_86410b84_macro$
+	}
+	PUSHCONT {
+		.loc ../contracts/utils/MetaLibrary.tsol, 12
+		BLKDROP 5
+		FALSE
+		PUSHINT 4
+		RETALT
+		.loc ../contracts/utils/MetaLibrary.tsol, 0
+	}
+	IFNOTJMP
+	.loc ../contracts/utils/MetaLibrary.tsol, 0
+	PUSH2 S3, S4
+	PUSHINT 8
+	DICTUGETNEXT
+	PUSHCONT {
+		DUP
+		ROT
+		PLDREF
+	}
+	PUSHCONT {
+		NULL
+		BLKPUSH 2, 0
+	}
+	IFELSE
+	POP S4
+	POP S4
+	POP S4
+}
+WHILEBRK
+IFRET
+BLKDROP 4
+.loc ../contracts/utils/MetaLibrary.tsol, 15
+TRUE
+.loc ../contracts/utils/MetaLibrary.tsol, 0
+
+.globl	MetaLibrary_with_obj_checkMetaValue_86410b84
+.type	MetaLibrary_with_obj_checkMetaValue_86410b84, @function
+CALL $MetaLibrary_with_obj_checkMetaValue_86410b84_macro$
+
+.macro MetaLibrary_with_obj_checkMetaValue_86410b84_macro
+.loc ../contracts/utils/MetaLibrary.tsol, 19
+OVER
+LESSINT 16
+SWAP
+PUSHINT 8
+CDATASIZEQ
+NULLSWAPIFNOT
+PUSHCONT {
+	TRIPLE
+}
+IF
+ISNULL
+NOT
+AND
+.loc ../contracts/utils/MetaLibrary.tsol, 0
+
+.globl	MetaLibrary_no_obj_checkMetaValue_86410b84
+.type	MetaLibrary_no_obj_checkMetaValue_86410b84, @function
+CALL $MetaLibrary_no_obj_checkMetaValue_86410b84_macro$
+
+.macro MetaLibrary_no_obj_checkMetaValue_86410b84_macro
+.loc ../contracts/utils/MetaLibrary.tsol, 19
+SWAP
+LESSINT 16
+SWAP
+PUSHINT 8
+CDATASIZEQ
+NULLSWAPIFNOT
+PUSHCONT {
+	TRIPLE
+}
+IF
+ISNULL
+NOT
+AND
+.loc ../contracts/utils/MetaLibrary.tsol, 0
+
 .globl	VersionLibrary_with_obj_compare_66da61cd
 .type	VersionLibrary_with_obj_compare_66da61cd, @function
 CALL $VersionLibrary_with_obj_compare_66da61cd_macro$
@@ -3452,7 +3628,7 @@ PUSHINT 1511832298
 LEQ
 IFJMPREF {
 	DUP
-	PUSHINT 1334695429
+	PUSHINT 1324944038
 	EQUAL
 	IFJMPREF {
 		CALL $createProfile$

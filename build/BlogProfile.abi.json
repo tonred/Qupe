@@ -56,14 +56,6 @@
 			]
 		},
 		{
-			"name": "updateMeta",
-			"inputs": [
-				{"name":"meta","type":"bytes"}
-			],
-			"outputs": [
-			]
-		},
-		{
 			"name": "join",
 			"inputs": [
 				{"name":"serverID","type":"uint64"}
@@ -168,6 +160,23 @@
 			"name": "setPubkeys",
 			"inputs": [
 				{"name":"pubkeys","type":"uint256[]"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setMeta",
+			"inputs": [
+				{"name":"meta","type":"map(uint8,cell)"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "updateMeta",
+			"inputs": [
+				{"name":"key","type":"uint8"},
+				{"name":"value","type":"optional(cell)"}
 			],
 			"outputs": [
 			]
@@ -576,7 +585,7 @@
 		{"name":"_sid","type":"uint16"},
 		{"components":[{"name":"major","type":"uint32"},{"name":"minor","type":"uint32"}],"name":"_version","type":"tuple"},
 		{"name":"_owner","type":"address"},
-		{"name":"_meta","type":"bytes"},
+		{"name":"_meta","type":"map(uint8,cell)"},
 		{"name":"_sendMessageValue","type":"uint128"},
 		{"name":"_minTagValue","type":"uint128"},
 		{"name":"_pubkeys","type":"map(uint256,bool)"},

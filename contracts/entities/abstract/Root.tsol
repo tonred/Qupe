@@ -2,8 +2,8 @@ pragma ever-solidity ^0.66.0;
 
 import "../../platform/PlatformUtils.tsol";
 import "../../structures/Infos.tsol";
-import "../../utils/Constants.tsol";
 import "../../utils/Gas.tsol";
+import "../../utils/MetaLibrary.tsol";
 import "../../utils/TransferUtils.tsol";
 import "./interfaces/IRoot.tsol";
 
@@ -53,8 +53,13 @@ abstract contract Root is IRoot, PlatformUtils, TransferUtils, BaseMaster, Rando
         return {value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false} _serversCount;
     }
 
-    function createProfile(bytes meta, uint128 minTagValue, uint[] pubkeys) public view responsible returns (address profile) {
+    function createProfile(
+        mapping(uint8 => TvmCell) meta,
+        uint128 minTagValue,
+        uint[] pubkeys
+    ) public view responsible returns (address profile) {
         _reserveTarget();
+        require(MetaLibrary.checkMeta(meta), ErrorCodes.INVALID_META);
         TvmCell stateInit = _buildProfileStateInit(msg.sender);
         TvmCell code = _getLatestCode(Constants.PROFILE_SID);
         TvmCell params = abi.encode(meta, _sendMessageValue, minTagValue, pubkeys);

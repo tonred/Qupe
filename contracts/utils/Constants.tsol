@@ -3,6 +3,11 @@ pragma ever-solidity ^0.66.0;
 
 library Constants {
 
+    // Meta max cell size (in distinct data cells)
+    uint16 constant MAX_META_KEY = 16;
+    uint16 constant MAX_META_CELLS = 8;
+
+    // Current version message format
     uint16 constant MESSAGE_VERSION = 1;
 
     // Versionable

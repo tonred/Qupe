@@ -37,6 +37,14 @@ const logDiff = async (tx: any): Promise<void> => {
   }
 }
 
+const encodeString = async (value: string): Promise<string> => {
+  const packed = await locklift.provider.packIntoCell({
+    structure: [{name: 'value', type: 'string'}],
+    data: {value: value},
+  });
+  return packed.boc;
+}
+
 const encodeData = (data: any): string => {
   return Buffer.from(JSON.stringify(data)).toString('hex')
 }
@@ -63,7 +71,7 @@ let signers = new Map<number, Signer>()
 let wallets = new Map<string, Address>()
 let profiles = new Map<string, Contract<FactorySource["ChatProfile"]>>();
 
-describe("Test Quashers Chat contracts", async function () {
+describe("Test Qupe Chat contracts", async function () {
   before(async () => {
     for (let i = 0; i < PROFILES_COUNT; i++) {
       let signer = await locklift.keystore.getSigner(i.toString());
@@ -114,7 +122,10 @@ describe("Test Quashers Chat contracts", async function () {
         const signer = signers.get(i);
         const owner = wallets.get(`wallet${i}`);
         const tx = await locklift.tracing.trace(root.methods.createProfile({
-          meta: encodeData({displayName: 'First user', avatar: 'QmUKiMzjKpHLSjHHQGhdXj17kyDDcGDiNEM9DevnjLm7PA'}),
+          meta: [
+            [0, await encodeString('First user')],
+            [1, await encodeString('QmUKiMzjKpHLSjHHQGhdXj17kyDDcGDiNEM9DevnjLm7PA')],
+          ],
           minTagValue: 0,
           pubkeys: [`0x${signer.publicKey}`],
           answerId: 0

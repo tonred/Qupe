@@ -1,0 +1,22 @@
+pragma ever-solidity ^0.66.0;
+
+import "./Constants.tsol";
+import "./ErrorCodes.tsol";
+
+
+library MetaLibrary {
+
+    function checkMeta(mapping(uint8 => TvmCell) meta) public returns (bool) {
+        for ((uint8 key, TvmCell value) : meta) {
+            if (!checkMetaValue(key, value)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function checkMetaValue(uint8 key, TvmCell value) public returns (bool) {
+        return key < Constants.MAX_META_KEY && value.dataSizeQ(Constants.MAX_META_CELLS).hasValue();
+    }
+
+}

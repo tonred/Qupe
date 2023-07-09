@@ -21,6 +21,7 @@ library ErrorCodes {
     uint16 constant INVALID_MESSAGE_DATA =              1105;
     uint16 constant IS_NOT_JOINED_TO_SEVER =            1106;
     uint16 constant IS_ALREADY_JOINED_TO_SERVER =       1107;
+    uint16 constant INVALID_META =                      1108;
 
     uint16 constant TOO_LOW_MESSAGE_VALUE =             1200;
 
@@ -34,6 +35,6 @@ library ErrorCodes {
 
     uint16 constant NOT_NATIVE_OR_STORED_TOKEN =        1500;
     uint16 constant NOT_JOINT_VAULT =                   1501;
-    uint16 constant INVALID_DATA =                      1502;
+    uint16 constant INVALID_ROOM_DATA =                 1502;
 
 }

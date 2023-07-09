@@ -40,7 +40,7 @@
 			"name": "createProfile",
 			"inputs": [
 				{"name":"answerId","type":"uint32"},
-				{"name":"meta","type":"bytes"},
+				{"name":"meta","type":"map(uint8,cell)"},
 				{"name":"minTagValue","type":"uint128"},
 				{"name":"pubkeys","type":"uint256[]"}
 			],

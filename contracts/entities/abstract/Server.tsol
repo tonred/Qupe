@@ -58,7 +58,7 @@ abstract contract Server is Base {
     }
 
     function createRoom(CallData data, TvmCell params) public hasPermission(data, Action.CREATE_ROOM) {
-        require(_checkCreateRoomData(data), ErrorCodes.INVALID_DATA);
+        require(_checkCreateRoomData(data), ErrorCodes.INVALID_ROOM_DATA);
         _createRoom(params, msg.sender);
     }
 
